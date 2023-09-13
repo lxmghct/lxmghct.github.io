@@ -1,0 +1,76 @@
+/* Pagination */
+
+.my-pagination {
+    font-size: 15px;
+    margin-top: 10px;
+}
+
+.my-pagination .param {
+    display: none;
+}
+
+.my-pagination__sizes,
+.my-pagination__total,
+.my-pagination__goto {
+    vertical-align: middle;
+    padding: 0 5px;
+}
+
+.my-pager {
+    user-select: none;
+    display: inline;
+    text-align: center;
+    line-height: 25px;
+}
+
+.my-pager li {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 4px;
+    width: 30px;
+    height: 25px;
+    color: #000;
+    border: 1px solid rgb(20, 118, 255);
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.my-pager li:hover {
+    color: rgb(20, 118, 255);
+}
+
+.my-pager li.active {
+    color: #fff;
+    background-color: rgb(20, 118, 255);
+}
+
+.my-pagination__sizes select {
+    cursor: pointer;
+    width: 40px;
+    height: 25px;
+    border: 1px solid rgb(20, 118, 255);
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.my-pagination__sizes select:focus {
+    outline: none;
+}
+
+.my-pagination__goto input {
+    width: 30px;
+    height: 25px;
+    border: 1px solid rgb(20, 118, 255);
+    border-radius: 5px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.my-pagination__goto input:focus {
+    outline: none;
+}
+
+.my-pagination-content div.hide {
+    display: none;
+}

@@ -1,0 +1,33 @@
+---
+layout: default
+title: 标签
+permalink: /pages/tags.html
+---
+
+<div class="home">
+  <div class="tag-list page-tag">
+    <a class="tag-filter" data-tag="all">全部({{ site.posts.size }})</a>
+    {% for tag in site.tags %}
+    <a class="tag-filter" data-tag="{{ tag[0] }}">{{ tag[0] }}({{ tag[1].size }})</a>
+    {% endfor %}
+  </div>
+
+  <div class="clear"></div>
+
+  <div>
+    {% for tag in site.tags %}
+    <div class="tag-target" name="{{ tag[0] }}">
+      <h1 class="tag-name">{{ tag[0] }}</h1>
+      <ul class="tags">
+        {% for post in tag[1] %}
+        <li class="article">
+          {% include post_record.html post=post %}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script id="tagscript" type="text/javascript" src="/assets/js/tagutils.js"></script>

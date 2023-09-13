@@ -1,0 +1,22 @@
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+    <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+    </div>
+    <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+    </div>
+    <div class="search-result-summary"></div>
+    <div class="search-result-container">
+    </div>
+    <div class="search-pagination">
+    {% include pagination.html content='.search-result-container' parent='.search-pagination' %}
+    </div>
+</div>

@@ -1,0 +1,152 @@
+<!-- pagination.html -->
+
+<div class="my-pagination">
+  <div class="param">{{ include.parentClassName }}</div>
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '{{ include.content }}';
+    const parentSelector = '{{ include.parent }}';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 5,
+      currentPage: 1
+    }
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
