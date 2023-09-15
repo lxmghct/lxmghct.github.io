@@ -155,3 +155,8 @@
     margin-top: 5px;
 }
 
+.search-result-item .preview .preview-number {
+    font-weight: bold;
+    color: #000;
+}
+

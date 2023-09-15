@@ -69,16 +69,40 @@ function getSearchResult() {
   }
 }
 
+const endCharSet = new Set(['。', '！', '？', '…', '\n', '\r', '.', '!', '?']);
+/**
+ * 查找匹配位置，并取出每处匹配的前后若干字符
+ * @param {*} keyword 
+ * @param {*} content 
+ * @returns 
+ */
 function getMatchedPositions(keyword, content) {
   const previewList = [];
   let regex = new RegExp(keyword, "gi");
   let match;
+  const maxLeftOffset = 30;
+  const maxRightOffset = 40;
   while ((match = regex.exec(content)) !== null) {
-    var startIndex = Math.max(0, match.index - 20);
-    var endIndex = Math.min(content.length, match.index + keyword.length + 20);
-    var preview = content.substring(startIndex, match.index) +
-    "<span class='highlight'>" + content.substring(match.index, match.index + keyword.length) + "</span>" +
-    content.substring(match.index + keyword.length, endIndex);
+    let startIndex = Math.max(0, match.index - maxLeftOffset);
+    let endIndex = Math.min(content.length, match.index + keyword.length + maxRightOffset);
+    let preStr = content.substring(startIndex, match.index);
+    let suffixStr = content.substring(match.index + keyword.length, endIndex);
+    let matchStr = content.substring(match.index, match.index + keyword.length);
+    // 截取preStr中最后一个终止符后的内容
+    for (let i = preStr.length - 1; i >= 0; i--) {
+      if (endCharSet.has(preStr[i])) {
+        preStr = preStr.substring(i + 1);
+        break;
+      }
+    }
+    // 截取suffixStr中第一个终止符前的内容
+    for (let i = 0; i < suffixStr.length; i++) {
+      if (endCharSet.has(suffixStr[i])) {
+        suffixStr = suffixStr.substring(0, i);
+        break;
+      }
+    }
+    let preview = preStr + "<span class='highlight'>" + matchStr + "</span>" + suffixStr;
     previewList.push(preview);
   }
   return previewList;
@@ -94,12 +118,12 @@ function renderSearchResult() {
       if (onlySearchTitle) {
         html += `<div class="search-result-item"><div class="title"><a href="${item.link}">${item.title}</a></div></div>`;
       } else {
-        // 查找在item中共有几处匹配, 并取出每处匹配的前后20个字符
+        // 查找在item中共有几处匹配, 并取出每处匹配的前后字符
         let matchedPositions = getMatchedPositions(searchContent, item.title + '\n' + item.content);
         totalMatched += matchedPositions.length;
         let positionHtml = "";
         for (let j = 0; j < matchedPositions.length; j++) {
-          positionHtml += `<div>${j + 1}. ${matchedPositions[j]}</div>`;
+          positionHtml += `<div><span class="preview-number">${j + 1}.</span> ${matchedPositions[j]}</div>`;
         }
         const titleHtml = `<div class="title">${i + 1}. <a href="${item.link}">${item.title}</a><span class="matched-num">(${matchedPositions.length}处匹配)</span></div>`;
         html += `<div class="search-result-item">${titleHtml}<div class="preview">${positionHtml}</div></div>`;
