@@ -74,6 +74,7 @@ layout: default
   }
   // 目录容器
   const tocList = document.getElementById("toc-list");
+  const tempTocData = []
 
   // 遍历标题，生成目录
   headings.forEach((heading) => {
@@ -89,17 +90,29 @@ layout: default
 
     listItem.appendChild(link);
 
-    if (level > 2) {
-      const parentList = tocList.querySelector(`li[data-level="${level - 1}"] ul`);
-      if (parentList) {
-        parentList.appendChild(listItem);
-      }
-    } else {
-      tocList.appendChild(listItem);
-    }
+    // if (level > 2) {
+    //   const parentList = tocList.querySelector(`li[data-level="${level - 1}"] ul`);
+    //   if (parentList) {
+    //     parentList.appendChild(listItem);
+    //   }
+    // } else {
+    //   tocList.appendChild(listItem);
+    // }
+    tocList.appendChild(listItem);
+    tempTocData.push({
+      level: level,
+      dom: listItem
+    })
 
     listItem.dataset.level = level;
   });
+
+  // 设置目录项的左边距
+  const minLevel = Math.min(...tempTocData.map(item => item.level))
+  tempTocData.forEach(item => {
+    item.dom.style.marginLeft = (item.level - minLevel) * 20 + "px"
+  })
+
 
   // 添加事件监听器，使目录项可展开和收起
   tocList.addEventListener("click", (e) => {

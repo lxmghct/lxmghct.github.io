@@ -67,11 +67,34 @@
 .toc-container {
     position: sticky;
     top: 30px;
-    height: 80vh;
-    overflow-y: auto;
+    padding-top: 10px;
 }
 
 #toc-list {
-    max-height: 500px;
-    /* overflow-y: auto; */
+    height: 70vh;
+    overflow-y: auto;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.toc-header h3 {
+    font-weight: bold;
+}
+
+.toc-container li {
+    margin: 10px 0;
+    padding: 0;
+}
+
+.toc-container li a {
+    text-decoration: none;
+    color: #666666;
+}
+.toc-container li a:visted {
+    color: #666666;
+}
+.toc-container li a:hover {
+    text-decoration: underline;
+    font-weight: bold;
 }

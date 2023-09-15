@@ -106,7 +106,7 @@
 	display: flex;
 }
 .left-side {
-	margin-bottom: 1em;
+	padding-right: 0;
 }
 
 .left-side .profile {
