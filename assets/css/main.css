@@ -8,8 +8,6 @@ body {
 	line-height: 1.5;
 	font-weight: 300;
 	color: rgba(0, 0, 0, 0.6);
-	background-color: #eaeaea;
-	-webkit-text-size-adjust: 100%;
 }
 
 h1,
@@ -138,16 +136,14 @@ blockquote> :last-child {
 	display: none;
 }
 
-.box-shadow {
-	border-radius: 7px !important;
-	-moz-border-radius: 7px !important;
-	-webkit-border-radius: 7px !important;
-}
-
 .post {
 	background: #fff;
 	padding: 1em 3em;
 	border-radius: 4px;
+}
+
+.hidden {
+	display: none;
 }
 
 @media (max-width: 992px) {

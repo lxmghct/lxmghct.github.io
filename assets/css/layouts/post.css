@@ -63,3 +63,15 @@
     padding: 1em 3em;
     background: white;
 }
+
+.toc-container {
+    position: sticky;
+    top: 30px;
+    height: 80vh;
+    overflow-y: auto;
+}
+
+#toc-list {
+    max-height: 500px;
+    /* overflow-y: auto; */
+}

@@ -1,0 +1,39 @@
+<div class="profile box-shadow center">
+  <div class="overlay"></div>
+  <div class="center avatar">
+    <a href="/" class="profile_avatar"><img class="circle" src="/assets/images/avatar.jpg"></a>
+  </div>
+  <div class="address">
+    <h5><span class="fa fa-map-marker"></span> Tianjin, China</h5>
+  </div>
+  <div class="center profile_desc">
+    {{ site.profile_description }}
+  </div>
+</div>
+
+<div class="tag-cloud-container box-shadow">
+  <div class="tag-cloud-title">
+    <a href="tags.html" title="标签" class="pjaxlink">
+      <p class="center">标签</p>
+    </a>
+  </div>
+  <div class="tag-cloud">
+    <hr>
+    <div class="tag-list left-bar-tag">
+      {% for tag in site.tags %}
+      <a data-tag="{{ tag[0] }}" class="pjaxlink">
+        <i class="fa fa-tags"></i>{{ tag[0] }}({{ tag[1].size}})
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+<div class="clear"></div>
+
+<div class="common-links box-shadow">
+  <p>常用链接</p>
+  <hr>
+  <ul>
+    <li><a href="https://github.com/">github主页</a></li>
+  </ul>
+</div>

@@ -2,13 +2,13 @@ $(document).ready(function () {
   $(function () {
     $(window).scroll(function () {
       if ($(window).scrollTop() > 150) {
-        $("#backtotop").addClass("showme");
+        $("#back-to-top").addClass("showme");
       } else {
-        $("#backtotop").removeClass("showme");
+        $("#back-to-top").removeClass("showme");
       }
     });
 
-    $("#backtotop").click(function () {
+    $("#back-to-top").click(function () {
       $("body,html").animate({ scrollTop: 0 }, 400);
       return false;
     });
@@ -55,11 +55,6 @@ $(document).ready(function () {
     );
   });
 
-  $("li.phoneselect").click(function () {
-    $("div.navbar-collapse").removeClass("in");
-    $("button.navbar-toggle").addClass("collapsed");
-  });
-
   $(".circle").load(function () {
     $(".circle").addClass("show");
   });
@@ -97,6 +92,9 @@ $(document).ready(function () {
     }
   });
   $("#header-search i").click(function () {
+    showSearchContainer();
+  });
+  $(".header-hidden-buttons .search-icon").click(function () {
     showSearchContainer();
   });
 

@@ -9,20 +9,13 @@
     padding-top: 4px;
 }
 
-.homeicon {
+.header-title i,
+.header-hidden-buttons i {
     font-size: 2em;
     color: white;
     vertical-align: middle;
-    margin-right: 5px;
-}
-
-
-.site-header {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 100%;
-    z-index: 5000;
+    margin: 0 5px;
+    cursor: pointer;
 }
 
 .site-title {
@@ -113,6 +106,9 @@
 }
 
 /* navibar on phone */
+.header-hidden-buttons {
+    margin-top: 12px;
+}
 .phone-nav {
     font-size: 1.2em;
     color: #fff;
@@ -146,13 +142,10 @@
     }
 }
 
-.navbar-toggle {
-    position: fixed;
-    right: 0.5em;
-}
-
 .navbar-default {
-    background: linear-gradient(to left, #54c656, #2f479d);
+    /* background: linear-gradient(to left, #54c656, #2f479d); */
+	background-image: url(/assets/images/header_bg.png);
+    background-size: auto 100%;
     border-width: 0;
 }
 
