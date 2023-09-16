@@ -133,8 +133,8 @@ blockquote> :last-child {
 	margin-top: 1em;
 	margin-bottom: 1em;
 	border-left: 6px solid;
-	margin-left: -3em;
-	padding-left: 3em;
+	margin-left: -1em;
+	padding-left: 2em;
 }
 
 @media (max-width: 992px) {
@@ -149,12 +149,6 @@ blockquote> :last-child {
 	padding-top: 10px;
 	letter-spacing: -1px;
 	line-height: 1;
-}
-
-@media (max-width: 992px) {
-	.post-title {
-		font-size: 1.4em;
-	}
 }
 
 .index-post-tag a:visited {

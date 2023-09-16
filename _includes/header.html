@@ -3,7 +3,7 @@
 		<div class="row">
 			<div class="navbar navbar-default" role="navigation">
 
-				<div class="navbar-header col-xs-9 col-sm-9 col-md-3 col-lg-3 center">
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
 					<div class="header-title">
 						<a href="{{ site.baseurl }}/" title="首页"></a>
 						<i class="fa fa-home fa-2x"></i>
@@ -31,11 +31,23 @@
 				</div>
 
 				<!-- 宽度不够时显示 -->
-				<div class="hidden-lg hidden-md col-sm-3 col-xs-3">
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
 					<div class="header-hidden-buttons">
-						<i class="fa fa-bars fa-2x menu-icon"></i>
 						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
 					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
 				</div>
 
 			</div>

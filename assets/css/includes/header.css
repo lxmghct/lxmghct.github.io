@@ -3,6 +3,7 @@
  */
 .navbar {
     border-radius: 0;
+    position: relative;
 }
 
 .navbar-header {
@@ -14,7 +15,7 @@
     font-size: 2em;
     color: white;
     vertical-align: middle;
-    margin: 0 5px;
+    margin: 0 5px 5px 0;
     cursor: pointer;
 }
 
@@ -109,56 +110,51 @@
 .header-hidden-buttons {
     margin-top: 12px;
 }
+#nav-trigger {
+    position: absolute;
+    right: 0;
+    opacity: 0; /* 隐藏，但是要能够触发失焦和聚焦事件 */
+}
 .phone-nav {
+    position: absolute;
+    right: 5px;
+    top: 100%;
     font-size: 1.2em;
-    color: #fff;
-    letter-spacing: 1px;
     text-align: center;
-    margin: 0 auto;
-    width: 100%;
+    width: 25%;
+    z-index: 3;
+    background-color: #4a4a4a;
+    border-radius: 0 0 5px 5px;
+    padding: 5px;
+    display: none;
 }
-
-.phone-nav li {
-    min-width: 16.6%;
-}
-
-.phone-nav li a {
-    line-height: 2em;
-}
-
-.phone-nav .page-link {
+.phone-nav ul {
+    margin: 0;
     padding: 0;
-    color: #fff ! important;
+    list-style-type: none;
 }
-
-.phone-nav li a:hover {
-    background-color: #428bca !important;
+.phone-nav li {
+    cursor: pointer;
+    border-bottom: 1px solid #999999;
+}
+.phone-nav a {
+    color: #fff;
+    display: block;
+}
+.phone-nav a:visited {
+    color: #fff;
+}
+.phone-nav a:hover {
+    background-color: #506274;
     color: #fff;
 }
 
-@media (min-width: 768px) {
-    .navbar-nav {
-        width: 100%;
-    }
-}
 
 .navbar-default {
     /* background: linear-gradient(to left, #54c656, #2f479d); */
 	background-image: url(/assets/images/header_bg.png);
     background-size: auto 100%;
     border-width: 0;
-}
-
-@media (min-width: 768px) and (max-width : 991px) {
-    .navbar-collapse.collapse {
-        display: none;
-    }
-}
-
-@media (min-width: 992px) {
-    .navbar-collapse.collapse {
-        display: none !important;
-    }
 }
 
 

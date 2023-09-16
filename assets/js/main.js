@@ -60,7 +60,7 @@ $(document).ready(function () {
     $(".search-start").click();
   }
   // 搜索
-  $("#header-search-input").keydown(function (event) {
+  $("#header-search-input").keydown((event) => {
     if (event.keyCode == 13) {
       showSearchContainer();
     }
@@ -70,8 +70,23 @@ $(document).ready(function () {
   $(".header-hidden-buttons .fa-search").click(showSearchContainer);
 
   // 遮罩层点击
-  $(".search-mask").click(function () {
+  $(".search-mask").click(() => {
     $(".search-container").css("display", "none");
     $(".search-mask").css("display", "none");
+  });
+
+  // 菜单
+  $("#nav-trigger").blur(() => {
+    // $(".phone-nav").css("display", "none");
+    // 延时隐藏
+    setTimeout(() => {
+      $(".phone-nav").css("display", "none");
+    }, 50);
+  });
+  $(".header-hidden-buttons .menu-icon").click(() => {
+    if ($(".phone-nav").css("display") !== "block") {
+      $("#nav-trigger").focus();
+      $(".phone-nav").css("display", "block");
+    }
   });
 });
