@@ -16,7 +16,6 @@ $(document).ready(function () {
     $("pre").addClass("prettyprint linenums");
     prettyPrint();
 
-    $("a#single_image").fancybox();
     $("a.group").fancybox({
       transitionIn: "elastic",
       transitionOut: "elastic",
@@ -36,39 +35,14 @@ $(document).ready(function () {
   });
 
   $(document).on("pjax:complete", function () {
-
     $("pre").addClass("prettyprint linenums");
-
     prettyPrint();
-
     $(".pjax_loading").css("display", "none");
-
-    $(".bookpiclist .bookpic").hover(
-      function () {
-        $(this).find(".booklabel").stop().animate({ bottom: 0 }, 200);
-        $(this).find("img").stop().animate({ top: -30 }, 500);
-      },
-      function () {
-        $(this).find(".booklabel").stop().animate({ bottom: -40 }, 200);
-        $(this).find("img").stop().animate({ top: 0 }, 300);
-      }
-    );
   });
 
   $(".circle").load(function () {
     $(".circle").addClass("show");
   });
-
-  $(".bookpiclist .bookpic").hover(
-    function () {
-      $(this).find(".booklabel").stop().animate({ bottom: 0 }, 200);
-      $(this).find("img").stop().animate({ top: -30 }, 500);
-    },
-    function () {
-      $(this).find(".booklabel").stop().animate({ bottom: -40 }, 200);
-      $(this).find("img").stop().animate({ top: 0 }, 300);
-    }
-  );
 
   $("a").click(function (event) {
     const href = $(this).attr("href");
@@ -91,12 +65,9 @@ $(document).ready(function () {
       showSearchContainer();
     }
   });
-  $("#header-search i").click(function () {
-    showSearchContainer();
-  });
-  $(".header-hidden-buttons .search-icon").click(function () {
-    showSearchContainer();
-  });
+  $("#header-search i").click(showSearchContainer);
+  $(".header-hidden-buttons .search-icon").click(showSearchContainer);
+  $(".header-hidden-buttons .fa-search").click(showSearchContainer);
 
   // 遮罩层点击
   $(".search-mask").click(function () {

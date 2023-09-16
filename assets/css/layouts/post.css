@@ -1,6 +1,91 @@
 /**
  * _layout/post.html
  */
+h1,h2,h3,h4,h5,h6,
+p,blockquote,pre,
+dl,dd,ol,ul,figure {
+    padding: 0;
+}
+img {
+    max-width: 100%;
+    vertical-align: middle;
+}
+figure>img {
+    display: block;
+}
+figcaption {
+    font-size: 14px;
+}
+.post-content ul {
+    margin-left: 20px;
+    list-style: square;
+}
+.post-content ol {
+    margin-left: 20px;
+    list-style: decimal;
+}
+.post-content li>ul {
+    list-style: circle;
+}
+.post-content li>ol {
+    list-style: lower-latin;
+}
+a {
+    color: #2a7ae2;
+    text-decoration: none;
+    cursor: pointer;
+}
+a:visited {
+    color: #1756a9;
+    text-decoration: none;
+}
+a:hover {
+    color: #111;
+    text-decoration: none;
+}
+blockquote {
+    color: #828282;
+    line-height: 1.8em;
+    border-left: 4px solid #e8e8e8;
+    padding-left: 15px;
+    font-size: 1em;
+}
+blockquote> :last-child {
+    margin-bottom: 0;
+}
+.post-content h1 {
+    font-size: 1.5em;
+}
+.post-content h2 {
+    font-size: 1.4em;
+}
+.post-content h3 {
+    font-size: 1.3em;
+}
+.post-content h4 {
+    font-size: 1.2em;
+}
+.post-content h5 {
+    font-size: 1.1em;
+}
+
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+	/* border-radius: 5px; */
+	/* color: white; */
+	/* font-family: "微软雅黑" , "宋体" , "黑体" ,Arial; */
+	padding: 5px 5px 5px 15px;
+	border-left: 4px solid #3B95B8;
+	border-bottom: 1px solid #3B95B8;
+    width: 80%;
+    font-weight: 700;
+}
+
+
 .index-post-tag a {
     background-color: #77b1e1;
     display: inline-block;
@@ -37,6 +122,39 @@
     position: absolute;
     top: 7px;
     left: 2px;
+}
+
+.post-content {
+	line-height: 1.8em;
+	letter-spacing: 1px;
+}
+
+.post-header {
+	margin-top: 1em;
+	margin-bottom: 1em;
+	border-left: 6px solid;
+	margin-left: -3em;
+	padding-left: 3em;
+}
+
+@media (max-width: 992px) {
+	.post-header {
+		margin-left: -1.5em;
+		padding-left: 1.5em;
+	}
+}
+
+.post-title {
+	font-size: 2em;
+	padding-top: 10px;
+	letter-spacing: -1px;
+	line-height: 1;
+}
+
+@media (max-width: 992px) {
+	.post-title {
+		font-size: 1.4em;
+	}
 }
 
 .index-post-tag a:visited {
@@ -89,12 +207,18 @@
 
 .toc-container li a {
     text-decoration: none;
-    color: #666666;
+    color: #2f7ca2;
 }
+
 .toc-container li a:visted {
-    color: #666666;
+    color: #2f7ca2;
 }
+
 .toc-container li a:hover {
     text-decoration: underline;
     font-weight: bold;
+}
+
+.toc-container .root-toc {
+    font-weight: 600;
 }
