@@ -77,16 +77,15 @@ $(document).ready(function () {
 
   // 菜单
   $("#nav-trigger").blur(() => {
-    // $(".phone-nav").css("display", "none");
-    // 延时隐藏
+    // 延时隐藏, blur比click先触发
     setTimeout(() => {
-      $(".phone-nav").css("display", "none");
-    }, 50);
+      $(".phone-nav").removeClass("phone-nav-show");
+    }, 100);
   });
   $(".header-hidden-buttons .menu-icon").click(() => {
-    if ($(".phone-nav").css("display") !== "block") {
+    if (!$(".phone-nav").hasClass("phone-nav-show")) {
       $("#nav-trigger").focus();
-      $(".phone-nav").css("display", "block");
+      $(".phone-nav").addClass("phone-nav-show");
     }
   });
 });

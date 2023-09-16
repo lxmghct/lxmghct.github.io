@@ -8,8 +8,11 @@ body {
 	line-height: 1.5;
 	font-weight: 300;
 	color: rgba(0, 0, 0, 0.6);
-	scroll-behavior: smooth;
 	min-width: 300px;
+}
+
+html, body {
+	scroll-behavior: smooth;
 }
 
 hr {
