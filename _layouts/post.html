@@ -55,54 +55,16 @@ layout: default
 
 </div>
 
+{% include table_of_contents.html %}
 
-<script>
-  // 点击<a>跳转到/pages/tags.html#{{ name }}
-  document.querySelectorAll(".index-post-tag a").forEach(function (item) {
-    item.addEventListener("click", function () {
-      window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
-    });
-  });
-
-  // 生成目录
-  // 获取文章内容的标题
-  const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
-  if (headings.length === 0) {
-    document.querySelector(".toc-container").classList.add("hidden");
-  } else {
-    document.querySelector(".toc-container").classList.remove("hidden");
-  }
-  // 目录容器
-  const tocList = document.getElementById("toc-list");
-  const tempTocData = []
-
-  // 遍历标题，生成目录
-  headings.forEach((heading) => {
-    const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
-    const listItem = document.createElement("li");
-    const link = document.createElement("a");
-
-    link.textContent = heading.textContent;
-    if (!heading.id) {
-      heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
-    }
-    link.href = `#${heading.id}`;
-    listItem.appendChild(link);
-    tocList.appendChild(listItem);
-    tempTocData.push({
-      level: level,
-      dom: listItem
-    })
-  });
-
-  // 设置目录项的左边距
-  const minLevel = Math.min(...tempTocData.map(item => item.level))
-  tempTocData.forEach(item => {
-    let diff = item.level - minLevel
-    item.dom.style.marginLeft = diff * 20 + "px"
-    if (diff === 0) {
-      item.dom.classList.add("root-toc")
-    }
-  })
-
+<!-- 日期+标题作为issue名 -->
+<script
+  src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="test"
+  issue-term="【{{ page.date | date:"%Y-%m-%d" }}】 {{ page.title | truncate: 100, "" }}"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous"
+  async>
 </script>

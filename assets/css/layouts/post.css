@@ -216,3 +216,7 @@ blockquote> :last-child {
 .toc-container .root-toc {
     font-weight: 600;
 }
+
+.beaudar {
+    margin: 0 0 0 50px;
+}
