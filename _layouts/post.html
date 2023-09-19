@@ -60,8 +60,8 @@ layout: default
 <!-- 日期+标题作为issue名 -->
 <script
   src="https://beaudar.lipk.org/client.js"
-  repo="lxmghct/blog-comments"
-  branch="test"
+  repo="{{ site.beaudar.repo }}"
+  branch="{{ site.beaudar.branch }}"
   issue-term="【{{ page.date | date:"%Y-%m-%d" }}】 {{ page.title | truncate: 100, "" }}"
   theme="github-light"
   loading="false"

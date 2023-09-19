@@ -15,15 +15,15 @@
  */
 .home {
 	margin: 0 0 2em 0;
-	padding: 2em 3em;
-	background: white;
+	padding: 0 3em;
+	background: #fff;
 	min-height: 50em;
 	border-radius: 4px;
 }
 
 @media (max-width: 992px) {
 	.home {
-		padding: 1em 1.5em;
+		padding: 0 1.5em;
 	}
 }
 
@@ -139,4 +139,8 @@ li.article {
 .classify-tag-after-post-title a:hover {
 	color: #0d66b3;
 	text-decoration: underline;
+}
+
+.post-preview .post-title {
+	color: #0d66b3;
 }

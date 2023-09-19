@@ -30,26 +30,26 @@
     width: 30px;
     height: 25px;
     color: #000;
-    border: 1px solid rgb(20, 118, 255);
+    border: 1px solid #3B95B8;
     cursor: pointer;
     border-radius: 5px;
     background-color: #fff;
 }
 
 .my-pager li:hover {
-    color: rgb(20, 118, 255);
+    color: #3B95B8;;
 }
 
 .my-pager li.active {
     color: #fff;
-    background-color: rgb(20, 118, 255);
+    background-color: #3B95B8;;
 }
 
 .my-pagination__sizes select {
     cursor: pointer;
     width: 40px;
     height: 25px;
-    border: 1px solid rgb(20, 118, 255);
+    border: 1px solid #3B95B8;;
     border-radius: 5px;
     background-color: #fff;
 }
@@ -61,7 +61,7 @@
 .my-pagination__goto input {
     width: 30px;
     height: 25px;
-    border: 1px solid rgb(20, 118, 255);
+    border: 1px solid #3B95B8;;
     border-radius: 5px;
     background-color: #fff;
     text-align: center;

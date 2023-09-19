@@ -4,10 +4,10 @@
     <a href="/" class="profile_avatar"><img class="circle" src="/assets/images/avatar.jpg"></a>
   </div>
   <div class="address">
-    <h5><span class="fa fa-map-marker"></span> Tianjin, China</h5>
+    <h5><span class="fa fa-map-marker"></span> {{ site.author.address }}</h5>
   </div>
   <div class="center profile_desc">
-    {{ site.profile_description }}
+    {{ site.author.description }}
   </div>
 </div>
 
@@ -34,6 +34,6 @@
   <p>常用链接</p>
   <hr>
   <ul>
-    <li><a href="https://github.com/">github主页</a></li>
+    <li><a href="{{ site.author.github }}">github主页</a></li>
   </ul>
 </div>

@@ -33,6 +33,11 @@
     width: 100%;
 }
 
+.site-footer a:hover {
+    color: #bafcff;
+    text-decoration: underline;
+}
+
 .footer-heading {
     color: #fafafa;
     font-size: 18px;

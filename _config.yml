@@ -2,15 +2,18 @@
 
 title: lxmghct's blog
 description: >- # this means to ignore newlines until "baseurl:"
-  代码人生：学习、实践、分享<br>
-  CodeLife: Learning, Practicing, Sharing
+  学习、实践、分享<br>
+  Learning, Practicing, Sharing
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
 rss_url: /feed.xml
 
 author:
+  address: Tianjin, China
   email: lxmghct@gmail.com
   github: https://github.com/lxmghct
+  description: >-
+    lxmghct's blog<br>Learning, Practicing, Sharing
 
 
 # Build settings
@@ -23,5 +26,7 @@ port: 4001
 sass:
   quiet_deps: true
 
-profile_description: longxiaoming<br>My Journey in Code
+beaudar:
+  repo: lxmghct/blog-comments
+  branch: master
   

@@ -36,6 +36,7 @@
 /* Profile elements style */
 .main-container {
 	display: flex;
+	margin-top: 15px;
 }
 .left-side {
 	padding-right: 0;
@@ -51,7 +52,7 @@
 }
 
 .left-side .box-shadow {
-	box-shadow: 0 0 8px #aaa;
+	box-shadow: 0 0 3px #aaa;
 	border-radius: 7px !important;
 	-moz-border-radius: 7px !important;
 	-webkit-border-radius: 7px !important;
