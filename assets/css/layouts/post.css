@@ -6,6 +6,50 @@ p,blockquote,pre,
 dl,dd,ol,ul,figure {
     padding: 0;
 }
+
+.post-content pre {
+    border: none;
+    border-radius: none;
+    max-height: 400px;
+}
+.post-content pre .language {
+    padding-left: 10px;
+    color: #000;
+    font-weight: bold;
+    background-color: #ddd5d3;
+    user-select: none;
+}
+.post-content pre code {
+    /* 代码块默认不换行 */
+    white-space: pre;
+    padding: 0;
+}
+/* 代码块行号 */
+.hljs {
+    background-color: #F7F4F3;
+}
+.hljs-ln-numbers {
+    position: sticky;
+    position: -webkit-sticky; /* 兼容 Safari */
+    left: 0;
+    background-color: #E7E5E3;
+}
+.hljs-ln-code {
+    padding: 0 5px !important;
+}
+.hljs-ln-n {
+    padding: 0 3px;
+    margin-right: 3px;
+    text-align: right;
+    min-width: 2em;
+}
+
+.post-content pre table.hljs-ln {
+    max-height: 350px;
+    overflow: auto;
+    display: block;
+}
+
 img {
     max-width: 100%;
     vertical-align: middle;
@@ -20,10 +64,10 @@ figcaption {
     margin-left: 20px;
     list-style: square;
 }
-.post-content ol {
+/* .post-content ol {
     margin-left: 20px;
     list-style: decimal;
-}
+} */
 .post-content li>ul {
     list-style: circle;
 }
@@ -178,6 +222,7 @@ blockquote> :last-child {
 
 .toc-container {
     position: sticky;
+    position: -webkit-sticky; /* 兼容 Safari */
     top: 30px;
     padding-top: 10px;
 }

@@ -57,14 +57,12 @@ layout: default
 
 {% include table_of_contents.html %}
 
-<!-- 日期+标题作为issue名 -->
-<script
-  src="https://beaudar.lipk.org/client.js"
-  repo="{{ site.beaudar.repo }}"
-  branch="{{ site.beaudar.branch }}"
-  issue-term="【{{ page.date | date:"%Y-%m-%d" }}】 {{ page.title | truncate: 100, "" }}"
-  theme="github-light"
-  loading="false"
-  crossorigin="anonymous"
-  async>
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js" repo="{{ site.beaudar.repo }}" branch="{{ site.beaudar.branch }}"
+  issue-term="【{{ page.date | date:" %Y-%m-%d" }}】 {{ page.title | truncate: 100, "" }}" theme="github-light"
+  loading="false" crossorigin="anonymous" async>
 </script>

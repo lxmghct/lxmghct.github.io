@@ -13,16 +13,16 @@ $(document).ready(function () {
       return false;
     });
 
-    $("pre").addClass("prettyprint linenums");
-    prettyPrint();
+    // $("pre").addClass("prettyprint linenums");
+    // prettyPrint();
 
-    $("a.group").fancybox({
-      transitionIn: "elastic",
-      transitionOut: "elastic",
-      speedIn: 600,
-      speedOut: 200,
-      overlayShow: false,
-    });
+    // $("a.group").fancybox({
+    //   transitionIn: "elastic",
+    //   transitionOut: "elastic",
+    //   speedIn: 600,
+    //   speedOut: 200,
+    //   overlayShow: false,
+    // });
   });
 
   $(document).pjax(".pjaxlink", "#pjax", {
@@ -35,8 +35,8 @@ $(document).ready(function () {
   });
 
   $(document).on("pjax:complete", function () {
-    $("pre").addClass("prettyprint linenums");
-    prettyPrint();
+    // $("pre").addClass("prettyprint linenums");
+    // prettyPrint();
     $(".pjax_loading").css("display", "none");
   });
 
