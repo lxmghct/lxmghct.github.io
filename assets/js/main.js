@@ -12,17 +12,6 @@ $(document).ready(function () {
       $("body,html").animate({ scrollTop: 0 }, 400);
       return false;
     });
-
-    // $("pre").addClass("prettyprint linenums");
-    // prettyPrint();
-
-    // $("a.group").fancybox({
-    //   transitionIn: "elastic",
-    //   transitionOut: "elastic",
-    //   speedIn: 600,
-    //   speedOut: 200,
-    //   overlayShow: false,
-    // });
   });
 
   $(document).pjax(".pjaxlink", "#pjax", {
