@@ -2,23 +2,24 @@
 layout: default
 ---
 <div class="home">
-    {% include pagination.html content='.home' parent='.home' %}
-    
-	{% for post in site.posts  %}
-        <div class="post-preview">
-            <a href="{{ post.url | prepend: site.baseurl }}">
-                <h2 class="post-title">
-                    {{ post.title }}
-                </h2>
-                <h3 class="post-subtitle">
-                    {{ post.subtitle }}
-                </h3>
-            </a>
-            <p class="post-meta">
-                Posted on {{ post.date | date: "%B %-d, %Y" }}
-            </p>
-        <hr>
-        </div>
-    {% endfor %}
-</div>
+  {% include pagination.html content='.home' parent='.home' %}
 
+  {% for post in site.posts %}
+  <div class="post-preview">
+    <a href="{{ post.url | prepend: site.baseurl }}">
+      <h2 class="post-title">
+        {{ post.title }}
+      </h2>
+      <h3 class="post-subtitle">
+        {{ post.subtitle }}
+      </h3>
+    </a>
+    <p class="post-meta">
+      Posted on {{ post.date | date: "%B %-d, %Y" }}
+      &nbsp; &nbsp;
+      {% include post_classify_tag.html post=post %}
+    </p>
+    <hr>
+  </div>
+  {% endfor %}
+</div>

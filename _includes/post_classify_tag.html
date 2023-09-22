@@ -1,0 +1,21 @@
+<span class="classify-tag-after-post-title">
+  {% if include.post.categories %}
+  &nbsp;
+  {% for category in include.post.categories %}
+  <a class="pjaxlink post-classify" href="{{ site.url }}/pages/classify.html#{{ category }}" title="分类: {{ category }}">
+    <i class="fa fa-folder-open"></i>
+    {{ category }}
+  </a>
+  &nbsp;
+  {% endfor %}
+  {% endif %}
+  {% if include.post.tags %}
+  {% for tag in include.post.tags %}
+  <a class="pjaxlink post-tag" href="{{ site.url }}/pages/tags.html#{{ tag }}" title="标签: {{ tag }}">
+    <i class="fa fa-tag"></i>
+    {{ tag }}
+  </a>
+  &nbsp;
+  {% endfor %}
+  {% endif %}
+</span>

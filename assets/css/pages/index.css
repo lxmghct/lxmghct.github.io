@@ -127,18 +127,24 @@ li.article {
 .classify-tag-after-post-title {
 	cursor: pointer;
 	text-decoration: none;
-	color: #ababab;
 	font-size: 12px;
 	font-weight: bold;
 }
 
-.classify-tag-after-post-title a {
+.classify-tag-after-post-title a.post-classify {
 	color: #ababab;
 }
 
-.classify-tag-after-post-title a:hover {
+.classify-tag-after-post-title a.post-classify:hover {
+	color: #525252;
+}
+
+.classify-tag-after-post-title a.post-tag {
+	color: #60a2e8;
+}
+
+.classify-tag-after-post-title a.post-tag:hover {
 	color: #0d66b3;
-	text-decoration: underline;
 }
 
 .post-preview .post-title {
