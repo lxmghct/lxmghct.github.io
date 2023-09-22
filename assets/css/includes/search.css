@@ -39,14 +39,6 @@
     font-family: "微软雅黑", Arial, sans-serif;
 }
 
-.header-search-input:focus {
-    width: 180px;
-    -moz-transition: all 0.5s ease;
-    -webkit-transition: all 0.5s ease;
-    -o-transition: all 0.5s ease;
-    transition: all 0.5s ease;
-}
-
 .search-container {
     width: 60vw;
     height: 80vh;

@@ -69,7 +69,7 @@ function getSearchResult() {
   }
 }
 
-const endCharSet = new Set(['。', '！', '？', '…', '\n', '\r', '.', '!', '?']);
+const endCharSet = new Set(['。', '！', '？', '\n', '\r']);
 /**
  * 查找匹配位置，并取出每处匹配的前后若干字符
  * @param {*} keyword 
