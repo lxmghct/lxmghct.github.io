@@ -1,30 +1,6 @@
 /**
  * _includes/footer.html
  */
-.wrapper {
-    max-width: -webkit-calc(800px - (10px * 2));
-    max-width: calc(800px - (10px * 2));
-    margin-right: auto;
-    margin-left: auto;
-    padding-right: 10px;
-    padding-left: 10px;
-}
-
-@media screen and (max-width: 800px) {
-    .wrapper {
-        max-width: -webkit-calc(800px - (10px));
-        max-width: calc(800px - (10px));
-        padding-right: 10px;
-        padding-left: 10px;
-    }
-}
-
-.wrapper:after,
-.footer-col-wrapper:after {
-    content: "";
-    display: table;
-    clear: both;
-}
 
 .site-footer {
     background: rgb(54, 54, 54);
@@ -38,17 +14,13 @@
     text-decoration: underline;
 }
 
-.footer-heading {
-    color: #fafafa;
-    font-size: 18px;
-    margin-bottom: 15px;
-}
-
-
 .footer-col-wrapper {
     font-size: 15px;
     color: #ccc;
-    margin-left: -15px;
+    display: flex;
+    max-width: 800px;
+    margin: 0 auto;
+    justify-content: space-between;
 }
 
 .sitedesc {
@@ -64,46 +36,8 @@
 }
 
 .footer-col {
-    float: left;
     margin-bottom: 15px;
     padding-left: 15px;
-}
-
-.footer-col-1 {
-    width: -webkit-calc(35% - (30px / 2));
-    width: calc(35% - (30px / 2));
-}
-
-.footer-col-2 {
-    width: -webkit-calc(20% - (30px / 2));
-    width: calc(20% - (30px / 2));
-}
-
-.footer-col-3 {
-    width: -webkit-calc(45% - (30px / 2));
-    width: calc(45% - (30px / 2));
-}
-
-@media screen and (max-width: 800px) {
-
-    .footer-col-1,
-    .footer-col-2 {
-        width: -webkit-calc(50% - (30px / 2));
-        width: calc(50% - (30px / 2));
-    }
-
-    .footer-col-3 {
-        width: -webkit-calc(100% - (30px / 2));
-        width: calc(100% - (30px / 2));
-    }
-}
-
-@media screen and (max-width: 600px) {
-    .footer-col {
-        float: none;
-        width: -webkit-calc(100% - (30px / 2));
-        width: calc(100% - (30px / 2));
-    }
 }
 
 .contact-list,
@@ -120,7 +54,6 @@
     display: inline-block;
     vertical-align: middle;
     zoom: 1;
-    text-indent: -9999px;
     margin: 5px 8px;
     opacity: 0.8;
     width: 2em;

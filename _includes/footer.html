@@ -1,38 +1,32 @@
 <footer class="site-footer">
 
-  <div class="wrapper">
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>{{ site.title }}</li>
+        <li><a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a></li>
+        <li></li>
+      </ul>
+    </div>
 
-    <div class="footer-col-wrapper">
-      <div class="footer-col  footer-col-1">
-        <ul class="contact-list">
-          <li>{{ site.title }}</li>
-          <li><a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a></li>
-        </ul>
-      </div>
-
-      <div class="footer-col  footer-col-2">
-        <ul class="social-media-list">
-          {% if site.author.github %}
-          <li>
-            <a class="github" href="{{ site.author.github }}" target="_blank" title="github"></a>
-          </li>
-          {% endif %}
-          {% if site.rss_url %}
-          <li>
-            <a class="rss" href="{{ site.rss_url }}" target="_blank" title="rss"></a>
-          </li>
-          {% endif %}
-        </ul>
-      </div>
-
-      <div class="footer-col  footer-col-3">
-        <p class="text">{{ site.description }}</p>
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        {% if site.author.github %}
+        <a class="github" href="{{ site.author.github }}" target="_blank" title="github"></a>
+        {% endif %}
+        {% if site.rss_url %}
+        <a class="rss" href="{{ site.rss_url }}" target="_blank" title="rss"></a>
+        {% endif %}
       </div>
     </div>
-    <div class="center sitedesc">
-      Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
-        Github</a>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">{{ site.description }}</p>
     </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
   </div>
 
   <script type="text/javascript" src="/assets/js/jquery.js"></script>
