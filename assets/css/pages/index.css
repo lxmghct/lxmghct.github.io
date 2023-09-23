@@ -1,4 +1,14 @@
 /**
+ * layouts/page.html
+ */
+.page {
+	background-color: #fff;
+	padding: 2em;
+	border-radius: 5px;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/**
  * pages/archives.html
  */
 .archive_span {
@@ -149,4 +159,17 @@ li.article {
 
 .post-preview .post-title {
 	color: #0d66b3;
+}
+
+/**
+ * pages/about.html
+ */
+.about-title {
+	border-bottom: 2px solid #eee;
+	margin-bottom: 0.5em;
+	font-size: 24px;
+	font-weight: bold;
+}
+.about-content {
+	margin-bottom: 2em;
 }

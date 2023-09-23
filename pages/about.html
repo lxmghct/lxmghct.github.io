@@ -1,5 +1,42 @@
 ---
-layout: default
+layout: page
 title: 关于
 permalink: /pages/about.html
 ---
+<div class="about-page">
+  <div class="about-title">
+    <i class="fa fa-info-circle"></i> 关于博客
+  </div>
+  <div class="about-content">
+    博客使用jekyll搭建，使用github pages托管，使用了一些前端技术，如：html5、css3、javascript、jquery等。
+    博客主要用来记录一些学习笔记、技术分享、生活感悟等。
+    之前主要在博客园记录一些自己平时开发遇到的问题(<a href="{{ site.author.cnblog }}" target="_blank">博客园地址</a>)，现在把博客转到github pages上来了。
+  </div>
+  
+  <div class="about-title">
+    <i class="fa fa-user"></i> 基本信息
+  </div>
+  <div class="about-content">
+    <p>姓名：{{ site.author.name }}</p>
+    <p>性别：男</p>
+    <p>年龄：25</p>
+    <p>南开大学软件工程专业在读本科生</p>
+  </div>
+
+  <!--联系方式-->
+  <div class="about-title">
+    <i class="fa fa-phone"></i> 联系方式
+  </div>
+  <div class="about-content">
+    <p>邮箱：<a href="mailto:{{ site.author.email }}">{{ site.author.email }}</a></p>
+    <p>github：<a href="{{ site.author.github }}" target="_blank">{{ site.author.github }}</a></p>
+  </div>
+
+  <div class="about-title">
+    <i class="fa fa-commenting"></i> 个人简介
+  </div>
+  <div class="about-content">
+    在校学生，热爱技术，热爱开源。希望能够通过平时记录自己的一些学习笔记和开发经验，不断提高自己的技术水平，并帮到更多的人。
+  </div>
+
+</div>

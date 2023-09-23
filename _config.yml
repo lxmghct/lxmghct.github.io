@@ -9,6 +9,7 @@ url: "" # the base hostname & protocol for your site, e.g. http://example.com
 rss_url: /feed.xml
 
 author:
+  name: Long, Xiaoming
   address: Tianjin, China
   email: lxmghct@gmail.com
   github: https://github.com/lxmghct
