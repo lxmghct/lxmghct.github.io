@@ -5,6 +5,11 @@
             window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
         });
     });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
 
     // 生成目录
     // 获取文章内容的标题

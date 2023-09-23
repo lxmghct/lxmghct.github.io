@@ -1,6 +1,6 @@
 <!-- _includes/post_record.html -->
 <span>{{ include.post.date | date: "%Y-%m-%d" }}</span> &raquo;
-<a class="pjaxlink" href="{{ include.post.url }}">{{ include.post.title }}</a>
+<a href="{{ include.post.url }}">{{ include.post.title }}</a>
 
 &nbsp;
 {% include post_classify_tag.html post=include.post %}

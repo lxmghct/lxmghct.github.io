@@ -22,17 +22,6 @@
 	padding-left: 0;
 }
 
-.pjax_loading {
-	margin: auto;
-	position: fixed;
-	top: 0;
-	left: 0;
-	bottom: 0;
-	right: 0;
-	display: none;
-	z-index: 999999;
-	background: url(/assets/images/pjax_loading.gif) 50% 50% no-repeat;
-}
 /* Profile elements style */
 .main-container {
 	display: flex;

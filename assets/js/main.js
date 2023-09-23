@@ -14,32 +14,8 @@ $(document).ready(function () {
     });
   });
 
-  $(document).pjax(".pjaxlink", "#pjax", {
-    fragment: "#pjax",
-    timeout: 10000,
-  });
-
-  $(document).on("pjax:send", function () {
-    $(".pjax_loading").css("display", "block");
-  });
-
-  $(document).on("pjax:complete", function () {
-    // $("pre").addClass("prettyprint linenums");
-    // prettyPrint();
-    $(".pjax_loading").css("display", "none");
-  });
-
   $(".circle").load(function () {
     $(".circle").addClass("show");
-  });
-
-  $("a").click(function (event) {
-    const href = $(this).attr("href");
-    // href与当前页面url不同
-    if (href && href != window.location.href) {
-      event.preventDefault();
-      window.location.href = $(this).attr("href");
-    }
   });
 
   function showSearchContainer() {
@@ -77,4 +53,18 @@ $(document).ready(function () {
       $(".phone-nav").addClass("phone-nav-show");
     }
   });
+
+  // 标签点击事件
+  document.querySelectorAll("a.post-tag,a.post-classify").forEach(item => {
+    item.addEventListener("click", function () {
+      var name = item.getAttribute("data-tag");
+      // 如果当前页面是/pages/tags.html或/pages/classify.html，只需修改hash值
+      if (window.location.pathname == "/pages/tags.html" || window.location.pathname == "/pages/classify.html") {
+        clickTag && clickTag(name);
+      } else {
+        window.location.href = item.getAttribute("href");
+      }
+    });
+  });
+
 });

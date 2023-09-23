@@ -53,3 +53,17 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
 });
+
+(function () {
+  document.querySelectorAll("a.post-tag").forEach(item => {
+    item.addEventListener("click", function () {
+      var name = item.getAttribute("data-tag");
+      // 如果当前页面是/pages/tags.html，只需修改hash值
+      if (window.location.pathname == "/pages/tags.html") {
+        clickTag && clickTag(name);
+      } else {
+        window.location.href = "/pages/tags.html#" + name;
+      }
+    });
+  });
+})();

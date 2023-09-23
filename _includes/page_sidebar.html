@@ -13,7 +13,7 @@
 
 <div class="tag-cloud-container box-shadow">
   <div class="tag-cloud-title">
-    <a href="tags.html" title="标签" class="pjaxlink">
+    <a href="tags.html" title="标签">
       <p class="center">标签</p>
     </a>
   </div>
@@ -21,7 +21,7 @@
     <hr>
     <div class="tag-list left-bar-tag">
       {% for tag in site.tags %}
-      <a data-tag="{{ tag[0] }}" class="pjaxlink">
+      <a class="post-tag" data-tag="{{ tag[0] }}" href="{{ site.url }}/pages/tags.html#{{ tag[0] }}">
         <i class="fa fa-tags"></i>{{ tag[0] }}({{ tag[1].size}})
       </a>
       {% endfor %}

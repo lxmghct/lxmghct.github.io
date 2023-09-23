@@ -2,7 +2,7 @@
   {% if include.post.categories %}
   &nbsp;
   {% for category in include.post.categories %}
-  <a class="pjaxlink post-classify" href="{{ site.url }}/pages/classify.html#{{ category }}" title="分类: {{ category }}">
+  <a class="post-classify" href="{{ site.url }}/pages/classify.html#{{ category }}" title="分类: {{ category }}" data-tag="{{ category }}">
     <i class="fa fa-folder-open"></i>
     {{ category }}
   </a>
@@ -11,7 +11,7 @@
   {% endif %}
   {% if include.post.tags %}
   {% for tag in include.post.tags %}
-  <a class="pjaxlink post-tag" href="{{ site.url }}/pages/tags.html#{{ tag }}" title="标签: {{ tag }}">
+  <a class="post-tag" href="{{ site.url }}/pages/tags.html#{{ tag }}" title="标签: {{ tag }}" data-tag="{{ tag }}">
     <i class="fa fa-tag"></i>
     {{ tag }}
   </a>

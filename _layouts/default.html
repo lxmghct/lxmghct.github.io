@@ -16,14 +16,14 @@
             {% include post_sidebar.html %}
           </div>
           <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
-            <div class="page-content box-shadow" id="pjax">{{ content }}</div>
+            <div class="page-content box-shadow">{{ content }}</div>
           </div>
         {% else %}
           <div class="col-md-3 col-lg-3 hidden-xs hidden-sm left-side fadein-left">
             {% include page_sidebar.html %}
           </div>
           <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 fadein-right">
-            <div class="page-content box-shadow" id="pjax">{{ content }}</div>
+            <div class="page-content box-shadow">{{ content }}</div>
           </div>
         {% endif %}
 
@@ -35,23 +35,6 @@
   <div id="back-to-top">
     <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
   </div>
-
-  <div class="pjax_loading"></div>
-
-  <script>
-    // 点击<a>跳转到/pages/tags.html#{{ name }}
-    document.querySelectorAll(".left-bar-tag a").forEach(function (item) {
-      item.addEventListener("click", function () {
-        var name = item.getAttribute("data-tag");
-        // 如果当前页面是/pages/tags.html，只需修改hash值
-        if (window.location.pathname == "/pages/tags.html") {
-          clickTag && clickTag(name);
-        } else {
-          window.location.href = "/pages/tags.html#" + name;
-        }
-      });
-    });
-  </script>
 
   {% include footer.html %}
 
