@@ -100,7 +100,7 @@ function copyText(text) {
       code.parentNode.insertAdjacentHTML("afterbegin", codeHeader);
     });
     // 代码行号
-    hljs.initLineNumbersOnLoad();
+    hljs.initLineNumbersOnLoad({ singleLine: true });
     // 添加复制按钮点击事件
     document.querySelectorAll(".copy-btn").forEach((copyBtn, i) => {
       copyBtn.onclick = () => { copyText(codeDataList[i].code); }
