@@ -7,6 +7,10 @@
 	border-radius: 5px;
 	box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+.post-time {
+	/* 等宽字体 */
+	font-family: 'Courier New', Courier, monospace;
+}
 
 /**
  * pages/archives.html
