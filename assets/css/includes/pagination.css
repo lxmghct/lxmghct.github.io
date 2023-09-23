@@ -3,10 +3,7 @@
 .my-pagination {
     font-size: 15px;
     margin-top: 10px;
-}
-
-.my-pagination .param {
-    display: none;
+    white-space: nowrap;
 }
 
 .my-pagination__sizes,
@@ -14,6 +11,17 @@
 .my-pagination__goto {
     vertical-align: middle;
     padding: 0 5px;
+}
+
+@media (max-width: 576px) {
+    .my-pagination {
+        font-size: 13px;
+    }
+    .my-pagination__sizes,
+    .my-pagination__total,
+    .my-pagination__goto {
+        padding: 0 2px;
+    }
 }
 
 .my-pager {
@@ -36,6 +44,15 @@
     background-color: #fff;
 }
 
+@media (max-width: 768px) {
+    .my-pager li {
+        width: 25px;
+        height: 20px;
+        padding: 0;
+        line-height: 19px;
+    }
+}
+
 .my-pager li:hover {
     color: #3B95B8;;
 }
@@ -54,6 +71,12 @@
     background-color: #fff;
 }
 
+@media (max-width: 768px) {
+    .my-pagination__sizes select {
+        height: 20px;
+    }
+}
+
 .my-pagination__sizes select:focus {
     outline: none;
 }
@@ -65,6 +88,13 @@
     border-radius: 5px;
     background-color: #fff;
     text-align: center;
+}
+
+@media (max-width: 768px) {
+    .my-pagination__goto input {
+        width: 25px;
+        height: 20px;
+    }
 }
 
 .my-pagination__goto input:focus {

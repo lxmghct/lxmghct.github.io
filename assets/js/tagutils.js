@@ -61,9 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
-  setTimeout(() => {
-    initClickEvent("a.post-tag", "/pages/tags.html");
-    initClickEvent("a.post-classify", "/pages/classify.html");
-  }, 1000);
+  initClickEvent("a.post-tag", "/pages/tags.html");
+  initClickEvent("a.post-classify", "/pages/classify.html");
 
 });

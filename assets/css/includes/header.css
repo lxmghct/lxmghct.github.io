@@ -1,9 +1,10 @@
 /**
  * _includes/header.html
  */
-.navbar {
+ .navbar {
     border-radius: 0;
     position: relative;
+    margin-bottom: 0;
 }
 
 .navbar-header {
