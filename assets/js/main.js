@@ -54,17 +54,4 @@ $(document).ready(function () {
     }
   });
 
-  // 标签点击事件
-  document.querySelectorAll("a.post-tag,a.post-classify").forEach(item => {
-    item.addEventListener("click", function () {
-      var name = item.getAttribute("data-tag");
-      // 如果当前页面是/pages/tags.html或/pages/classify.html，只需修改hash值
-      if (window.location.pathname == "/pages/tags.html" || window.location.pathname == "/pages/classify.html") {
-        clickTag && clickTag(name);
-      } else {
-        window.location.href = item.getAttribute("href");
-      }
-    });
-  });
-
 });

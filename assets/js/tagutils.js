@@ -1,5 +1,7 @@
 function clickTag(tag) {
+  console.log("clickTag: \"" + tag + "\"");
   const filter = document.querySelector(`.tag-filter[data-tag="${tag}"]`);
+  console.log(filter);
   if (filter) {
     filter.click();
   } else {
@@ -36,34 +38,32 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  const hash = window.location.hash;
-  if (hash && hash.startsWith("#")) {
-    clickTag(hash.substring(1));
+  if (window.location.pathname === "/pages/tags.html" || window.location.pathname === "/pages/classify.html") {
+    const hash = window.location.hash;
+    if (hash && hash.startsWith("#")) {
+      const str = hash.substring(1);
+      // 中文标签需要解码
+      clickTag(decodeURIComponent(str));
+    }
   }
 
-  // 如果当前是/pages/classify.html页面，那么点击标签后，需要跳转到/pages/classify.html页面
-  if (window.location.pathname == "/pages/classify.html") {
-    const tagLinks = document.querySelectorAll(".classify-tag-after-post-title a");
-    tagLinks.forEach((link) => {
+  function initClickEvent(selector, path) {
+    const links = document.querySelectorAll(selector);
+    links.forEach((link) => {
       link.addEventListener("click", function (e) {
-        e.preventDefault();
-        clickTag(this.innerText);
+        const tag = this.getAttribute("data-tag");
+        if (window.location.pathname === path) {
+          e.preventDefault();
+          clickTag(tag);
+        } else {
+          window.location.href = path + "#" + tag;
+        }
       });
     });
   }
+  setTimeout(() => {
+    initClickEvent("a.post-tag", "/pages/tags.html");
+    initClickEvent("a.post-classify", "/pages/classify.html");
+  }, 1000);
 
 });
-
-(function () {
-  document.querySelectorAll("a.post-tag").forEach(item => {
-    item.addEventListener("click", function () {
-      var name = item.getAttribute("data-tag");
-      // 如果当前页面是/pages/tags.html，只需修改hash值
-      if (window.location.pathname == "/pages/tags.html") {
-        clickTag && clickTag(name);
-      } else {
-        window.location.href = "/pages/tags.html#" + name;
-      }
-    });
-  });
-})();
