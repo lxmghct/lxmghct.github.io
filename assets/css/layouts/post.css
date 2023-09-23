@@ -118,6 +118,7 @@ a {
     color: #2a7ae2;
     text-decoration: none;
     cursor: pointer;
+    word-break: break-all;
 }
 a:visited {
     color: #1756a9;
@@ -159,12 +160,12 @@ blockquote> :last-child {
 .post-content h4,
 .post-content h5,
 .post-content h6 {
-	/* border-radius: 5px; */
-	/* color: white; */
-	/* font-family: "微软雅黑" , "宋体" , "黑体" ,Arial; */
-	padding: 5px 5px 5px 15px;
-	border-left: 4px solid #3B95B8;
-	border-bottom: 1px solid #3B95B8;
+    /* border-radius: 5px; */
+    /* color: white; */
+    /* font-family: "微软雅黑" , "宋体" , "黑体" ,Arial; */
+    padding: 5px 5px 5px 15px;
+    border-left: 4px solid #3B95B8;
+    border-bottom: 1px solid #3B95B8;
     width: 80%;
     font-weight: 700;
 }
@@ -209,30 +210,30 @@ blockquote> :last-child {
 }
 
 .post-content {
-	line-height: 1.8em;
-	letter-spacing: 1px;
+    line-height: 1.8em;
+    letter-spacing: 1px;
 }
 
 .post-header {
-	margin-top: 1em;
-	margin-bottom: 1em;
-	border-left: 6px solid;
-	margin-left: -1em;
-	padding-left: 2em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    border-left: 6px solid;
+    margin-left: -1em;
+    padding-left: 2em;
 }
 
 @media (max-width: 992px) {
-	.post-header {
-		margin-left: -1.5em;
-		padding-left: 1.5em;
-	}
+    .post-header {
+        margin-left: -1.5em;
+        padding-left: 1.5em;
+    }
 }
 
 .post-title {
-	font-size: 2em;
-	padding-top: 10px;
-	letter-spacing: -1px;
-	line-height: 1;
+    font-size: 2em;
+    padding-top: 10px;
+    letter-spacing: -1px;
+    line-height: 1;
 }
 
 .index-post-tag a:visited {
@@ -252,12 +253,17 @@ blockquote> :last-child {
     color: #828282;
 }
 
-.prevandnext {
+.prev-and-next {
     margin-bottom: 2em;
     margin-top: 2em;
     border-radius: 7px;
     padding: 1em 3em;
     background: white;
+    padding-left: 2em;
+}
+
+.prev-and-next div {
+    margin-bottom: 0.5em;
 }
 
 .toc-container {
@@ -303,5 +309,13 @@ blockquote> :last-child {
 }
 
 .beaudar {
-    margin: 0 0 0 50px;
+    margin: 0 0 0 20px;
+    width: 90%;
 }
+
+/* @media (max-width: 576px) {
+    .beaudar {
+        margin-left: 0;
+        width: 100%;
+    }
+} */

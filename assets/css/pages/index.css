@@ -10,6 +10,7 @@
 .post-time {
 	/* 等宽字体 */
 	font-family: 'Courier New', Courier, monospace;
+	white-space: nowrap;
 }
 
 /**
@@ -35,9 +36,9 @@
 	border-radius: 4px;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 576px) {
 	.home {
-		padding: 0 1.5em;
+		padding: 0;
 	}
 }
 
@@ -104,6 +105,12 @@ li.article {
 	list-style-type: none;
 }
 
+@media (max-width: 576px) {
+	li.article {
+		padding-left: 1em;
+	}
+}
+
 .classify-list {
 	text-align: center;
 }
@@ -166,14 +173,28 @@ li.article {
 }
 .post-preview .post-title {
 	color: #0d66b3;
-	font-size: 26px;
 	padding: 10px 0;
 	display: inline-block;
 	font-weight: 500;
+	font-size: 26px;
+	line-height: 1.2;
 }
 .post-meta-info {
     font-size: 14px;
     color: #828282;
+}
+.post-meta-info .post-time {
+	margin-right: 2em;
+}
+@media (max-width: 576px) {
+	.post-preview .post-title {
+		font-size: 22px;
+	}
+	/* 换行显示 */
+	.post-meta-info .post-time {
+		display: block;
+		margin-right: 0;
+	}
 }
 
 .post-preview .post-title:hover {

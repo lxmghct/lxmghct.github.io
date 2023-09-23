@@ -1,6 +1,12 @@
 <!-- _includes/post_record.html -->
-<span class="post-time">{{ include.post.date | date: "%Y-%m-%d" }}</span> &raquo;
+<span class="post-time">
+    {{ include.post.date | date: "%Y-%m-%d" }}
+    &raquo;
+</span>
+
+<span>
 <a href="{{ include.post.url }}">{{ include.post.title }}</a>
 
 &nbsp;
 {% include post_classify_tag.html post=include.post %}
+</span>
