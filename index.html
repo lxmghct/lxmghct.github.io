@@ -1,5 +1,5 @@
 ---
-layout: default
+layout: page
 ---
 <div class="home">
   {% include pagination.html content='.home' parent='.home' %}
@@ -7,18 +7,15 @@ layout: default
   {% for post in site.posts %}
   <div class="post-preview">
     <a href="{{ post.url | prepend: site.baseurl }}">
-      <h2 class="post-title">
+      <span class="post-title">
         {{ post.title }}
-      </h2>
-      <h3 class="post-subtitle">
-        {{ post.subtitle }}
-      </h3>
+      </span>
     </a>
-    <p class="post-meta">
+    <div class="post-meta-info">
       Posted on {{ post.date | date: "%B %-d, %Y" }}
       &nbsp; &nbsp;
       {% include post_classify_tag.html post=post %}
-    </p>
+    </div>
     <hr>
   </div>
   {% endfor %}
