@@ -2,8 +2,6 @@
 layout: page
 ---
 <div class="home">
-  {% include pagination.html content='.home' parent='.home' %}
-
   {% for post in site.posts %}
   <div class="post-preview">
     <a href="{{ post.url | prepend: site.baseurl }}">
@@ -12,11 +10,11 @@ layout: page
       </span>
     </a>
     <div class="post-meta-info">
-      Posted on {{ post.date | date: "%B %-d, %Y" }}
-      &nbsp; &nbsp;
+      <span class="post-time">发布于 {{ post.date | date: "%Y-%m-%d" }}</span>
       {% include post_classify_tag.html post=post %}
     </div>
     <hr>
   </div>
   {% endfor %}
+  {% include pagination.html content='.home' parent='.home' %}
 </div>
