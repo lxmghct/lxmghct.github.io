@@ -5,8 +5,10 @@
 </span>
 
 <span>
-<a href="{{ include.post.url }}">{{ include.post.title }}</a>
+    <a href="{{ include.post.url }}">{{ include.post.title }}</a>
+    &nbsp;
+</span>
 
-&nbsp;
-{% include post_classify_tag.html post=include.post %}
+<span class="tags-container">
+    {% include post_classify_tag.html post=include.post %}
 </span>

@@ -34,11 +34,13 @@ $(document).ready(function () {
   $(".header-hidden-buttons .search-icon").click(showSearchContainer);
   $(".header-hidden-buttons .fa-search").click(showSearchContainer);
 
-  // 遮罩层点击
-  $(".search-mask").click(() => {
+  // 遮罩层与关闭按钮点击
+  function hideSearchContainer() {
     $(".search-container").css("display", "none");
     $(".search-mask").css("display", "none");
-  });
+  }
+  $(".search-container .search-container-close").click(hideSearchContainer);
+  $(".search-mask").click(hideSearchContainer);
 
   // 菜单
   $("#nav-trigger").blur(() => {

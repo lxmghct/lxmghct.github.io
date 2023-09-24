@@ -7,6 +7,12 @@
 	min-height: 600px;
 }
 
+@media (max-width: 576px) {
+	.my-col {
+		padding: 0;
+	}
+}
+
 .common-links {
 	margin-top: 1em;
 	background: #fff;
@@ -25,7 +31,7 @@
 /* Profile elements style */
 .main-container {
 	display: flex;
-	margin-top: 5px;
+	margin-top: 10px;
 }
 .left-side {
 	padding-right: 0;

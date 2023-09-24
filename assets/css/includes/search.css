@@ -28,13 +28,13 @@
     display: inline-block;
     border: none;
     outline: none;
-    width: 160px;
-    height: 16px;
-    padding: 7px 11px 7px 0;
+    width: 10.5em;
+    height: 1.1em;
+    padding: 0.5em 0.7em 0.5em 0;
     font-weight: 400;
     color: #444;
-    font-size: 14px;
-    line-height: 16px;
+    font-size: 1em;
+    line-height: 1.2;
     box-sizing: content-box;
     font-family: "微软雅黑", Arial, sans-serif;
 }
@@ -60,8 +60,13 @@
         width: 90vw;
         margin-left: -45vw;
         margin-top: -40vh;
-        overflow-x: auto;
+        padding: 10px;
     }
+}
+
+.search-container-main {
+    overflow-x: auto;
+    height: 100%;
 }
 
 .search-container-wrapper {
@@ -160,6 +165,15 @@
 
 .search-result-item .preview .preview-number {
     font-weight: bold;
+    color: #000;
+}
+
+.search-container .search-container-close {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    font-size: 20px;
     color: #000;
 }
 

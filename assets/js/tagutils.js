@@ -1,7 +1,5 @@
 function clickTag(tag) {
-  console.log("clickTag: \"" + tag + "\"");
   const filter = document.querySelector(`.tag-filter[data-tag="${tag}"]`);
-  console.log(filter);
   if (filter) {
     filter.click();
   } else {
