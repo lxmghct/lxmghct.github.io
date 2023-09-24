@@ -31,6 +31,40 @@
 	margin-bottom: 0.5em;
 }
 
+.archive .my-legend {
+	display: block;
+	width: 100%;
+	padding: 0;
+	margin-bottom: 20px;
+	font-size: 1.5em;
+	line-height: inherit;
+	color: #333;
+	border: 0;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.year-selector {
+	padding: 0 1em;
+	margin-bottom: 2em;
+}
+
+.year-selector span {
+	cursor: pointer;
+	border: 1px solid #aaaaaa;
+	padding: 0.3em 0.6em;
+	margin: 0 3px;
+	border-radius: 3px;
+}
+
+.year-selector span:hover {
+	border: 1px solid #3B95B8;
+}
+
+.year-selector span.active {
+	border: 2px solid #3B95B8;
+	font-weight: bold;
+}
+
 /**
  * pages public css
  */
