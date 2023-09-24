@@ -9,7 +9,7 @@ layout: default
       <p class="post-meta">
         <i class="fa fa-calendar"></i>
         &nbsp;
-        {{ page.date | date:"%Y-%m-%d" }}
+        {{ page.date | date:"%Y-%m-%d %H:%M" }}
         {% if page.author %} • {{ page.author }}{% endif %}
         {% if page.meta %} • {{ page.meta }}{% endif %}
       </p>
