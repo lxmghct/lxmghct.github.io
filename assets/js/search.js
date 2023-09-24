@@ -35,6 +35,9 @@ function makeHttpRequest(method, url, data) {
   });
 }
 
+/**
+ * 获取jekyll-feed生成的feed.xml中的数据
+ */
 function getXmlData() {
   articleData = [];
   return new Promise(function (resolve, reject) {
@@ -47,6 +50,25 @@ function getXmlData() {
           const link = item.getElementsByTagName("link")[0].getAttribute("href");
           let content = item.getElementsByTagName("content")[0].childNodes[0].nodeValue.replace(/<.*?>/g, "");
           articleData.push({ title, link, content });
+        }
+        resolve(articleData);
+      }).catch(function (err) {
+        reject(err);
+      });
+  });
+}
+
+/**
+ * 获取自己生成的json文件中的数据
+ */
+function getJsonData() {
+  articleData = [];
+  return new Promise(function (resolve, reject) {
+    makeHttpRequest("get", "/assets/posts.json")
+      .then(function (res) {
+        const data = JSON.parse(res.responseText);
+        for (const item of data) {
+          articleData.push({ title: item.title, link: item.url, content: item.content });
         }
         resolve(articleData);
       }).catch(function (err) {
@@ -70,6 +92,10 @@ function getSearchResult() {
 }
 
 const endCharSet = new Set(['。', '！', '？', '\n', '\r']);
+
+function convertHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
 /**
  * 查找匹配位置，并取出每处匹配的前后若干字符
  * @param {*} keyword 
@@ -102,7 +128,7 @@ function getMatchedPositions(keyword, content) {
         break;
       }
     }
-    let preview = preStr + "<span class='highlight'>" + matchStr + "</span>" + suffixStr;
+    let preview = convertHtml(preStr) + "<span class='highlight'>" + convertHtml(matchStr) + "</span>" + convertHtml(suffixStr);
     previewList.push(preview);
   }
   return previewList;
@@ -148,10 +174,14 @@ var inputTimeout = null;
 function startSearch() {
   inputTimeout && clearTimeout(inputTimeout);
   if (articleData.length === 0) {
-    getXmlData().then(() => {
+    // getXmlData().then(() => {
+    //   getSearchResult();
+    //   renderSearchResult();
+    // });
+    getJsonData().then(() => {
       getSearchResult();
       renderSearchResult();
-    });
+    })
   } else {
     getSearchResult();
     renderSearchResult();
