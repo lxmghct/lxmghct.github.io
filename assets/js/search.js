@@ -139,7 +139,14 @@ function renderSearchResult() {
   searchResultSummary.innerHTML = `<span class="number">${searchResults.length}</span>篇文章中找到<span class="number">${totalMatched}</span>处匹配`;
 }
 
+// 输入计时器
+var inputTimeout = null;
+
+/**
+ * 开始搜索
+ */
 function startSearch() {
+  inputTimeout && clearTimeout(inputTimeout);
   if (articleData.length === 0) {
     getXmlData().then(() => {
       getSearchResult();
@@ -158,7 +165,11 @@ searchBtn.addEventListener("click", function () {
 
 // input事件
 searchInput.addEventListener("input", function () {
-  startSearch();
+  inputTimeout && clearTimeout(inputTimeout);
+  // 防止输入过快影响性能
+  inputTimeout = setTimeout(() => {
+    startSearch();
+  }, 500);
 });
 
 // 为搜索框添加回车事件监听器
