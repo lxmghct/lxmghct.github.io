@@ -5,6 +5,10 @@
     position: relative;
 }
 
+.highlighter-rouge table td {
+    border: none;
+}
+
 .code-header {
     position: absolute;
     top: 0;
