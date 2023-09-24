@@ -7,89 +7,6 @@ dl,dd,ol,ul,figure {
     padding: 0;
 }
 
-.highlighter-rouge {
-    position: relative;
-}
-
-.code-header {
-    position: absolute;
-    top: 0;
-    right: 20px;
-    z-index: 1;
-}
-.code-header.hidden {
-    display: none;
-}
-
-.code-header .change-wrap-btn,
-.code-header .copy-btn {
-    cursor: pointer;
-    padding: 0 5px;
-    border-radius: 5px;
-}
-
-.code-header .change-wrap-btn:hover,
-.code-header .copy-btn:hover {
-    background-color: #e3e0dc;
-}
-
-.code-header .change-wrap-btn:active,
-.code-header .copy-btn:active {
-    /* 点击按钮后的样式 */
-    background-color: #d0cfcf;
-}
-
-.post-content pre {
-    border: none;
-    border-radius: none;
-    max-height: 400px;
-    background-color: #F7F4F3;
-    padding-top: 15px;
-}
-.post-content pre .code-header {
-    padding-left: 10px;
-    color: #000;
-    user-select: none;
-}
-.post-content pre code {
-    /* 代码块默认不换行 */
-    white-space: pre;
-    padding: 0;
-}
-.post-content pre code.wrap {
-    white-space: pre-wrap !important;
-}
-/* 代码块行号 */
-.hljs {
-    background-color: transparent;
-}
-.hljs-ln {
-    padding-bottom: 10px;
-}
-.hljs-ln-numbers {
-    position: sticky;
-    position: -webkit-sticky; /* 兼容 Safari */
-    left: 0;
-    background-color: #F7F4F3;
-    vertical-align: top;
-}
-.hljs-ln-code {
-    padding: 0 5px !important;
-}
-.hljs-ln-n {
-    padding: 0 3px;
-    margin-right: 3px;
-    text-align: right;
-    min-width: 2em;
-    border-right: 1px solid #e3e0dc;
-}
-
-.post-content pre table.hljs-ln {
-    max-height: 350px;
-    overflow: auto;
-    display: block;
-}
-
 img {
     max-width: 100%;
     vertical-align: middle;
@@ -97,15 +14,12 @@ img {
 figure>img {
     display: block;
 }
-figcaption {
-    font-size: 14px;
-}
 .post-content ul {
-    margin-left: 20px;
+    margin-left: 1.3em;
     list-style: square;
 }
 .post-content ol {
-    margin-left: 20px;
+    margin-left: 1.3em;
     list-style: decimal;
 }
 .post-content li>ul {
@@ -132,7 +46,7 @@ blockquote {
     color: #828282;
     line-height: 1.8em;
     border-left: 4px solid #e8e8e8;
-    padding-left: 15px;
+    padding-left: 1em;
     font-size: 1em;
 }
 blockquote> :last-child {
@@ -163,11 +77,25 @@ blockquote> :last-child {
     /* border-radius: 5px; */
     /* color: white; */
     /* font-family: "微软雅黑" , "宋体" , "黑体" ,Arial; */
-    padding: 5px 5px 5px 15px;
+    padding: 0.3em 0.3em 0.3em 0.5em;
     border-left: 4px solid #3B95B8;
     border-bottom: 1px solid #3B95B8;
     width: 80%;
     font-weight: 700;
+    line-height: 1.5;
+}
+
+.post-classify-list,
+.post-classify-list a {
+    color: #996e5d;
+}
+
+.post-classify-list a:hover {
+    opacity: 0.7;
+}
+
+.post-tag-list {
+    color: #4982dc;
 }
 
 
@@ -176,22 +104,22 @@ blockquote> :last-child {
     display: inline-block;
     font-weight: normal;
     color: #fff;
-    height: 20px;
-    line-height: 18px;
+    height: 1.34em;
+    line-height: 1.2;
     font-size: 1em;
-    padding: 0 10px;
+    padding: 0 0.67em;
     position: relative;
     -webkit-border-radius: 0 5px 5px 0;
     border-radius: 0 5px 5px 0;
-    margin: 0px 9px;
+    margin: 0 0 0 1em;
 }
 
 .index-post-tag a:before {
     content: " ";
     position: absolute;
     top: 0;
-    left: -20px;
-    border: 10px solid transparent;
+    left: -1.34em;
+    border: 0.67em solid transparent;
     border-right-color: #77b1e1;
 }
 
@@ -205,13 +133,13 @@ blockquote> :last-child {
     -webkit-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.3);
     position: absolute;
-    top: 7px;
+    top: calc(50% - 2px);
     left: 2px;
 }
 
 .post-content {
-    line-height: 1.8em;
-    letter-spacing: 1px;
+    line-height: 1.6;
+    /* letter-spacing: 1px; */
 }
 
 .post-header {
@@ -222,18 +150,17 @@ blockquote> :last-child {
     padding-left: 2em;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 576px) {
     .post-header {
-        margin-left: -1.5em;
+        margin-left: -1em;
         padding-left: 1.5em;
     }
 }
 
 .post-title {
     font-size: 2em;
-    padding-top: 10px;
-    letter-spacing: -1px;
-    line-height: 1;
+    padding-top: 0.6em;
+    line-height: 1.5;
 }
 
 .index-post-tag a:visited {
@@ -249,14 +176,13 @@ blockquote> :last-child {
 .post-meta {
     margin-right: 1em;
     display: inline-block;
-    font-size: 14px;
+    font-size: 0.9em;
     color: #828282;
 }
 
 .prev-and-next {
     margin-bottom: 2em;
     margin-top: 2em;
-    border-radius: 7px;
     padding: 1em 3em;
     background: white;
     padding-left: 2em;
@@ -286,7 +212,7 @@ blockquote> :last-child {
 }
 
 .toc-container li {
-    margin: 10px 0;
+    margin: 0.5em 0;
     padding: 0;
 }
 
@@ -312,10 +238,3 @@ blockquote> :last-child {
     margin: 0 0 0 20px;
     width: 90%;
 }
-
-/* @media (max-width: 576px) {
-    .beaudar {
-        margin-left: 0;
-        width: 100%;
-    }
-} */

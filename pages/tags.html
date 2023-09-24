@@ -18,7 +18,7 @@ permalink: /pages/tags.html
     {% for tag in site.tags %}
     <div class="tag-target" name="{{ tag[0] }}">
       <h1 class="tag-name">{{ tag[0] }}</h1>
-      <ul class="tags">
+      <ul class="article-list-of-tag">
         {% for post in tag[1] %}
         <li class="article">
           {% include post_record.html post=post %}

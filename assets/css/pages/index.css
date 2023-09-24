@@ -58,13 +58,13 @@
 .tag-list a {
 	text-decoration: none;
 	color: rgb(0, 0, 0, 0.6);
-	font-size: 12px;
+	font-size: 0.9em;
 	line-height: 1.5;
 	display: inline-block;
 	margin: 0 0.5em 0.5em 0;
-	padding: 3px 10px;
+	padding: 0.2em 0.8em;
 	border: 1px solid #d9d9d9;
-	border-radius: 14px;
+	border-radius: 1em;
 	box-sizing: border-box;
 	font-weight: normal;
 }
@@ -87,7 +87,7 @@
 	border: #3B95B8 2px solid;
 }
 
-.tags {
+.article-list-of-tag {
 	margin-left: 0;
 	padding-left: 0;
 	border-left: 2px solid #3B95B8;
@@ -137,10 +137,10 @@ li.article a:hover {
 	text-decoration: none;
 	color: #fff;
 	background-color: #335571;
-	font-size: 12px;
+	font-size: 0.8em;
 	line-height: 1.5;
-	margin: 0 1em 1em 0;
-	padding: 3px 10px;
+	margin: 0 1.2em 1.2em 0;
+	padding: 0.25em 0.83em;
 	border-radius: 2px;
 	font-weight: bold;
 }
@@ -162,7 +162,7 @@ li.article a:hover {
 .classify-tag-after-post-title {
 	cursor: pointer;
 	text-decoration: none;
-	font-size: 12px;
+	font-size: 0.8em;
 	font-weight: bold;
 }
 
@@ -182,29 +182,26 @@ li.article a:hover {
 }
 
 .post-preview {
-	padding: 1em;
+	padding: 0.8em;
 }
 .post-preview .post-title {
 	color: #0d66b3;
-	padding: 10px 0;
+	padding: 0.4em 0;
 	display: inline-block;
 	font-weight: 500;
-	font-size: 26px;
+	font-size: 1.73em;
 	line-height: 1.2;
 }
 .post-meta-info {
-    font-size: 14px;
+    font-size: 0.9em;
     color: #828282;
 }
-.post-meta-info .post-time {
+.post-meta-info .time-info {
 	margin-right: 2em;
 }
 @media (max-width: 576px) {
-	.post-preview .post-title {
-		font-size: 22px;
-	}
 	/* 换行显示 */
-	.post-meta-info .post-time {
+	.post-meta-info .time-info {
 		display: block;
 		margin-right: 0;
 	}
@@ -220,7 +217,7 @@ li.article a:hover {
 .about-title {
 	border-bottom: 2px solid #eee;
 	margin-bottom: 0.5em;
-	font-size: 24px;
+	font-size: 1.6em;
 	font-weight: bold;
 }
 .about-content {
