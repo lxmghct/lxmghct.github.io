@@ -13,6 +13,12 @@
 	white-space: nowrap;
 }
 
+@media (max-width: 576px) {
+	.tags-container {
+		display: none;
+	}
+}
+
 /**
  * pages/archives.html
  */
@@ -30,7 +36,7 @@
  */
 .home {
 	margin: 0 0 2em 0;
-	padding: 0 3em;
+	padding: 0 2em;
 	background: #fff;
 	min-height: 50em;
 	border-radius: 4px;
@@ -101,7 +107,7 @@ h1.tag-name {
 }
 
 li.article {
-	padding-left: 4em;
+	padding-left: 3em;
 	list-style-type: none;
 }
 
@@ -109,6 +115,14 @@ li.article {
 	li.article {
 		padding-left: 1em;
 	}
+}
+
+li.article a {
+	color: #03639b;
+}
+
+li.article a:hover {
+	opacity: 0.7;
 }
 
 .classify-list {
@@ -122,7 +136,7 @@ li.article {
 .classify-tag a {
 	text-decoration: none;
 	color: #fff;
-	background-color: #0d66b3;
+	background-color: #335571;
 	font-size: 12px;
 	line-height: 1.5;
 	margin: 0 1em 1em 0;
@@ -142,7 +156,7 @@ li.article {
 
 .classify-list .active {
 	color: #fff;
-	background-color: #00a6e8;
+	background-color: #9469bf
 }
 
 .classify-tag-after-post-title {
@@ -153,19 +167,18 @@ li.article {
 }
 
 .classify-tag-after-post-title a.post-classify {
-	color: #ababab;
-}
-
-.classify-tag-after-post-title a.post-classify:hover {
-	color: #525252;
+	white-space: nowrap;
+	color: #996e5d;
 }
 
 .classify-tag-after-post-title a.post-tag {
-	color: #60a2e8;
+	white-space: nowrap;
+	color: #4982dc;
 }
 
+.classify-tag-after-post-title a.post-classify:hover,
 .classify-tag-after-post-title a.post-tag:hover {
-	color: #0d66b3;
+	opacity: 0.5;
 }
 
 .post-preview {
