@@ -4,8 +4,8 @@
 
 .site-footer {
     background: rgb(54, 54, 54);
-    margin-top: 30px;
-    padding: 20px 0;
+    margin-top: 20px;
+    padding: 1.3em 0;
     width: 100%;
 }
 
@@ -15,7 +15,6 @@
 }
 
 .footer-col-wrapper {
-    font-size: 15px;
     color: #ccc;
     display: flex;
     max-width: 800px;
@@ -36,8 +35,8 @@
 }
 
 .footer-col {
-    margin-bottom: 15px;
-    padding-left: 15px;
+    margin-bottom: 1em;
+    padding-left: 1em;
 }
 
 .contact-list,
@@ -54,7 +53,7 @@
     display: inline-block;
     vertical-align: middle;
     zoom: 1;
-    margin: 5px 8px;
+    margin: 0.3em 0.5em;
     opacity: 0.8;
     width: 2em;
     height: 2em;

@@ -1,23 +1,30 @@
 /**
  * _includes/header.html
  */
- .navbar {
+.navbar {
     border-radius: 0;
     position: relative;
     margin-bottom: 0;
+    /* 取消bootstrap默认的min-height: 50px; */
+    min-height: 0;
 }
 
 .navbar-header {
-    padding-top: 4px;
+    padding-top: 0.26em;
 }
 
 .header-title i,
 .header-hidden-buttons i {
     font-size: 2em;
-    color: white;
+    color: #eeeeee;
     vertical-align: middle;
-    margin: 0 5px 5px 0;
+    margin: 0 0.3em 0 0;
     cursor: pointer;
+}
+
+.header-title i:hover,
+.header-hidden-buttons i:hover {
+    color: #fff;
 }
 
 .site-title {
@@ -34,11 +41,12 @@
 
 .site-title,
 .site-title:visited {
-    color: #fff;
+    color: #eeeeee;
 }
 
 .site-title:hover {
     text-decoration: none;
+    color: #fff;
 }
 
 
@@ -77,40 +85,15 @@
 }
 
 .site-nav .page-link:not(:first-child) {
-    margin-left: 20px;
-}
-
-@media screen and (max-width: 600px) {
-    .site-nav {
-        position: absolute;
-        top: 9px;
-        right: 30px;
-        background-color: #fdfdfd;
-        border: 1px solid #e8e8e8;
-        border-radius: 5px;
-        text-align: right;
-    }
-
-    .site-nav .trigger {
-        clear: both;
-        display: none;
-    }
-
-    .site-nav:hover .trigger {
-        display: block;
-        padding-bottom: 5px;
-    }
-
-    .site-nav .page-link {
-        display: block;
-        padding: 5px 10px;
-    }
+    margin-left: 1.3em;
 }
 
 /* navibar on phone */
 .header-hidden-buttons {
-    margin-top: 12px;
+    margin-top: 0.8em;
+    text-align: right;
 }
+
 #nav-trigger {
     position: absolute;
     right: 0;
@@ -125,7 +108,7 @@
     width: 33%;
     z-index: 3;
     border-radius: 0 0 5px 5px;
-    padding: 5px;
+    padding: 0.4em;
     background-color: transparent;
     overflow: hidden;
     background-color: #4a4a4a;

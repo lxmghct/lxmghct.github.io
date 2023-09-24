@@ -18,7 +18,7 @@ permalink: /pages/classify.html
         {% for category in site.categories %}
         <div class="tag-target" name="{{ category[0] }}">
             <h1 class="tag-name">{{ category[0] }}</h1>
-            <ul class="tags">
+            <ul class="article-list-of-tag">
                 {% for post in category[1] %}
                 <li class="article">
                     {% include post_record.html post=post %}
