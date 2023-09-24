@@ -27,8 +27,6 @@ function copyText(text) {
 (function () {
   // 忽略未转义的 HTML 代码
   hljs.configure({ ignoreUnescapedHTML: true });
-  // 代码高亮
-  // hljs.highlightAll();
 
   // 如果是无法识别的语言, 不会被自动添加div.highlighter-rouge, 所以需要手动处理
   // 找到没有任何类的<pre>元素
@@ -78,7 +76,10 @@ function copyText(text) {
       code: code.textContent,
     });
     codeList.push(code);
+    // code.classList.add(`language-${language.replace("language-", "")}`);
   });
+  // 代码高亮
+  // hljs.highlightAll();
   // Web Worker
   const worker = new Worker("/assets/js/highlight/worker.js");
   worker.onmessage = (event) => {
@@ -90,7 +91,6 @@ function copyText(text) {
       code.classList.add("hljs");
       code.classList.add(`language-${codeDataList[i].language}`);
       // 显示语言类别
-      // code.parentNode.insertAdjacentHTML("afterbegin", `<div class="code-header">${codeDataList[i].language}</div>`);
       let codeHeader =
         `<div class="code-header">` +
         `<span class="language">${codeDataList[i].language}</span> | ` +
@@ -102,8 +102,19 @@ function copyText(text) {
     // 代码行号
     hljs.initLineNumbersOnLoad({ singleLine: true });
     // 添加复制按钮点击事件
-    document.querySelectorAll(".copy-btn").forEach((copyBtn, i) => {
-      copyBtn.onclick = () => { copyText(codeDataList[i].code); }
+    document.querySelectorAll(".copy-btn").forEach(copyBtn => {
+      copyBtn.onclick = () => {
+        let parent = copyBtn.parentNode.parentNode;
+        let codeTable = parent.querySelector(".hljs-ln tbody");
+        let codeRows = codeTable.querySelectorAll("tr");
+        let text = "";
+        codeRows.forEach((row) => {
+          // 忽略行号, 直接找.hljs-ln-code元素
+          let code = row.querySelector(".hljs-ln-code");
+          text += code.textContent + "\n";
+        });
+        copyText(text);
+      }
     });
     // 添加自动换行按钮点击事件
     document.querySelectorAll(".change-wrap-btn").forEach((changeWrapBtn, i) => {
