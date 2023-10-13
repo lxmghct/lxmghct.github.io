@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  github pages自定义插件
+title:  github page自定义插件
 date:   2023-10-13 09:30:00 +0800
 categories: 技术探索
 tags: github
