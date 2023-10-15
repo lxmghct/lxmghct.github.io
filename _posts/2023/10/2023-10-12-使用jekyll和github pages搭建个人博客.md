@@ -2,7 +2,7 @@
 layout: post
 title:  "使用jekyll和github pages搭建个人博客"
 date:   2023-10-12 14:00:00 +0800
-categories: 技术
+categories: 个人博客
 tags: jekyll
 ---
 **Jekyll** 是一个静态网站生成器，它可以将文本文档（如 Markdown 或 Textile）和 HTML 文件通过一些处理生成一个有机整体的 HTML 语言的网站。Jekyll 的核心是一个文本转换引擎，它支持多种文本标记语言，例如 Markdown 和 HTML，并通过 Liquid 渲染器转化成一个完整的可发布的静态网站。
