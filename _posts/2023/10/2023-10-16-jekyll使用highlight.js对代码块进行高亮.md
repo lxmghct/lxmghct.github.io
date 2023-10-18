@@ -2,7 +2,7 @@
 layout: post
 title:  jekyll使用highlight.js对代码块进行高亮
 date:   2023-10-15 21:20:00 +0800
-categories: 个人博客 技术
+categories: 开发日志
 tags: jekyll 前端
 ---
 
