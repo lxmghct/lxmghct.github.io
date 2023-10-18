@@ -2,7 +2,7 @@
 layout: post
 title:  "jekyll添加beaudar评论系统"
 date:   2023-10-15 09:10:00 +0800
-categories: 个人博客
+categories: 开发日志
 tags: jekyll
 ---
 beaudar是一个基于github issue的评论系统，所有评论都保存在某个仓库的issue评论中，是utterances的中文版本。官网为[https://beaudar.lipk.org/](https://beaudar.lipk.org/)，其中有详细的使用说明。
