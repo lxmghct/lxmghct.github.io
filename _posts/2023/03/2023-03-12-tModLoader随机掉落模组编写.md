@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  tModLoader随机掉落模组编写
-date:   2023-03-12 00:10:00 +0800
+date:   2023-03-12 10:00:00 +0800
 categories: 开发日志
 tags: C# 游戏 terraria
 ---
