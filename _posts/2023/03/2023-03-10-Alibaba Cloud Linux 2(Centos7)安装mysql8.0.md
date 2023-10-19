@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  2023-03-10-Alibaba Cloud Linux 2(Centos7)安装mysql8.0.md
-date:   2023-03-25 16:10:00 +0800
+date:   2023-03-10 02:30:00 +0800
 categories: 编程随笔
 tags: mysql linux
 ---
