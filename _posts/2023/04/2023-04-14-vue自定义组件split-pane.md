@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  vue自定义组件 split-pane
-date:   2023-04-14 00:01:50 +0800
+date:   2023-04-14 01:50:00 +0800
 categories: 开发日志
 tags: 前端 vue
 ---
