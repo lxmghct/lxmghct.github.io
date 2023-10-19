@@ -1,9 +1,9 @@
 ---
 layout: post
-title:  "泰拉瑞亚EasyBuildMod便捷建造模组开发"
+title:  泰拉瑞亚EasyBuildMod便捷建造模组开发
 date:   2023-03-25 16:10:00 +0800
 categories: 开发日志
-tags: C# 游戏
+tags: C# 游戏 terraria
 ---
 
 <style>

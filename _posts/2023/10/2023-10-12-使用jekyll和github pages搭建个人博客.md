@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "使用jekyll和github pages搭建个人博客"
+title:  使用jekyll和github pages搭建个人博客
 date:   2023-10-12 14:00:00 +0800
 categories: 开发日志
 tags: jekyll

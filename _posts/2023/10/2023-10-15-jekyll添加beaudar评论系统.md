@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "jekyll添加beaudar评论系统"
+title:  jekyll添加beaudar评论系统
 date:   2023-10-15 09:10:00 +0800
 categories: 开发日志
 tags: jekyll
