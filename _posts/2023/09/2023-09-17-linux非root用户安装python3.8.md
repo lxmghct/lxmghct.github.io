@@ -46,14 +46,28 @@ Failed to build these modules:
 _ctypes 
 ```
 
-## 2. 安装openssl, libffi, zlib
+## 2. 安装openssl, libffi, zlib, sqlite3等依赖库
+
+### 2.1. 直接下载已经编译好的库
+有root权限可以直接使用包管理器安装，如`yum`, `apt-get`, `brew`等。但是在没有root权限的情况下，可以自己编译安装。也可以下载已经编译好的库，然后指定路径。
+
+```bash
+apt-get download libbz2-dev lib-lzma-dev
+dpkg -x libbz2-dev_1.0.8-4_amd64.deb $HOME/libs/libbz2
+dpkg -x liblzma-dev_5.2.2-1.3_amd64.deb $HOME/libs/liblzma
+```
+
+### 2.2. 下载源码编译安装
+
+这里以openssl, libffi, zlib, sqlite3为例。
+
 openssl:
 
 ```bash
 wget https://www.openssl.org/source/openssl-1.1.1d.tar.gz
 tar -zxvf openssl-1.1.1d.tar.gz
 cd openssl-1.1.1d
-./config --prefix=$HOME/openssl
+./config --prefix=$HOME/libs/openssl
 make && make install
 ```
 
@@ -66,24 +80,52 @@ zlib前往[https://zlib.net/](https://zlib.net/)下载。或者其他站点下�
 wget https://nchc.dl.sourceforge.net/project/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz
 ```
 
-## 3. 编译安装Python
-先指定编译时的依赖库的路径:
+sqlite3: 参考[https://blog.csdn.net/qq_37144341/article/details/115214323](https://blog.csdn.net/qq_37144341/article/details/115214323)
+
+```
+wget https://www.sqlite.org/2017/sqlite-autoconf-3170000.tar.gz
+tar -zxvf sqlite-autoconf-3170000.tar.gz
+cd sqlite-autoconf-3170000
+./configure --prefix=$HOME/libs/sqlite3 --disable-static --enable-fts5 --enable-json1 CFLAGS="-g -O2 -DSQLITE_ENABLE_FTS3=1 
+```
+
+### 2.3. 配置环境变量
+
+写入环境变量, 打开`~/.bashrc`添加如下内容:
+
 ```bash
-export LDFLAGS="-L$HOME/openssl/lib -L$HOME/libffi/lib -L$HOME/zlib/lib"
-export CPPFLAGS="-I$HOME/openssl/include -I$HOME/libffi/include -I$HOME/zlib/include"
+export LD_LIBRARY_PATH=$HOME/libs/libbz2/usr/lib/x86_64-linux-gnu:$HOME/libs/liblzma/usr/lib/x86_64-linux-gnu:$LD_LIBRARY_PATH
+```
+
+其他依赖库类似。
+
+这里需要写进`~/.bashrc`，如果仅仅只在当前shell生效，那么尽管python可以编译安装成功，并且可以正常执行。但是在下次重新进入系统或者打开新的shell时，就会在执行python代码时，比如`python xxx.py`时，会报错找不到依赖库，报错类似于:
+
+```
+ModuleNotFoundError: No module named '_lzma'
+```
+
+一开始我遇到时确实有点困惑，以为是有别人也在服务器上动过相关的环境。后面才意识到忘记把依赖库的路径写入环境变量。
+
+## 3. 编译安装Python
+先指定编译时的依赖库的路径，尽管上面配了`LD_LIBRARY_PATH`，但是编译时还是需要指定依赖库的头文件和库文件的路径。
+
+```bash
+export LDFLAGS="-L$HOME/libs/openssl/lib -L$HOME/libs/libffi/lib -L$HOME/libs/zlib/lib"
+export CPPFLAGS="-I$HOME/libs/openssl/include -I$HOME/libs/libffi/include -I$HOME/libs/zlib/include"
 ```
 
 然后重新编译安装Python:
 
 ```bash
 # 可以输入./configure --help查看更多选项, 这里openssl可以用--with-openssl指定
-./configure --prefix=$HOME/python3 --with-openssl=$HOME/openssl
+./configure --prefix=$HOME/python3 --with-openssl=$HOME/libs/openssl
 
 # 也可以直接把上一步LDFLAGS和CPPFLAGS的设置放到configure的前面
-# LDFLAGS=... CPPFLAGS=... ./configure --prefix=$HOME/python3 --with-openssl=$HOME/openssl
+# LDFLAGS=... CPPFLAGS=... ./configure --prefix=$HOME/python3 --with-openssl=$HOME/libs/openssl
 
 # 也可以用pkg-config来查找依赖库的路径
-# export PKG_CONFIG_PATH=$HOME/openssl/lib/pkgconfig:$HOME/libffi/lib/pkgconfig:$HOME/zlib/lib/pkgconfig
+# export PKG_CONFIG_PATH=$HOME/libs/openssl/lib/pkgconfig:$HOME/libs/libffi/lib/pkgconfig:$HOME/libs/zlib/lib/pkgconfig
 # LDFLAGS=$(pkg-config --libs-only-L openssl) ...其他部分同上
 ```
 
