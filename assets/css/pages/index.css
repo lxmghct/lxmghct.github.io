@@ -31,7 +31,7 @@
  * pages/tags.html
  */
 .tag-list {
-	text-align: center;
+	text-align: left;
 }
 
 .tag-list a {
@@ -39,7 +39,7 @@
 	color: rgb(0, 0, 0, 0.6);
 	font-size: 12px;
 	line-height: 1.5;
-	float: left;
+	display: inline-block;
 	margin: 0 1em 1em 0;
 	padding: 3px 10px;
 	border: 1px solid #d9d9d9;
