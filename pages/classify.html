@@ -1,0 +1,33 @@
+---
+layout: default
+title: 分类
+permalink: /pages/classify.html
+---
+
+<div class="home">
+    <div class="classify-list page-tag classify-tag">
+        <a class="tag-filter" data-tag="all">全部 ({{ site.posts.size }})</a>
+        {% for category in site.categories %}
+        <a class="tag-filter" data-tag="{{ category[0] }}">{{ category[0] }} ({{ category[1].size }})</a>
+        {% endfor %}
+    </div>
+
+    <div class="clear"></div>
+
+    <div>
+        {% for category in site.categories %}
+        <div class="tag-target" name="{{ category[0] }}">
+            <h1 class="tag-name">{{ category[0] }}</h1>
+            <ul class="tags">
+                {% for post in category[1] %}
+                <li class="article">
+                    {% include post_record.html post=post %}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script id="classifyscript" type="text/javascript" src="/assets/js/tagutils.js"></script>

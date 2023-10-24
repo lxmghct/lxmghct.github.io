@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+{% include head.html %}
+
+<body>
+
+  {% include header.html %}
+
+  <div class="content">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-3 col-lg-3 hidden-xs hidden-sm aside1 fadein-left">
+          <div class="profile box-shadow center">
+            <div class="overlay"></div>
+            <div class="center avatar">
+              <a href="/" class="profile_avatar"><img class="circle" src="/assets/images/avatar.jpg"></a>
+            </div>
+            <div class="address">
+              <h5><span class="fa fa-map-marker"></span> Tianjin, China</h5>
+            </div>
+            <div class="center profile_desc">
+              {{ site.profile_description }}
+            </div>
+          </div>
+
+          <div class="tag-cloud-text">
+            <a href="tags.html" title="标签" class="pjaxlink">
+              <p class="center">标签</p>
+            </a>
+          </div>
+          <div class="tag-cloud">
+            <hr>
+            <div class="tag-list left-bar-tag">
+              {% for tag in site.tags %}
+              <a data-tag="{{ tag[0] }}" class="pjaxlink">
+                <i class="fa fa-tags"></i>{{ tag[0] }}({{ tag[1].size}})
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="clear"></div>
+          <div class="recentcome box-shadow">
+            <p>最近访客 <i class="fa fa-user"></i></p>
+            <ul class="ds-recent-visitors" data-num-items="15"></ul>
+          </div>
+          <div class="comment box-shadow">
+            <p>最新评论 <i class="fa fa-comments"></i></p>
+            <dl class="ds-recent-comments" data-num-items="5" data-show-avatars="1" data-show-time="1"
+              data-show-title="1" data-show-admin="1" data-excerpt-length="50"></dl>
+          </div>
+
+          <div class="common-links">
+            <p>常用链接</p>
+            <hr>
+            <ul>
+              <li><a href="https://github.com/">github主页</a></li>
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="col-xs-12 col-sm-12 col-md-9 col-lg-9 box-shadow fadein-right aside2">
+          <div class="page-content" id="pjax">{{content}}</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="profile_social">
+    <a class="rss" href="{{ site.rss_url }}" target="_blank" title="github"></a>
+    <a class="github" href="{{ site.author.github }}" target="_blank" title="rss"></a>
+  </div>
+
+  <div id="backtotop">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <div class="pjax_loading"></div>
+
+  <script>
+    // 点击<a>跳转到/pages/tags.html#{{ name }}
+    document.querySelectorAll(".left-bar-tag a").forEach(function (item) {
+      item.addEventListener("click", function () {
+        var name = item.getAttribute("data-tag");
+        // 如果当前页面是/pages/tags.html，只需修改hash值
+        if (window.location.pathname == "/pages/tags.html") {
+          clickTag && clickTag(name);
+        } else {
+          window.location.href = "/pages/tags.html#" + name;
+        }
+      });
+    });
+  </script>
+
+  {% include footer.html %}
+
+</body>
+
+</html>

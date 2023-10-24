@@ -1,0 +1,14 @@
+<!-- _includes/post_record.html -->
+<span>{{ include.post.date | date: "%Y-%m-%d" }}</span> &raquo;
+<a class="pjaxlink" href="{{ include.post.url }}">{{ include.post.title }}</a>
+
+{% if include.post.categories %}
+&nbsp;&nbsp;
+<span class="classify-tag-after-post-title">
+    <i class="fa fa-folder-open"></i>
+    {% for category in include.post.categories %}
+    <a class="pjaxlink" href="{{ site.url }}/pages/classify.html#{{ category }}">{{ category }}</a>
+    &nbsp;
+    {% endfor %}
+</span>
+{% endif %}

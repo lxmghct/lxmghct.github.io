@@ -1,0 +1,26 @@
+---
+layout: default
+---
+<div class="home">
+    
+	{% for post in site.posts  %}
+        {% if post.title != "About" %}
+            <div class="post-preview">
+                <a href="{{ post.url | prepend: site.baseurl }}">
+                    <h2 class="post-title">
+                        {{ post.title }}
+                    </h2>
+                    <h3 class="post-subtitle">
+                        {{ post.subtitle }}
+                    </h3>
+                </a>
+                <p class="post-meta">
+                    Posted on {{ post.date | date: "%B %-d, %Y" }}
+                </p>
+            <hr>
+            </div>
+        {% endif %}
+    {% endfor %}
+{% include pagination.html content='.home' parent='.home' %}
+</div>
+
