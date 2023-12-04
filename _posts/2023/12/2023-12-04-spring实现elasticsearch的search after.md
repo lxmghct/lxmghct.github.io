@@ -94,6 +94,7 @@ public class Test {
 1. 由于数据中的中文有简体和繁体，所以需要同时匹配简体和繁体，这里用到了`com.github.houbb.opencc4j.util.ZhConverterUtil`来转换简体和繁体。
 2. 允许使用空格、加号、减号来分隔关键字，来表示与或非的关系，需要对搜索关键字中的这几个符号的格式做检查，并动态拼接 painless script。
 
+{% raw %}
 ```java
 package com.mb.retrieval.utils;
 
@@ -227,3 +228,4 @@ public class Test {
 
 }
 ```
+{% endraw %}
