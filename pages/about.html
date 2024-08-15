@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>关于 | lxmghct's blog</title>
+  <meta name="description"
+    content="学习、实践、分享<br> Learning, Practicing, Sharing">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/pages/about.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-3 col-lg-3 hidden-xs hidden-sm left-side fadein-left">
+            <div class="profile box-shadow center">
+  <div class="overlay"></div>
+  <div class="center avatar">
+    <a href="/" class="profile_avatar"><img class="circle" src="/assets/images/avatar.jpg"></a>
+  </div>
+  <div class="address">
+    <h5><span class="fa fa-map-marker"></span> Tianjin, China</h5>
+  </div>
+  <div class="center profile_desc">
+    lxmghct's blog<br>Learning, Practicing, Sharing
+  </div>
+</div>
+
+<div class="tag-cloud-container box-shadow">
+  <div class="tag-cloud-title">
+    <a href="tags.html" title="标签">
+      <p class="center">标签</p>
+    </a>
+  </div>
+  <div class="tag-cloud">
+    <hr>
+    <div class="tag-list left-bar-tag">
+      
+      <a class="post-tag" data-tag="mysql" href="/pages/tags.html#mysql">
+        <i class="fa fa-tags"></i>mysql(2)
+      </a>
+      
+      <a class="post-tag" data-tag="linux" href="/pages/tags.html#linux">
+        <i class="fa fa-tags"></i>linux(4)
+      </a>
+      
+      <a class="post-tag" data-tag="C#" href="/pages/tags.html#C#">
+        <i class="fa fa-tags"></i>C#(2)
+      </a>
+      
+      <a class="post-tag" data-tag="游戏" href="/pages/tags.html#游戏">
+        <i class="fa fa-tags"></i>游戏(2)
+      </a>
+      
+      <a class="post-tag" data-tag="terraria" href="/pages/tags.html#terraria">
+        <i class="fa fa-tags"></i>terraria(2)
+      </a>
+      
+      <a class="post-tag" data-tag="conda" href="/pages/tags.html#conda">
+        <i class="fa fa-tags"></i>conda(1)
+      </a>
+      
+      <a class="post-tag" data-tag="前端" href="/pages/tags.html#前端">
+        <i class="fa fa-tags"></i>前端(17)
+      </a>
+      
+      <a class="post-tag" data-tag="axios" href="/pages/tags.html#axios">
+        <i class="fa fa-tags"></i>axios(1)
+      </a>
+      
+      <a class="post-tag" data-tag="mariadb" href="/pages/tags.html#mariadb">
+        <i class="fa fa-tags"></i>mariadb(2)
+      </a>
+      
+      <a class="post-tag" data-tag="vue" href="/pages/tags.html#vue">
+        <i class="fa fa-tags"></i>vue(10)
+      </a>
+      
+      <a class="post-tag" data-tag="js" href="/pages/tags.html#js">
+        <i class="fa fa-tags"></i>js(1)
+      </a>
+      
+      <a class="post-tag" data-tag="mybatis" href="/pages/tags.html#mybatis">
+        <i class="fa fa-tags"></i>mybatis(2)
+      </a>
+      
+      <a class="post-tag" data-tag="spring" href="/pages/tags.html#spring">
+        <i class="fa fa-tags"></i>spring(11)
+      </a>
+      
+      <a class="post-tag" data-tag="交叉编译" href="/pages/tags.html#交叉编译">
+        <i class="fa fa-tags"></i>交叉编译(1)
+      </a>
+      
+      <a class="post-tag" data-tag="unity" href="/pages/tags.html#unity">
+        <i class="fa fa-tags"></i>unity(1)
+      </a>
+      
+      <a class="post-tag" data-tag="jekyll" href="/pages/tags.html#jekyll">
+        <i class="fa fa-tags"></i>jekyll(10)
+      </a>
+      
+      <a class="post-tag" data-tag="test" href="/pages/tags.html#test">
+        <i class="fa fa-tags"></i>test(1)
+      </a>
+      
+      <a class="post-tag" data-tag="python" href="/pages/tags.html#python">
+        <i class="fa fa-tags"></i>python(6)
+      </a>
+      
+      <a class="post-tag" data-tag="java" href="/pages/tags.html#java">
+        <i class="fa fa-tags"></i>java(2)
+      </a>
+      
+      <a class="post-tag" data-tag="css" href="/pages/tags.html#css">
+        <i class="fa fa-tags"></i>css(1)
+      </a>
+      
+      <a class="post-tag" data-tag="neo4j" href="/pages/tags.html#neo4j">
+        <i class="fa fa-tags"></i>neo4j(12)
+      </a>
+      
+      <a class="post-tag" data-tag="element-ui" href="/pages/tags.html#element-ui">
+        <i class="fa fa-tags"></i>element-ui(1)
+      </a>
+      
+      <a class="post-tag" data-tag="arcgis" href="/pages/tags.html#arcgis">
+        <i class="fa fa-tags"></i>arcgis(1)
+      </a>
+      
+      <a class="post-tag" data-tag="elasticsearch" href="/pages/tags.html#elasticsearch">
+        <i class="fa fa-tags"></i>elasticsearch(4)
+      </a>
+      
+      <a class="post-tag" data-tag="html" href="/pages/tags.html#html">
+        <i class="fa fa-tags"></i>html(3)
+      </a>
+      
+      <a class="post-tag" data-tag="git" href="/pages/tags.html#git">
+        <i class="fa fa-tags"></i>git(2)
+      </a>
+      
+      <a class="post-tag" data-tag="swagger" href="/pages/tags.html#swagger">
+        <i class="fa fa-tags"></i>swagger(3)
+      </a>
+      
+      <a class="post-tag" data-tag="ubuntu" href="/pages/tags.html#ubuntu">
+        <i class="fa fa-tags"></i>ubuntu(1)
+      </a>
+      
+      <a class="post-tag" data-tag="饥荒" href="/pages/tags.html#饥荒">
+        <i class="fa fa-tags"></i>饥荒(2)
+      </a>
+      
+      <a class="post-tag" data-tag="security" href="/pages/tags.html#security">
+        <i class="fa fa-tags"></i>security(3)
+      </a>
+      
+      <a class="post-tag" data-tag="maven" href="/pages/tags.html#maven">
+        <i class="fa fa-tags"></i>maven(1)
+      </a>
+      
+      <a class="post-tag" data-tag="nodejs" href="/pages/tags.html#nodejs">
+        <i class="fa fa-tags"></i>nodejs(1)
+      </a>
+      
+      <a class="post-tag" data-tag="redis" href="/pages/tags.html#redis">
+        <i class="fa fa-tags"></i>redis(1)
+      </a>
+      
+      <a class="post-tag" data-tag="nginx" href="/pages/tags.html#nginx">
+        <i class="fa fa-tags"></i>nginx(3)
+      </a>
+      
+      <a class="post-tag" data-tag="UE5" href="/pages/tags.html#UE5">
+        <i class="fa fa-tags"></i>UE5(2)
+      </a>
+      
+      <a class="post-tag" data-tag="微信小程序" href="/pages/tags.html#微信小程序">
+        <i class="fa fa-tags"></i>微信小程序(1)
+      </a>
+      
+    </div>
+  </div>
+</div>
+<div class="clear"></div>
+
+<div class="common-links box-shadow">
+  <p>常用链接</p>
+  <hr>
+  <ul>
+    <li><a href="https://github.com/lxmghct">github主页</a></li>
+    <li><a href="https://www.cnblogs.com/lxm-cnblog">博客园</a></li>
+    <li><a href="/feed.xml">订阅本站</a></li>
+  </ul>
+</div>
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-9 col-lg-9 fadein-right">
+            <div class="page-content box-shadow"><div class="page">
+    <div class="about-page">
+  <div class="about-title">
+    <i class="fa fa-info-circle"></i> 关于博客
+  </div>
+  <div class="about-content">
+    博客使用jekyll搭建，使用github pages托管，使用了一些前端技术，如：html5、css3、javascript、jquery等。
+    博客主要用来记录一些学习笔记、技术分享、生活感悟等。
+    之前主要在博客园记录一些自己平时开发遇到的问题(<a href="https://www.cnblogs.com/lxm-cnblog" target="_blank">博客园地址</a>)，现在把博客转到github pages上来了。
+  </div>
+  
+  <div class="about-title">
+    <i class="fa fa-user"></i> 基本信息
+  </div>
+  <div class="about-content">
+    <p>姓名：Long, Xiaoming</p>
+    <p>南开大学软件工程专业在读本科生</p>
+  </div>
+
+  <!--联系方式-->
+  <div class="about-title">
+    <i class="fa fa-phone"></i> 联系方式
+  </div>
+  <div class="about-content">
+    <p>邮箱：<a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></p>
+    <p>github：<a href="https://github.com/lxmghct" target="_blank">https://github.com/lxmghct</a></p>
+  </div>
+
+  <div class="about-title">
+    <i class="fa fa-commenting"></i> 个人简介
+  </div>
+  <div class="about-content">
+    在校学生，热爱技术，热爱开源。希望能够通过平时记录自己的一些学习笔记和开发经验，不断提高自己的技术水平，并帮到更多的人。
+  </div>
+
+</div>
+</div></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

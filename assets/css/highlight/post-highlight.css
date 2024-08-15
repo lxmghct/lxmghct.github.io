@@ -1,0 +1,89 @@
+/**
+ * _layout/post.html code block
+ */
+.highlighter-rouge {
+    position: relative;
+}
+
+.highlighter-rouge table td {
+    border: none;
+}
+
+.code-header {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    z-index: 1;
+}
+.code-header.hidden {
+    display: none;
+}
+
+.code-header .change-wrap-btn,
+.code-header .copy-btn {
+    cursor: pointer;
+    padding: 0 5px;
+    border-radius: 5px;
+}
+
+.code-header .change-wrap-btn:hover,
+.code-header .copy-btn:hover {
+    background-color: #e3e0dc;
+}
+
+.code-header .change-wrap-btn:active,
+.code-header .copy-btn:active {
+    /* 点击按钮后的样式 */
+    background-color: #d0cfcf;
+}
+
+.post-content pre {
+    border: none;
+    border-radius: none;
+    max-height: 400px;
+    background-color: #F7F4F3;
+    padding-top: 15px;
+}
+.post-content pre .code-header {
+    padding-left: 10px;
+    color: #000;
+    user-select: none;
+}
+.post-content pre code {
+    /* 代码块默认不换行 */
+    white-space: pre;
+    padding: 0;
+}
+.post-content pre code.wrap {
+    white-space: pre-wrap !important;
+}
+/* 代码块行号 */
+.hljs {
+    background-color: transparent;
+}
+.hljs-ln {
+    padding-bottom: 10px;
+}
+.hljs-ln-numbers {
+    position: sticky;
+    position: -webkit-sticky; /* 兼容 Safari */
+    left: 0;
+    background-color: #F7F4F3;
+    vertical-align: top;
+}
+.hljs-ln-code {
+    padding: 0 5px !important;
+}
+.hljs-ln-n {
+    padding: 0 3px;
+    margin-right: 3px;
+    text-align: right;
+    min-width: 2em;
+    border-right: 1px solid #e3e0dc;
+}
+
+.post-content pre table.hljs-ln {
+    max-height: 350px;
+    overflow: auto;
+    display: block;
+}

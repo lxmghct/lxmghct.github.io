@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>导航栏手机端自适应 | lxmghct's blog</title>
+  <meta name="description"
+    content="我的博客导航栏中包含的内容比较多，包含首页、分类、归档等，还有一个搜索框。在手机端显示时，如果直接把导航栏的内容全部显示出来，必然会换行，影响美观。所以需要对导航栏进行自适应，当屏幕宽度小于一定值时，导航栏的内容自动隐藏，通过点击菜单按钮显示。完整代码在https://github.com/lxmghct/lxm...">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/14/%E5%AF%BC%E8%88%AA%E6%A0%8F%E6%89%8B%E6%9C%BA%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">导航栏手机端自适应</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-10-14 00:10
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="开发日志">开发日志</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="jekyll">jekyll</a>
+          
+          <a data-tag="前端">前端</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p>我的博客导航栏中包含的内容比较多，包含首页、分类、归档等，还有一个搜索框。在手机端显示时，如果直接把导航栏的内容全部显示出来，必然会换行，影响美观。所以需要对导航栏进行自适应，当屏幕宽度小于一定值时，导航栏的内容自动隐藏，通过点击菜单按钮显示。
+完整代码在<a href="https://github.com/lxmghct/lxmghct.github.io">https://github.com/lxmghct/lxmghct.github.io</a>的<code class="language-plaintext highlighter-rouge">_includes/header.html</code>等文件中。</p>
+
+<h2 id="1-实现思路">1. 实现思路</h2>
+<p>首先需要判断当前页面是否是手机端，这可以通过判断屏幕宽度来实现。然后通过点击菜单按钮显示导航栏的内容。这个可以通过现有的一些ui库来实现，也可以自己通过js来实现。</p>
+
+<h2 id="2-实现过程">2. 实现过程</h2>
+<h3 id="21-根据屏幕宽度选择性显示导航栏">2.1 根据屏幕宽度选择性显示导航栏</h3>
+<p>可以使用<code class="language-plaintext highlighter-rouge">bootstrap</code>的<code class="language-plaintext highlighter-rouge">col-{size}-{number}</code>类来实现。其中<code class="language-plaintext highlighter-rouge">size</code>表示屏幕大小，有<code class="language-plaintext highlighter-rouge">xs</code>、<code class="language-plaintext highlighter-rouge">sm</code>、<code class="language-plaintext highlighter-rouge">md</code>、<code class="language-plaintext highlighter-rouge">lg</code>、<code class="language-plaintext highlighter-rouge">xl</code>五种，对应的像素值如下：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">xs</code>：小于576px</li>
+  <li><code class="language-plaintext highlighter-rouge">sm</code>：大于等于576px</li>
+  <li><code class="language-plaintext highlighter-rouge">md</code>：大于等于768px</li>
+  <li><code class="language-plaintext highlighter-rouge">lg</code>：大于等于992px</li>
+  <li><code class="language-plaintext highlighter-rouge">xl</code>：大于等于1200px
+<code class="language-plaintext highlighter-rouge">col</code>表示列，<code class="language-plaintext highlighter-rouge">number</code>表示占据的列数。例如<code class="language-plaintext highlighter-rouge">col-md-6</code>表示在中等屏幕上占据6列。隐藏可以用<code class="language-plaintext highlighter-rouge">hidden-{size}</code>类来实现。例如<code class="language-plaintext highlighter-rouge">hidden-xs</code>表示在小屏幕上隐藏。</li>
+</ul>
+
+<p>宽度够时显示导航栏：</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"col-md-6 col-lg-6 hidden-sm hidden-xs center"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"site-nav"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"nav nav-pills"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"select"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"/pages/classify.html"</span><span class="nt">&gt;</span>分类<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"select"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"/pages/archive.html"</span><span class="nt">&gt;</span>归档<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"select"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"/pages/tags.html"</span><span class="nt">&gt;</span>标签<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+      <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"select"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"/pages/about.html"</span><span class="nt">&gt;</span>关于<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
+    <span class="nt">&lt;/ul&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+<p>宽度不够时显示菜单按钮：</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- 宽度不够时显示 --&gt;</span>
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"hidden-lg hidden-md col-sm-4 col-xs-4"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"header-hidden-buttons"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">"fa fa-search fa-lg search-icon"</span><span class="nt">&gt;&lt;/i&gt;</span>
+    <span class="nt">&lt;i</span> <span class="na">class=</span><span class="s">"fa fa-bars fa-2x menu-icon"</span><span class="nt">&gt;&lt;/i&gt;</span>
+    <span class="c">&lt;!-- 用于控制菜单的显示和隐藏 --&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"checkbox"</span> <span class="na">id=</span><span class="s">"nav-trigger"</span> <span class="na">class=</span><span class="s">"nav-trigger"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+
+<h2 id="22-点击菜单按钮显示导航栏">2.2 点击菜单按钮显示导航栏</h2>
+<p>这里我打算自己写一个下拉菜单。点击时显示导航栏内容，再次点击按钮或者其他任意空白处隐藏导航栏内容。实现思路是创建一个透明的勾选框，显示菜单时用js使其聚焦，然后通过勾选框的失去焦点事件来隐藏导航栏内容。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"checkbox"</span> <span class="na">id=</span><span class="s">"nav-trigger"</span> <span class="na">class=</span><span class="s">"nav-trigger"</span><span class="nt">&gt;</span>
+</code></pre></div></div>
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">#nav-trigger</span> <span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+    <span class="nl">right</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+    <span class="nl">opacity</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span> <span class="c">/* 隐藏，但是要能够触发失焦和聚焦事件，所以不能用display:none */</span>
+<span class="p">}</span>
+<span class="nc">.phone-nav-show</span> <span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">#nav-trigger</span><span class="dl">"</span><span class="p">).</span><span class="nf">blur</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="c1">// 延时隐藏, 因为blur比click先触发</span>
+  <span class="nf">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nf">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">.phone-nav</span><span class="dl">"</span><span class="p">).</span><span class="nf">removeClass</span><span class="p">(</span><span class="dl">"</span><span class="s2">phone-nav-show</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">},</span> <span class="mi">100</span><span class="p">);</span>
+<span class="p">});</span>
+<span class="nf">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">.header-hidden-buttons .menu-icon</span><span class="dl">"</span><span class="p">).</span><span class="nf">click</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nf">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">.phone-nav</span><span class="dl">"</span><span class="p">).</span><span class="nf">hasClass</span><span class="p">(</span><span class="dl">"</span><span class="s2">phone-nav-show</span><span class="dl">"</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nf">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">#nav-trigger</span><span class="dl">"</span><span class="p">).</span><span class="nf">focus</span><span class="p">();</span>
+    <span class="nf">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">.phone-nav</span><span class="dl">"</span><span class="p">).</span><span class="nf">addClass</span><span class="p">(</span><span class="dl">"</span><span class="s2">phone-nav-show</span><span class="dl">"</span><span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h2 id="3-效果">3. 效果</h2>
+<p>宽屏时显示：
+<img src="/post_assets/images/2023/10/14-nav-large-screen.png" alt="宽屏时显示" /></p>
+
+<p>窄屏时显示：
+<img src="/post_assets/images/2023/10/14-nav-small-screen.png" alt="窄屏时显示" /></p>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/14/%E4%B8%AA%E4%BA%BA%E4%B8%BB%E9%A1%B5%E5%93%8D%E5%BA%94%E5%BC%8F%E5%B8%83%E5%B1%80%E8%B0%83%E6%95%B4.html" title="个人主页响应式布局调整">个人主页响应式布局调整</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/13/jekyll%E5%AE%9E%E7%8E%B0%E6%98%BE%E7%A4%BA%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95.html"
+      title="jekyll实现显示文章目录">jekyll实现显示文章目录</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-10-14】 导航栏手机端自适应"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

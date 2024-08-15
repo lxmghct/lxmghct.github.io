@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>jekyll自定义分页组件 | lxmghct's blog</title>
+  <meta name="description"
+    content="不采用其他现有的分页插件，自定义分页组件，实现纯前端分页功能。1. 整体思路假定所有待分页的元素都位于同一个父元素下，获取所有待分页的元素，根据每页数量pageSize和当前页currentPage，计算出当前需要显示的元素的起始索引start和结束索引end，然后根据start和end显示元素，将其他元素隐藏。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/12/jekyll%E8%87%AA%E5%AE%9A%E4%B9%89%E5%88%86%E9%A1%B5%E7%BB%84%E4%BB%B6.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">jekyll自定义分页组件</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-10-12 13:30
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="开发日志">开发日志</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="jekyll">jekyll</a>
+          
+          <a data-tag="前端">前端</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p>不采用其他现有的分页插件，自定义分页组件，实现纯前端分页功能。</p>
+<h2 id="1-整体思路">1. 整体思路</h2>
+<p>假定所有待分页的元素都位于同一个父元素下，获取所有待分页的元素，根据每页数量<code class="language-plaintext highlighter-rouge">pageSize</code>和当前页<code class="language-plaintext highlighter-rouge">currentPage</code>，计算出当前需要显示的元素的起始索引<code class="language-plaintext highlighter-rouge">start</code>和结束索引<code class="language-plaintext highlighter-rouge">end</code>，然后根据<code class="language-plaintext highlighter-rouge">start</code>和<code class="language-plaintext highlighter-rouge">end</code>显示元素，将其他元素隐藏。</p>
+
+<h2 id="2-设计目标">2. 设计目标</h2>
+<p>能够实现显示总页数、当前页、显示当前页前后页码、跳转到指定页、修改每页显示数量等功能，如下图所示：
+<img src="/post_assets/images/2023/10/12-pagination-preview.png" alt="分页组件" /></p>
+
+<h2 id="3-实现过程">3. 实现过程</h2>
+<p>这里只展示核心逻辑，一些较为简单的逻辑这里就不多赘述。完整代码请参考<a href="https://github.com/lxmghct/lxmghct.github.io/blob/master/_includes/pagination.html">https://github.com/lxmghct/lxmghct.github.io/blob/master/_includes/pagination.html</a></p>
+<h3 id="31-分页核心逻辑">3.1 分页核心逻辑</h3>
+<p>开始索引为<code class="language-plaintext highlighter-rouge">pageSize * (currentPage - 1)</code>，结束索引为<code class="language-plaintext highlighter-rouge">pageSize * currentPage</code>，遍历所有待分页元素，根据索引通过添加或移除<code class="language-plaintext highlighter-rouge">hide</code>类来显示或隐藏元素。</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">function</span> <span class="nf">changeContentShow</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">showPageStart</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span> <span class="o">*</span> <span class="p">(</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="kd">const</span> <span class="nx">showPageEnd</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span> <span class="o">*</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">;</span>
+      <span class="k">for </span><span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">total</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">&gt;=</span> <span class="nx">showPageStart</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">showPageEnd</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pageItems</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="dl">"</span><span class="s2">hide</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="nx">pageItems</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">hide</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="32-显示当前页前后页码">3.2 显示当前页前后页码</h3>
+<p>这里采用的方式是：每次页码更新时，重新生成页码列表，根据当前页码和总页数，生成当前页码前后大约3个页码的页码列表，如果当前页码距离第一页或最后一页小于3，则显示当前页码前后的页码直到第一页或最后一页；否则就显示为省略号<code class="language-plaintext highlighter-rouge">...</code>。</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">function</span> <span class="nf">showPagerList</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">totalPage</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">ceil</span><span class="p">(</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">total</span> <span class="o">/</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span><span class="p">);</span>
+      <span class="nx">pagerContainer</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">createLi</span> <span class="o">=</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">li</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">li</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">li</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+        <span class="nx">pagerContainer</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">li</span><span class="p">);</span>
+        <span class="c1">// add click event</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">li</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+            <span class="nf">changePage</span><span class="p">();</span>
+          <span class="p">});</span>
+        <span class="p">}</span>
+        <span class="c1">// set active</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">li</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">active</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="kd">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">end</span> <span class="o">=</span> <span class="nx">totalPage</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">pagerNumberList</span> <span class="o">=</span> <span class="p">[];</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">-</span> <span class="nx">start</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(...[</span><span class="nx">start</span><span class="p">,</span> <span class="nx">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span><span class="p">,</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">]);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">for </span><span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">start</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">end</span> <span class="o">-</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(...[</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span><span class="p">,</span> <span class="nx">end</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">end</span><span class="p">]);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">for </span><span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">end</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">forEach</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nf">createLi</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+</code></pre></div></div>
+
+<h3 id="33-优化组件的使用">3.3 优化组件的使用</h3>
+<p>将该分页组件封装为<code class="language-plaintext highlighter-rouge">_include</code>目录下的一个组件，通过组件调用时传参来配置一些参数，尽量能够直接使用。</p>
+
+<p>这里我打算父组件只向分页组件传递待分页元素父组件的选择器，分页组件自动获取该父组件下的所有待分页元素，然后进行分页操作。这样做的好处是：父组件不需要关心待分页元素的数量，也不需要任何其他操作就可以使用分页组件。</p>
+
+<p>考虑到分页组件有时候需要放在分页元素的父组件外，所以还需要传递一个参数<code class="language-plaintext highlighter-rouge">parent</code>，用来指定分页元素的父组件的选择器。这两个选择器可以相同，也可以不同。</p>
+
+<p>组件之间传参的方式为：<br />
+父组件使用如下方式调用子组件并传参：</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">&lt;!-- pagination.html --&gt;</span>
+
+<span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"my-pagination"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"my-pager"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"active"</span><span class="nt">&gt;</span>1<span class="nt">&lt;/li&gt;</span>
+    <span class="nt">&lt;li&gt;</span>2<span class="nt">&lt;/li&gt;</span>
+  <span class="nt">&lt;/ul&gt;</span>
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"my-pagination__sizes"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"my-pagination__sizes__label"</span><span class="nt">&gt;</span>每页<span class="nt">&lt;/span&gt;</span>
+    <span class="nt">&lt;select</span> <span class="na">class=</span><span class="s">"my-pagination__sizes__select"</span> <span class="na">autocomplete=</span><span class="s">"off"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;option&gt;</span>5<span class="nt">&lt;/option&gt;</span>
+      <span class="nt">&lt;option&gt;</span>10<span class="nt">&lt;/option&gt;</span>
+      <span class="nt">&lt;option&gt;</span>20<span class="nt">&lt;/option&gt;</span>
+    <span class="nt">&lt;/select&gt;</span>
+    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"my-pagination__sizes__label"</span><span class="nt">&gt;</span>条<span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"my-pagination__total"</span><span class="nt">&gt;</span>共 0 条<span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"my-pagination__goto"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"my-pagination__goto__label"</span><span class="nt">&gt;</span>前往<span class="nt">&lt;/span&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">class=</span><span class="s">"my-pagination__goto__input"</span> <span class="na">type=</span><span class="s">"text"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"my-pagination__goto__label"</span><span class="nt">&gt;</span>页<span class="nt">&lt;/span&gt;</span>
+  <span class="nt">&lt;/span&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+  <span class="p">(</span><span class="nf">function </span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">contentSelector</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">.home</span><span class="dl">'</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">parentSelector</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">.home</span><span class="dl">'</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">contentContainer</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">contentSelector</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">contentContainer</span> <span class="o">||</span> <span class="o">!</span><span class="nx">contentSelector</span> <span class="o">||</span> <span class="o">!</span><span class="nx">parentSelector</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nf">error</span><span class="p">(</span><span class="dl">"</span><span class="s2">pagination.html: content or parent is not defined</span><span class="dl">"</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kd">const</span> <span class="nx">pageItems</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="kd">const</span> <span class="nx">pagerContainer</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">parentSelector</span><span class="p">}</span><span class="s2"> .my-pager`</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">totalContainer</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">parentSelector</span><span class="p">}</span><span class="s2"> .my-pagination__total`</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">sizesSelect</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">parentSelector</span><span class="p">}</span><span class="s2"> .my-pagination__sizes__select`</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">gotoInput</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">parentSelector</span><span class="p">}</span><span class="s2"> .my-pagination__goto__input`</span><span class="p">);</span>
+
+    <span class="kd">const</span> <span class="nx">paginationData</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">total</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+      <span class="na">pageSize</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+      <span class="na">currentPage</span><span class="p">:</span> <span class="mi">1</span>
+    <span class="p">}</span>
+    <span class="nx">sizesSelect</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span><span class="p">;</span>
+
+    <span class="kd">function</span> <span class="nf">showPagerList</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">totalPage</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">ceil</span><span class="p">(</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">total</span> <span class="o">/</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span><span class="p">);</span>
+      <span class="nx">pagerContainer</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">createLi</span> <span class="o">=</span> <span class="p">(</span><span class="nx">i</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">li</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">li</span><span class="dl">"</span><span class="p">);</span>
+        <span class="nx">li</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+        <span class="nx">pagerContainer</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">li</span><span class="p">);</span>
+        <span class="c1">// add click event</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">!==</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">li</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">click</span><span class="dl">"</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">=</span> <span class="nx">i</span><span class="p">;</span>
+            <span class="nf">changePage</span><span class="p">();</span>
+          <span class="p">});</span>
+        <span class="p">}</span>
+        <span class="c1">// set active</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">i</span> <span class="o">===</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">li</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">active</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="kd">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">end</span> <span class="o">=</span> <span class="nx">totalPage</span><span class="p">;</span>
+      <span class="kd">const</span> <span class="nx">pagerNumberList</span> <span class="o">=</span> <span class="p">[];</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">-</span> <span class="nx">start</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(...[</span><span class="nx">start</span><span class="p">,</span> <span class="nx">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span><span class="p">,</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">]);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">start</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">end</span> <span class="o">-</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(...[</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="dl">"</span><span class="s2">...</span><span class="dl">"</span><span class="p">,</span> <span class="nx">end</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">end</span><span class="p">]);</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="nx">end</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nx">i</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="nx">pagerNumberList</span><span class="p">.</span><span class="nf">forEach</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nf">createLi</span><span class="p">(</span><span class="nx">item</span><span class="p">);</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nf">changeTotal</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nx">pageItems</span><span class="p">.</span><span class="nx">length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">contentContainer</span><span class="p">.</span><span class="nx">children</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">contentContainer</span><span class="p">.</span><span class="nx">children</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nf">contains</span><span class="p">(</span><span class="dl">"</span><span class="s2">my-pagination</span><span class="dl">"</span><span class="p">)</span> <span class="o">||</span> <span class="nx">contentContainer</span><span class="p">.</span><span class="nx">children</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">tagName</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">SCRIPT</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="nx">pageItems</span><span class="p">.</span><span class="nf">push</span><span class="p">(</span><span class="nx">contentContainer</span><span class="p">.</span><span class="nx">children</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+      <span class="p">}</span>
+      <span class="nx">paginationData</span><span class="p">.</span><span class="nx">total</span> <span class="o">=</span> <span class="nx">pageItems</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+      <span class="nx">totalContainer</span><span class="p">.</span><span class="nx">innerText</span> <span class="o">=</span> <span class="s2">`共 </span><span class="p">${</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">total</span><span class="p">}</span><span class="s2"> 条`</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nf">changeContentShow</span><span class="p">()</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">showPageStart</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span> <span class="o">*</span> <span class="p">(</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+      <span class="kd">const</span> <span class="nx">showPageEnd</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span> <span class="o">*</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">;</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kd">let</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">total</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">i</span> <span class="o">&gt;=</span> <span class="nx">showPageStart</span> <span class="o">&amp;&amp;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">showPageEnd</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">pageItems</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="dl">"</span><span class="s2">hide</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+          <span class="nx">pageItems</span><span class="p">[</span><span class="nx">i</span><span class="p">].</span><span class="nx">classList</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">hide</span><span class="dl">"</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nf">changePage</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nf">showPagerList</span><span class="p">();</span>
+      <span class="nf">changeContentShow</span><span class="p">();</span>
+      <span class="nx">gotoInput</span><span class="p">.</span><span class="nx">value</span> <span class="o">=</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kd">function</span> <span class="nf">startPagination</span><span class="p">()</span> <span class="p">{</span>
+      <span class="nf">changeTotal</span><span class="p">();</span>
+      <span class="nf">changePage</span><span class="p">();</span>
+    <span class="p">}</span>
+
+    <span class="nx">sizesSelect</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">change</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">;</span>
+      <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+      <span class="nf">changePage</span><span class="p">();</span>
+    <span class="p">});</span>
+
+    <span class="nx">gotoInput</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">"</span><span class="s2">keyup</span><span class="dl">"</span><span class="p">,</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">===</span> <span class="mi">13</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">gotoPage</span> <span class="o">=</span> <span class="nf">parseInt</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">gotoPage</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="nx">gotoPage</span> <span class="o">&lt;=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">ceil</span><span class="p">(</span><span class="nx">paginationData</span><span class="p">.</span><span class="nx">total</span> <span class="o">/</span> <span class="nx">paginationData</span><span class="p">.</span><span class="nx">pageSize</span><span class="p">))</span> <span class="p">{</span>
+          <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">=</span> <span class="nx">gotoPage</span><span class="p">;</span>
+          <span class="nf">changePage</span><span class="p">();</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+
+    <span class="c1">// 监听内容变化</span>
+    <span class="kd">const</span> <span class="nx">observer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MutationObserver</span><span class="p">((</span><span class="nx">mutationsList</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">for </span><span class="p">(</span><span class="kd">let</span> <span class="nx">mutation</span> <span class="k">of</span> <span class="nx">mutationsList</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">mutation</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">childList</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nf">changeTotal</span><span class="p">();</span>
+          <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="nf">changePage</span><span class="p">();</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+    <span class="nx">observer</span><span class="p">.</span><span class="nf">observe</span><span class="p">(</span><span class="nx">contentContainer</span><span class="p">,</span> <span class="p">{</span> <span class="na">childList</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+
+    <span class="nf">startPagination</span><span class="p">();</span>
+  <span class="p">})();</span>
+<span class="nt">&lt;/script&gt;</span>
+</code></pre></div></div>
+<p>子组件接收参数的方式为：</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">const</span> <span class="nx">contentSelector</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">parentSelector</span> <span class="o">=</span> <span class="dl">''</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">contentContainer</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">contentSelector</span><span class="p">}</span><span class="s2">`</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">pagerContainer</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="s2">`</span><span class="p">${</span><span class="nx">parentSelector</span><span class="p">}</span><span class="s2"> .my-pager`</span><span class="p">);</span>
+</code></pre></div></div>
+
+<h3 id="34-实时更新分页组件">3.4 实时更新分页组件</h3>
+<p>待分页容器内的元素有时会在其他地方被改变，所以最好能够实时更新分页组件的各个分页参数，避免不必要的额外操作，方便分页组件的使用。可以采用<code class="language-plaintext highlighter-rouge">MutationObserver</code>来监听待分页容器内元素的变化，然后实时更新分页组件。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">const</span> <span class="nx">observer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MutationObserver</span><span class="p">((</span><span class="nx">mutationsList</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">for </span><span class="p">(</span><span class="kd">let</span> <span class="nx">mutation</span> <span class="k">of</span> <span class="nx">mutationsList</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">mutation</span><span class="p">.</span><span class="nx">type</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">childList</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nf">changeTotal</span><span class="p">();</span> <span class="c1">// update total</span>
+          <span class="nx">paginationData</span><span class="p">.</span><span class="nx">currentPage</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+          <span class="nf">changePage</span><span class="p">();</span> <span class="c1">// update page</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+    <span class="p">});</span>
+    <span class="nx">observer</span><span class="p">.</span><span class="nf">observe</span><span class="p">(</span><span class="nx">contentContainer</span><span class="p">,</span> <span class="p">{</span> <span class="na">childList</span><span class="p">:</span> <span class="kc">true</span> <span class="p">});</span>
+</code></pre></div></div>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/12/jekyll%E5%AE%9E%E7%8E%B0%E6%96%87%E7%AB%A0%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD.html" title="jekyll实现文章搜索功能">jekyll实现文章搜索功能</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/10/12/jekyll%E6%9E%84%E5%BB%BA%E5%8D%9A%E5%AE%A2%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98.html"
+      title="jekyll构建博客过程中遇到的一些问题">jekyll构建博客过程中遇到的一些问题</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-10-12】 jekyll自定义分页组件"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

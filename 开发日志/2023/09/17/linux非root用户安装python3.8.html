@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>linux非root用户安装python3.8 | lxmghct's blog</title>
+  <meta name="description"
+    content="1. 下载Pythonwget https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tgztar -zxvf Python-3.8.10.tgz此时尝试编译安装，一般会缺少某些依赖编译失败。./configure --prefix=$HOME/python...">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/09/17/linux%E9%9D%9Eroot%E7%94%A8%E6%88%B7%E5%AE%89%E8%A3%85python3.8.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">linux非root用户安装python3.8</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-09-17 09:40
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="开发日志">开发日志</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="python">python</a>
+          
+          <a data-tag="linux">linux</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h2 id="1-下载python">1. 下载Python</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://www.python.org/ftp/python/3.8.10/Python-3.8.10.tgz
+<span class="nb">tar</span> <span class="nt">-zxvf</span> Python-3.8.10.tgz
+</code></pre></div></div>
+<p>此时尝试编译安装，一般会缺少某些依赖编译失败。</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./configure <span class="nt">--prefix</span><span class="o">=</span><span class="nv">$HOME</span>/python3
+make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">make</code>步骤一般会报下面的错:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Failed to build these modules:
+_hashlib              _ssl                                     
+
+Could not build the ssl module!
+Python requires an OpenSSL 1.0.2 or 1.1 compatible libssl with X509_VERIFY_PARAM_set1_host().
+LibreSSL 2.6.4 and earlier do not provide the necessary APIs, https://github.com/libressl-portable/portable/issues/381
+</code></pre></div></div>
+<p>有时还会缺少<code class="language-plaintext highlighter-rouge">zlib</code>, <code class="language-plaintext highlighter-rouge">libffi</code>, <code class="language-plaintext highlighter-rouge">sqlite3</code>等。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Python build finished successfully!
+The necessary bits to build these optional modules were not found:
+_bz2                  _curses               _curses_panel      
+_dbm                  _gdbm                 _lzma              
+_sqlite3              _tkinter              _uuid              
+readline              zlib   
+</code></pre></div></div>
+<p>缺少<code class="language-plaintext highlighter-rouge">libffi</code>导致<code class="language-plaintext highlighter-rouge">_ctypes</code>模块编译失败:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fatal error: ffi.h: No such file or directory
+  107 | #include &lt;ffi.h&gt;
+      |          ^~~~~~~
+compilation terminated.
+
+Failed to build these modules:
+_ctypes 
+</code></pre></div></div>
+
+<h2 id="2-安装openssl-libffi-zlib-sqlite3等依赖库">2. 安装openssl, libffi, zlib, sqlite3等依赖库</h2>
+
+<h3 id="21-直接下载已经编译好的库">2.1. 直接下载已经编译好的库</h3>
+<p>有root权限可以直接使用包管理器安装，如<code class="language-plaintext highlighter-rouge">yum</code>, <code class="language-plaintext highlighter-rouge">apt-get</code>, <code class="language-plaintext highlighter-rouge">brew</code>等。但是在没有root权限的情况下，可以自己编译安装。也可以下载已经编译好的库，然后指定路径。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>apt-get download libbz2-dev lib-lzma-dev
+dpkg <span class="nt">-x</span> libbz2-dev_1.0.8-4_amd64.deb <span class="nv">$HOME</span>/libs/libbz2
+dpkg <span class="nt">-x</span> liblzma-dev_5.2.2-1.3_amd64.deb <span class="nv">$HOME</span>/libs/liblzma
+</code></pre></div></div>
+
+<h3 id="22-下载源码编译安装">2.2. 下载源码编译安装</h3>
+
+<p>这里以openssl, libffi, zlib, sqlite3为例。</p>
+
+<p>openssl:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://www.openssl.org/source/openssl-1.1.1d.tar.gz
+<span class="nb">tar</span> <span class="nt">-zxvf</span> openssl-1.1.1d.tar.gz
+<span class="nb">cd </span>openssl-1.1.1d
+./config <span class="nt">--prefix</span><span class="o">=</span><span class="nv">$HOME</span>/libs/openssl
+make <span class="o">&amp;&amp;</span> make <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>libffi和zlib也都类似的步骤。</p>
+
+<p>libffi前往<a href="https://github.com/libffi/libffi/releases">https://github.com/libffi/libffi/releases</a>下载</p>
+
+<p>zlib前往<a href="https://zlib.net/">https://zlib.net/</a>下载。或者其他站点下载:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://nchc.dl.sourceforge.net/project/libpng/zlib/1.2.11/zlib-1.2.11.tar.gz
+</code></pre></div></div>
+
+<p>sqlite3: 参考<a href="https://blog.csdn.net/qq_37144341/article/details/115214323">https://blog.csdn.net/qq_37144341/article/details/115214323</a></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://www.sqlite.org/2017/sqlite-autoconf-3170000.tar.gz
+tar -zxvf sqlite-autoconf-3170000.tar.gz
+cd sqlite-autoconf-3170000
+./configure --prefix=$HOME/libs/sqlite3 --disable-static --enable-fts5 --enable-json1 CFLAGS="-g -O2 -DSQLITE_ENABLE_FTS3=1 
+</code></pre></div></div>
+
+<h3 id="23-配置环境变量">2.3. 配置环境变量</h3>
+
+<p>写入环境变量, 打开<code class="language-plaintext highlighter-rouge">~/.bashrc</code>添加如下内容:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">LD_LIBRARY_PATH</span><span class="o">=</span><span class="nv">$HOME</span>/libs/libbz2/usr/lib/x86_64-linux-gnu:<span class="nv">$HOME</span>/libs/liblzma/usr/lib/x86_64-linux-gnu:<span class="nv">$LD_LIBRARY_PATH</span>
+</code></pre></div></div>
+
+<p>其他依赖库类似。</p>
+
+<p>这里需要写进<code class="language-plaintext highlighter-rouge">~/.bashrc</code>，如果仅仅只在当前shell生效，那么尽管python可以编译安装成功，并且可以正常执行。但是在下次重新进入系统或者打开新的shell时，就会在执行python代码时，比如<code class="language-plaintext highlighter-rouge">python xxx.py</code>时，会报错找不到依赖库，报错类似于:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ModuleNotFoundError: No module named '_lzma'
+</code></pre></div></div>
+
+<p>一开始我遇到时确实有点困惑，以为是有别人也在服务器上动过相关的环境。后面才意识到忘记把依赖库的路径写入环境变量。</p>
+
+<h2 id="3-编译安装python">3. 编译安装Python</h2>
+<p>先指定编译时的依赖库的路径，尽管上面配了<code class="language-plaintext highlighter-rouge">LD_LIBRARY_PATH</code>，但是编译时还是需要指定依赖库的头文件和库文件的路径。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">export </span><span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">"-L</span><span class="nv">$HOME</span><span class="s2">/libs/openssl/lib -L</span><span class="nv">$HOME</span><span class="s2">/libs/libffi/lib -L</span><span class="nv">$HOME</span><span class="s2">/libs/zlib/lib"</span>
+<span class="nb">export </span><span class="nv">CPPFLAGS</span><span class="o">=</span><span class="s2">"-I</span><span class="nv">$HOME</span><span class="s2">/libs/openssl/include -I</span><span class="nv">$HOME</span><span class="s2">/libs/libffi/include -I</span><span class="nv">$HOME</span><span class="s2">/libs/zlib/include"</span>
+</code></pre></div></div>
+
+<p>然后重新编译安装Python:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 可以输入./configure --help查看更多选项, 这里openssl可以用--with-openssl指定</span>
+./configure <span class="nt">--prefix</span><span class="o">=</span><span class="nv">$HOME</span>/python3 <span class="nt">--with-openssl</span><span class="o">=</span><span class="nv">$HOME</span>/libs/openssl
+
+<span class="c"># 也可以直接把上一步LDFLAGS和CPPFLAGS的设置放到configure的前面</span>
+<span class="c"># LDFLAGS=... CPPFLAGS=... ./configure --prefix=$HOME/python3 --with-openssl=$HOME/libs/openssl</span>
+
+<span class="c"># 也可以用pkg-config来查找依赖库的路径</span>
+<span class="c"># export PKG_CONFIG_PATH=$HOME/libs/openssl/lib/pkgconfig:$HOME/libs/libffi/lib/pkgconfig:$HOME/libs/zlib/lib/pkgconfig</span>
+<span class="c"># LDFLAGS=$(pkg-config --libs-only-L openssl) ...其他部分同上</span>
+</code></pre></div></div>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>make
+<span class="c"># 如果比较慢可以加上-j参数 make -j8</span>
+<span class="c"># 如果没有出现"Failed to build these modules: ..."之类的错误，就可以继续安装</span>
+make <span class="nb">install</span>
+</code></pre></div></div>
+
+<h2 id="4-配置环境变量">4. 配置环境变量</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'export PATH=$HOME/python3/bin:$PATH'</span> <span class="o">&gt;&gt;</span> ~/.bashrc
+<span class="nb">source</span> ~/.bashrc
+</code></pre></div></div>
+
+<h2 id="5-测试">5. 测试</h2>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 <span class="nt">--version</span>
+pip3 <span class="nt">--version</span>
+</code></pre></div></div>
+
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/12/%E4%BD%BF%E7%94%A8jekyll%E5%92%8Cgithub-pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2.html" title="使用jekyll和github pages搭建个人博客">使用jekyll和github pages搭建个人博客</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E6%B5%8B%E8%AF%95/2023/09/11/welcome-to-jekyll.html"
+      title="Welcome to Jekyll!">Welcome to Jekyll!</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-09-17】 linux非root用户安装python3.8"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

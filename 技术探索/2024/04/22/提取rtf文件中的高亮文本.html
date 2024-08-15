@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>提取rtf文件中的高亮文本 | lxmghct's blog</title>
+  <meta name="description"
+    content="1. 问题描述我最近需要处理一个 rtf 格式的命名实体识别的数据集，其中包含了一些高亮文本，不同的颜色代表不同的实体类型。我需要提取这些高亮文本，以便后续处理。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E6%8A%80%E6%9C%AF%E6%8E%A2%E7%B4%A2/2024/04/22/%E6%8F%90%E5%8F%96rtf%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E9%AB%98%E4%BA%AE%E6%96%87%E6%9C%AC.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">提取rtf文件中的高亮文本</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2024-04-22 07:30
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="技术探索">技术探索</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="python">python</a>
+          
+          <a data-tag="nodejs">nodejs</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h2 id="1-问题描述">1. 问题描述</h2>
+<p>我最近需要处理一个 rtf 格式的命名实体识别的数据集，其中包含了一些高亮文本，不同的颜色代表不同的实体类型。我需要提取这些高亮文本，以便后续处理。</p>
+
+<p>rtf 文件中的内容如图所示：
+<img src="/post_assets/images/2024/04/22-rtf-example.png" alt="rtf文件内容" /></p>
+
+<p>而 rtf 的格式比较复杂，下面是使用文本编辑器打开的 rtf 文件的内容：</p>
+
+<pre><code class="language-rtf">{\rtf1\ansi\ansicpg936\deff0\deflang1033\deflangfe2052{\fonttbl{\f0\fnil\fprq2\fcharset134 \'cb\'ce\'cc\'e5;}{\f1\fswiss\fcharset238{\*\fname Arial;}Arial CE;}}
+{\colortbl ;\red0\green0\blue0;\red255\green255\blue255;\red34\green177\blue76;\red255\green242\blue0;\red237\green28\blue36;\red214\green214\blue214;\red185\green122\blue87;\red63\green72\blue204;\red255\green174\blue201;\red163\green73\blue164;}
+\viewkind4\uc1\pard\lang2052\f0\fs30\par
+
+\'d7\'d3\'d3\'ce\'a3\'ba\cf5\highlight6\'bf\'d7\'d7\'d3\cf0\highlight0\'b5\'c4\'d6\'f8\'c3\'fb\'b5\'dc\'d7\'d3\'a3\'ac\'d0\'d5\'d1\'d4\'a3\'ac\'c3\'fb\'d9\'c8\'a3\'ac\'d7\'d6\'d7\'d3\'d3\'ce\'a3\'ac\'d2\'e0\'b3\'c6\ldblquote\'d1\'d4\'d3\'ce\rdblquote\ldblquote\'ca\'e5\'ca\'cf\rdblquote\'a3\'ac\cf4\highlight7\'b4\'ba\'c7\'ef\cf0\highlight0\'c4\'a9\cf8\highlight9\b\'ce\'e2\'b9\'fa\cf0\highlight0\b0\'c8\'cb\'a3\'ac\'d3\'eb\cf5\highlight6\'d7\'d3\'cf\'c4\cf0\highlight0\'a1\'a2\cf5\highlight6\b\'d7\'d3\'d5\'c5\cf0\highlight0\b0\'c6\'eb\'c3\'fb\'a3\'ac\ldblquote\cf3\highlight4\ul\b\'bf\'d7\'c3\'c5\'ca\'ae\'d5\'dc\cf0\highlight0\ulnone\b0\rdblquote\'d6\'ae\'d2\'bb\'a3\'ac\'d4\'f8\'ce\'aa\cf8\highlight9\b\'ce\'e4\'b3\'c7\cf2\highlight10\'d4\'d7\cf0\highlight0\b0\'a1\'a3\'d7\'c8\'ba\'f1\'a3\'ba\'d7\'cc\'c8\'f3\'d4\'f3\'b1\'bb\'a1\'a3\'d7\'c8\'a3\'ac\'cd\'a8\ldblquote\'d7\'cc\rdblquote\'a1\'a3\fs18\par
+}
+
+</code></pre>
+<p>可以看到如果直接读取 rtf 文件的内容，工作量会比较大。所以需要借助一些工具来处理 rtf 文件。</p>
+
+<h2 id="2-方法探索">2. 方法探索</h2>
+<p>一开始根据 chatgpt 的建议使用了 Python 的 Rtf15Reader 或者 PyRTF 来处理 rtf 文件，其中使用了 Rtf15Reader 的部分代码如下：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">pyth.plugins.rtf15.reader</span> <span class="kn">import</span> <span class="n">Rtf15Reader</span>
+<span class="kn">from</span> <span class="n">pyth.plugins.plaintext.writer</span> <span class="kn">import</span> <span class="n">PlaintextWriter</span>
+<span class="n">doc</span> <span class="o">=</span> <span class="n">Rtf15Reader</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">rtf_content</span><span class="p">)</span>
+<span class="n">text</span> <span class="o">=</span> <span class="n">PlaintextWriter</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">doc</span><span class="p">).</span><span class="nf">getvalue</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>但是这两个库都无法正确从我目前使用的 rtf 文件中提取高亮文本，由于我对 rtf 文件的格式也不是很了解，所以我也不知道这两个库无法正确处理的原因。</p>
+
+<h2 id="3-解决方案">3. 解决方案</h2>
+<p>由于直接处理不好处理，所以我打算把 rtf 文件转换成 html 文件，然后再从 html 文件中提取高亮文本，毕竟自己对 html 文件比较了解，更容易提取出其中的高亮文本。</p>
+
+<h3 id="31-rtf-转-html">3.1. rtf 转 html</h3>
+
+<p>转换方式是使用 Python 的 win32 模块来调用 Word 来打开 rtf 文件并保存为 html 文件。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">os</span>
+<span class="kn">import</span> <span class="n">win32com.client</span> <span class="k">as</span> <span class="n">win32</span>
+<span class="kn">import</span> <span class="n">codecs</span>
+<span class="kn">import</span> <span class="n">shutil</span>
+
+<span class="c1"># 创建一个Word应用对象
+</span><span class="n">word</span> <span class="o">=</span> <span class="n">win32</span><span class="p">.</span><span class="n">gencache</span><span class="p">.</span><span class="nc">EnsureDispatch</span><span class="p">(</span><span class="sh">'</span><span class="s">Word.Application</span><span class="sh">'</span><span class="p">)</span>
+
+<span class="c1"># 获取文件夹中的所有文件
+</span><span class="n">rtf_folder</span> <span class="o">=</span> <span class="sh">'</span><span class="s">rtf</span><span class="sh">'</span>
+<span class="n">html_folder</span> <span class="o">=</span> <span class="sh">'</span><span class="s">html</span><span class="sh">'</span>
+
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">exists</span><span class="p">(</span><span class="n">html_folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="p">.</span><span class="nf">makedirs</span><span class="p">(</span><span class="n">html_folder</span><span class="p">)</span>
+
+<span class="n">current_folder</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">dirname</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">abspath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+
+<span class="c1"># 先获取一下rtf文件夹的所有文件，防止word打开时出现文件夹中有临时文件的情况
+# 不然有可能会报错: pywintypes.com_error: (-2147352567, '发生意外。', (0, 'Microsoft Word', '很抱歉，找不到您的文件。该项目是否已移动、重命名或删除?\r (D:\\projects\\python\\...\\rtf\\~$015.rtf)', 'wdmain11.chm', 24654, -2146823114), None)
+</span><span class="n">rtf_files</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="nf">listdir</span><span class="p">(</span><span class="n">rtf_folder</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">rtf_files</span><span class="p">:</span>
+    <span class="c1"># 检查文件是否是RTF文件
+</span>    <span class="k">if</span> <span class="n">filename</span><span class="p">.</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">'</span><span class="s">.rtf</span><span class="sh">'</span><span class="p">):</span>
+        <span class="c1"># 获取文件的完整路径
+</span>        <span class="n">rtf_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">rtf_folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+        <span class="c1"># 打开RTF文件
+</span>        <span class="n">doc</span> <span class="o">=</span> <span class="n">word</span><span class="p">.</span><span class="n">Documents</span><span class="p">.</span><span class="nc">Open</span><span class="p">(</span><span class="n">rtf_path</span><span class="p">)</span>
+        <span class="c1"># 另存为HTML
+</span>        <span class="n">wdFormatHTML</span> <span class="o">=</span> <span class="mi">8</span> <span class="c1"># Word的HTML格式常数
+</span>        <span class="n">html_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">current_folder</span><span class="p">,</span> <span class="n">html_folder</span><span class="p">,</span> <span class="n">filename</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">.rtf</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">.html</span><span class="sh">'</span><span class="p">))</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">doc</span><span class="p">.</span><span class="nc">SaveAs</span><span class="p">(</span><span class="n">html_path</span><span class="p">,</span> <span class="n">FileFormat</span><span class="o">=</span><span class="n">wdFormatHTML</span><span class="p">)</span>
+            <span class="c1"># 关闭文档
+</span>            <span class="n">doc</span><span class="p">.</span><span class="nc">Close</span><span class="p">()</span>
+            <span class="c1"># 以UTF-8编码保存HTML文件
+</span>            <span class="k">with</span> <span class="n">codecs</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="n">html_path</span><span class="p">,</span> <span class="sh">'</span><span class="s">r</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">gbk</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="nb">file</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
+            <span class="k">with</span> <span class="n">codecs</span><span class="p">.</span><span class="nf">open</span><span class="p">(</span><span class="n">html_path</span><span class="p">,</span> <span class="sh">'</span><span class="s">w</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">utf-8</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="nb">file</span><span class="p">:</span>
+                <span class="nb">file</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sh">'</span><span class="s">Error File:</span><span class="sh">'</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="nf">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="c1"># 移除错误的html文件, 包括xxx.html和xxx.files目录
+</span>            <span class="n">os</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="n">html_path</span><span class="p">)</span>
+            <span class="n">shutil</span><span class="p">.</span><span class="nf">rmtree</span><span class="p">(</span><span class="n">html_path</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">'</span><span class="s">.html</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">.files</span><span class="sh">'</span><span class="p">),</span> <span class="n">ignore_errors</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+<span class="c1"># 关闭Word应用
+</span><span class="n">word</span><span class="p">.</span><span class="nc">Quit</span><span class="p">()</span>
+</code></pre></div></div>
+
+<p>上述代码中有两个需要注意的地方：</p>
+<ol>
+  <li>由于 Word 打开 rtf 文件时会生成一些临时文件，如果直接使用<code class="language-plaintext highlighter-rouge">os.listdir</code>获取文件列表，可能会读取到这些临时文件从而导致报错，所以需要先获取文件列表，然后再处理文件。</li>
+  <li>由于 Word 保存 html 文件时默认使用 gbk 编码，不方便后续处理，所以需要读取后再以 utf-8 编码保存。此时如果使用浏览器打开 html 文件，可能会出现乱码，但是不影响后续处理。</li>
+</ol>
+
+<h3 id="32-提取高亮文本">3.2. 提取高亮文本</h3>
+<p>读取上一步生成的 html 文件，解析带有<code class="language-plaintext highlighter-rouge">background</code>属性的<code class="language-plaintext highlighter-rouge">span</code>标签，提取其中的文本。html 的格式大概如下：</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"WordSection1"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;p</span> <span class="na">class=</span><span class="s">"MsoNormal"</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;span&gt;</span>other text<span class="nt">&lt;/span&gt;</span>
+        <span class="c">&lt;!-- 高亮文本在b标签内 --&gt;</span>
+        <span class="nt">&lt;b&gt;</span>
+            <span class="nt">&lt;span</span> <span class="na">style=</span><span class="s">"..."</span><span class="nt">&gt;&lt;/span&gt;</span>
+        <span class="nt">&lt;/b&gt;</span>
+    <span class="nt">&lt;/p&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+<p>在读取 html 方面，js 具有一定优势，所以采用 nodejs 来处理 html 文件。cheerio 是一个类似 jQuery 的库，可以方便地解析 html 文件。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">fs</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">fs</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">path</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">path</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">cheerio</span> <span class="o">=</span> <span class="nf">require</span><span class="p">(</span><span class="dl">"</span><span class="s2">cheerio</span><span class="dl">"</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nf">parseHtmlFile</span><span class="p">(</span><span class="nx">filePath</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">content</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nf">readFileSync</span><span class="p">(</span><span class="nx">filePath</span><span class="p">,</span> <span class="dl">"</span><span class="s2">utf-8</span><span class="dl">"</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">$</span> <span class="o">=</span> <span class="nx">cheerio</span><span class="p">.</span><span class="nf">load</span><span class="p">(</span><span class="nx">content</span><span class="p">);</span>
+
+  <span class="kd">let</span> <span class="nx">wordIndex</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">allText</span> <span class="o">=</span> <span class="dl">""</span><span class="p">;</span>
+  <span class="c1">// 高亮颜色与类型的对应关系</span>
+  <span class="kd">const</span> <span class="nx">colorMap</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">silver</span><span class="p">:</span> <span class="dl">"</span><span class="s2">人物</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">yellow</span><span class="p">:</span> <span class="dl">"</span><span class="s2">知识点</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">aqua</span><span class="p">:</span> <span class="dl">"</span><span class="s2">朝代</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">red</span><span class="p">:</span> <span class="dl">"</span><span class="s2">文献</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">lime</span><span class="p">:</span> <span class="dl">"</span><span class="s2">事件</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">gray</span><span class="p">:</span> <span class="dl">"</span><span class="s2">官职</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">fuchsia</span><span class="p">:</span> <span class="dl">"</span><span class="s2">地名</span><span class="dl">"</span><span class="p">,</span>
+  <span class="p">};</span>
+  <span class="kd">const</span> <span class="nx">resultMap</span> <span class="o">=</span> <span class="p">{};</span>
+
+  <span class="nf">$</span><span class="p">(</span><span class="dl">"</span><span class="s2">.MsoNormal</span><span class="dl">"</span><span class="p">)</span>
+    <span class="p">.</span><span class="nf">children</span><span class="p">()</span>
+    <span class="p">.</span><span class="nf">each</span><span class="p">((</span><span class="nx">i</span><span class="p">,</span> <span class="nx">elem</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="c1">// 依次遍历子元素</span>
+      <span class="kd">const</span> <span class="nx">text</span> <span class="o">=</span> <span class="nf">$</span><span class="p">(</span><span class="nx">elem</span><span class="p">).</span><span class="nf">text</span><span class="p">();</span>
+      <span class="nx">allText</span> <span class="o">+=</span> <span class="nx">text</span><span class="p">;</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">elem</span><span class="p">.</span><span class="nx">name</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">b</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 找到高亮文本</span>
+        <span class="kd">const</span> <span class="nx">span</span> <span class="o">=</span> <span class="nf">$</span><span class="p">(</span><span class="nx">elem</span><span class="p">).</span><span class="nf">find</span><span class="p">(</span><span class="dl">"</span><span class="s2">span</span><span class="dl">"</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">style</span> <span class="o">=</span> <span class="nx">span</span><span class="p">.</span><span class="nf">attr</span><span class="p">(</span><span class="dl">"</span><span class="s2">style</span><span class="dl">"</span><span class="p">);</span>
+        <span class="kd">const</span> <span class="nx">match</span> <span class="o">=</span> <span class="nx">style</span><span class="p">.</span><span class="nf">match</span><span class="p">(</span><span class="sr">/background:</span><span class="se">(</span><span class="sr">.*</span><span class="se">?)(</span><span class="sr">;|$</span><span class="se">)</span><span class="sr">/</span><span class="p">);</span> <span class="c1">// (;|$) 匹配分号或者字符串结尾</span>
+        <span class="k">if </span><span class="p">(</span><span class="nx">match</span><span class="p">)</span> <span class="p">{</span>
+          <span class="kd">let</span> <span class="nx">color</span> <span class="o">=</span> <span class="nx">match</span><span class="p">[</span><span class="mi">1</span><span class="p">];</span>
+          <span class="nx">color</span> <span class="o">=</span> <span class="nx">colorMap</span><span class="p">[</span><span class="nx">color</span><span class="p">]</span> <span class="o">||</span> <span class="nx">color</span><span class="p">;</span>
+          <span class="kd">const</span> <span class="nx">spanText</span> <span class="o">=</span> <span class="nx">span</span><span class="p">.</span><span class="nf">text</span><span class="p">();</span>
+          <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">resultMap</span><span class="p">[</span><span class="nx">color</span><span class="p">])</span> <span class="p">{</span>
+            <span class="nx">resultMap</span><span class="p">[</span><span class="nx">color</span><span class="p">]</span> <span class="o">=</span> <span class="p">[];</span>
+          <span class="p">}</span>
+          <span class="nx">resultMap</span><span class="p">[</span><span class="nx">color</span><span class="p">].</span><span class="nf">push</span><span class="p">({</span>
+            <span class="na">text</span><span class="p">:</span> <span class="nx">spanText</span><span class="p">,</span>
+            <span class="na">start</span><span class="p">:</span> <span class="nx">wordIndex</span><span class="p">,</span>
+            <span class="na">end</span><span class="p">:</span> <span class="nx">wordIndex</span> <span class="o">+</span> <span class="nx">spanText</span><span class="p">.</span><span class="nx">length</span><span class="p">,</span>
+          <span class="p">});</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="nx">wordIndex</span> <span class="o">+=</span> <span class="nx">text</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+    <span class="p">});</span>
+
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">content</span><span class="p">:</span> <span class="nx">allText</span><span class="p">,</span>
+    <span class="na">resultMap</span><span class="p">:</span> <span class="nx">resultMap</span><span class="p">,</span>
+  <span class="p">};</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nf">parseHtmlFilesInDirectory</span><span class="p">(</span><span class="nx">dirPath</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">files</span> <span class="o">=</span> <span class="nx">fs</span><span class="p">.</span><span class="nf">readdirSync</span><span class="p">(</span><span class="nx">dirPath</span><span class="p">);</span>
+  <span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="p">[];</span>
+
+  <span class="k">for </span><span class="p">(</span><span class="kd">const</span> <span class="nx">file</span> <span class="k">of</span> <span class="nx">files</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">path</span><span class="p">.</span><span class="nf">extname</span><span class="p">(</span><span class="nx">file</span><span class="p">)</span> <span class="o">===</span> <span class="dl">"</span><span class="s2">.html</span><span class="dl">"</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">filePath</span> <span class="o">=</span> <span class="nx">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="nx">dirPath</span><span class="p">,</span> <span class="nx">file</span><span class="p">);</span>
+      <span class="kd">const</span> <span class="nx">result</span> <span class="o">=</span> <span class="nf">parseHtmlFile</span><span class="p">(</span><span class="nx">filePath</span><span class="p">);</span>
+      <span class="nx">results</span><span class="p">.</span><span class="nf">push</span><span class="p">({</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">result</span> <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+
+  <span class="k">return</span> <span class="nx">results</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">dirPath</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">html</span><span class="dl">"</span><span class="p">;</span>
+<span class="kd">const</span> <span class="nx">results</span> <span class="o">=</span> <span class="nf">parseHtmlFilesInDirectory</span><span class="p">(</span><span class="nx">dirPath</span><span class="p">);</span>
+
+<span class="cm">/**
+ * 输出示例结果
+ * @param {*} results
+ */</span>
+<span class="kd">function</span> <span class="nf">getExampleOutput</span><span class="p">(</span><span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">outputDir</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">html-output</span><span class="dl">"</span><span class="p">;</span>
+  <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">fs</span><span class="p">.</span><span class="nf">existsSync</span><span class="p">(</span><span class="nx">outputDir</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nf">mkdirSync</span><span class="p">(</span><span class="nx">outputDir</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="c1">// 写入到文件, utf-8 编码格式</span>
+  <span class="c1">// fs.writeFileSync('result.json', JSON.stringify(results, null, 2), 'utf-8');</span>
+  <span class="k">for </span><span class="p">(</span><span class="kd">const</span> <span class="p">{</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">result</span> <span class="p">}</span> <span class="k">of</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nf">writeFileSync</span><span class="p">(</span>
+      <span class="nx">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="nx">outputDir</span><span class="p">,</span> <span class="nx">file</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="dl">"</span><span class="s2">.html</span><span class="dl">"</span><span class="p">,</span> <span class="dl">"</span><span class="s2">.json</span><span class="dl">"</span><span class="p">)),</span>
+      <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+      <span class="dl">"</span><span class="s2">utf-8</span><span class="dl">"</span>
+    <span class="p">);</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**
+ * 输出doccano格式结果, jsonl格式
+ * {"id": 1, "text": "text", "labels": [[0, 4, "label"]]}
+ * @param {*} results
+ */</span>
+<span class="kd">function</span> <span class="nf">getDoccanoOutput</span><span class="p">(</span><span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">doccanoOutputDir</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">doccano-output</span><span class="dl">"</span><span class="p">;</span>
+  <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">fs</span><span class="p">.</span><span class="nf">existsSync</span><span class="p">(</span><span class="nx">doccanoOutputDir</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">fs</span><span class="p">.</span><span class="nf">mkdirSync</span><span class="p">(</span><span class="nx">doccanoOutputDir</span><span class="p">);</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">jsonlData</span> <span class="o">=</span> <span class="p">[];</span>
+  <span class="k">for </span><span class="p">(</span><span class="kd">const</span> <span class="p">{</span> <span class="nx">file</span><span class="p">,</span> <span class="nx">result</span> <span class="p">}</span> <span class="k">of</span> <span class="nx">results</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">file</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="dl">"</span><span class="s2">.html</span><span class="dl">"</span><span class="p">,</span> <span class="dl">""</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="p">{</span> <span class="nx">content</span><span class="p">,</span> <span class="nx">resultMap</span> <span class="p">}</span> <span class="o">=</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="kd">const</span> <span class="nx">labels</span> <span class="o">=</span> <span class="p">[];</span>
+    <span class="k">for </span><span class="p">(</span><span class="kd">const</span> <span class="nx">key</span> <span class="k">in</span> <span class="nx">resultMap</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">items</span> <span class="o">=</span> <span class="nx">resultMap</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+      <span class="k">for </span><span class="p">(</span><span class="kd">const</span> <span class="nx">item</span> <span class="k">of</span> <span class="nx">items</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">labels</span><span class="p">.</span><span class="nf">push</span><span class="p">([</span><span class="nx">item</span><span class="p">.</span><span class="nx">start</span><span class="p">,</span> <span class="nx">item</span><span class="p">.</span><span class="nx">end</span><span class="p">,</span> <span class="nx">key</span><span class="p">]);</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">// 按照起始位置排序</span>
+    <span class="nx">labels</span><span class="p">.</span><span class="nf">sort</span><span class="p">((</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="nx">b</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
+    <span class="nx">jsonlData</span><span class="p">.</span><span class="nf">push</span><span class="p">({</span>
+      <span class="nx">id</span><span class="p">,</span>
+      <span class="na">text</span><span class="p">:</span> <span class="nx">content</span><span class="p">,</span>
+      <span class="na">label</span><span class="p">:</span> <span class="nx">labels</span><span class="p">,</span>
+      <span class="na">Comments</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+  <span class="nx">fs</span><span class="p">.</span><span class="nf">writeFileSync</span><span class="p">(</span>
+    <span class="nx">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="nx">doccanoOutputDir</span><span class="p">,</span> <span class="dl">"</span><span class="s2">data.jsonl</span><span class="dl">"</span><span class="p">),</span>
+    <span class="nx">jsonlData</span><span class="p">.</span><span class="nf">map</span><span class="p">((</span><span class="nx">item</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="nx">JSON</span><span class="p">.</span><span class="nf">stringify</span><span class="p">(</span><span class="nx">item</span><span class="p">)).</span><span class="nf">join</span><span class="p">(</span><span class="dl">"</span><span class="se">\n</span><span class="dl">"</span><span class="p">),</span>
+    <span class="dl">"</span><span class="s2">utf-8</span><span class="dl">"</span>
+  <span class="p">);</span>
+<span class="p">}</span>
+
+<span class="c1">// getExampleOutput(results);</span>
+<span class="nf">getDoccanoOutput</span><span class="p">(</span><span class="nx">results</span><span class="p">);</span>
+</code></pre></div></div>
+
+<p>检测背景色采用了正则表达式，匹配<code class="language-plaintext highlighter-rouge">background</code>属性的值，然后根据颜色值来判断高亮文本的类型。上面的<code class="language-plaintext highlighter-rouge">colorMap</code>是颜色值与类型的对应关系，是通过事先输出所有的颜色和对应的文本，从而分析出来的。</p>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2024/05/24/redis%E5%AD%98%E5%82%A8ip%E6%AE%B5%E9%97%AE%E9%A2%98.html" title="redis存储ip段问题">redis存储ip段问题</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2024/04/21/spring-gateway%E7%BB%9F%E4%B8%80%E9%85%8D%E7%BD%AE%E8%BF%87%E6%BB%A4%E5%99%A8.html"
+      title="spring gateway统一配置过滤器">spring gateway统一配置过滤器</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2024-04-22】 提取rtf文件中的高亮文本"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

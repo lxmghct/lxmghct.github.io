@@ -1,0 +1,91 @@
+/**
+ * _includes/footer.html
+ */
+
+.site-footer {
+    background: rgb(54, 54, 54);
+    margin-top: 20px;
+    padding: 1.3em 0;
+    width: 100%;
+}
+
+.site-footer a:hover {
+    color: #bafcff;
+    text-decoration: underline;
+}
+
+.footer-col-wrapper {
+    color: #ccc;
+    display: flex;
+    max-width: 800px;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.sitedesc {
+    color: #ccc;
+}
+
+.sitedesc a {
+    color: rgb(151, 241, 255);
+}
+
+.sitedesc a:visted {
+    color: rgb(151, 241, 255);
+}
+
+.footer-col {
+    margin-bottom: 1em;
+    padding-left: 1em;
+}
+
+.contact-list,
+.social-media-list {
+    list-style: none;
+    margin-left: 0;
+}
+
+.contact-list a {
+    color: rgb(123, 237, 255);
+}
+
+.social-media-list a {
+    display: inline-block;
+    vertical-align: middle;
+    zoom: 1;
+    margin: 0.3em 0.5em;
+    opacity: 0.8;
+    width: 2em;
+    height: 2em;
+    border-radius: 50%;
+    -webkit-transition: all 0.28s ease;
+    transition: all 0.28s ease;
+}
+
+.social-media-list a:visited {
+    opacity: 0.8;
+}
+
+.social-media-list a:hover {
+    opacity: 1;
+}
+
+.social-media-list a.github {
+    background: url(/assets/images/social/github.png) center no-repeat #27a5ff;
+    border: 1px solid #c6befe;
+}
+
+.social-media-list a.rss {
+    background: url(/assets/images/social/rss.png) center no-repeat #ef7522;
+    border: 1px solid #ef7522;
+}
+
+.social-media-list a:visited {
+    color: #000;
+}
+
+.social-media-list a:hover {
+    color: #000;
+}
+
+/* end _includes/footer.html */

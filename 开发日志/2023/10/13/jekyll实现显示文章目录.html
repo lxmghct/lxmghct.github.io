@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>jekyll实现显示文章目录 | lxmghct's blog</title>
+  <meta name="description"
+    content="1. 实现思路首先先要判断当前页面是否是文章，然后获取文章的各级标题并生成目录，并添加点击跳转到相应标题的功能。完整代码在https://github.com/lxmghct/lxmghct.github.io/blob/master/_includes/table_of_contents.html">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/13/jekyll%E5%AE%9E%E7%8E%B0%E6%98%BE%E7%A4%BA%E6%96%87%E7%AB%A0%E7%9B%AE%E5%BD%95.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">jekyll实现显示文章目录</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-10-13 00:30
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="开发日志">开发日志</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="jekyll">jekyll</a>
+          
+          <a data-tag="前端">前端</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h2 id="1-实现思路">1. 实现思路</h2>
+<p>首先先要判断当前页面是否是文章，然后获取文章的各级标题并生成目录，并添加点击跳转到相应标题的功能。完整代码在<a href="https://github.com/lxmghct/lxmghct.github.io/blob/master/_includes/table_of_contents.html">https://github.com/lxmghct/lxmghct.github.io/blob/master/_includes/table_of_contents.html</a></p>
+
+<h2 id="2-实现过程">2. 实现过程</h2>
+<h3 id="21-获取标题并生成目录">2.1 获取标题并生成目录</h3>
+<p>先获取所有的标题<code class="language-plaintext highlighter-rouge">h1</code>-<code class="language-plaintext highlighter-rouge">h6</code>，然后遍历生成目录。生成目录时考虑到有些文章并不是从<code class="language-plaintext highlighter-rouge">h1</code>开始的，有可能<code class="language-plaintext highlighter-rouge">h2</code>或者<code class="language-plaintext highlighter-rouge">h3</code>才是第一级小标题，所以要先获取所有的标题，然后才能判断目录的层级。</p>
+
+<p>为了方便后面的点击跳转，需要给每个标题添加一个<code class="language-plaintext highlighter-rouge">id</code>，如果标题没有<code class="language-plaintext highlighter-rouge">id</code>，则根据标题内容生成一个<code class="language-plaintext highlighter-rouge">id</code>。这样直接把<code class="language-plaintext highlighter-rouge">#id</code>添加到链接的<code class="language-plaintext highlighter-rouge">href</code>属性上就可以实现点击跳转。</p>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 获取文章内容的标题</span>
+<span class="kd">const</span> <span class="nx">headings</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelectorAll</span><span class="p">(</span><span class="dl">"</span><span class="s2">.post-content h1, post-content h2, .post-content h3, .post-content h4, .post-contenth5, .post-content h6</span><span class="dl">"</span><span class="p">);</span>
+<span class="k">if </span><span class="p">(</span><span class="nx">headings</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">.toc-container</span><span class="dl">"</span><span class="p">).</span><span class="nx">classList</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">hidden</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="dl">"</span><span class="s2">.toc-container</span><span class="dl">"</span><span class="p">).</span><span class="nx">classList</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="dl">"</span><span class="s2">hidden</span><span class="dl">"</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="c1">// 目录容器</span>
+<span class="kd">const</span> <span class="nx">tocList</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">getElementById</span><span class="p">(</span><span class="dl">"</span><span class="s2">toc-list</span><span class="dl">"</span><span class="p">);</span>
+<span class="kd">const</span> <span class="nx">tempTocData</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="c1">// 遍历标题，生成目录</span>
+<span class="nx">headings</span><span class="p">.</span><span class="nf">forEach</span><span class="p">((</span><span class="nx">heading</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">level</span> <span class="o">=</span> <span class="nf">parseInt</span><span class="p">(</span><span class="nx">heading</span><span class="p">.</span><span class="nx">tagName</span><span class="p">.</span><span class="nf">charAt</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="mi">10</span><span class="p">);</span> <span class="c1">// 获取标题级别</span>
+    <span class="kd">const</span> <span class="nx">listItem</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">li</span><span class="dl">"</span><span class="p">);</span>
+    <span class="kd">const</span> <span class="nx">link</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">a</span><span class="dl">"</span><span class="p">);</span>
+    <span class="nx">link</span><span class="p">.</span><span class="nx">textContent</span> <span class="o">=</span> <span class="nx">heading</span><span class="p">.</span><span class="nx">textContent</span><span class="p">;</span>
+    <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">heading</span><span class="p">.</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">heading</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">heading</span><span class="p">.</span><span class="nx">textContent</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\s</span><span class="sr">+/g</span><span class="p">,</span> <span class="dl">"</span><span class="s2">-</span><span class="dl">"</span><span class="p">).</span><span class="nf">toLowerCase</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="nx">link</span><span class="p">.</span><span class="nx">href</span> <span class="o">=</span> <span class="s2">`#</span><span class="p">${</span><span class="nx">heading</span><span class="p">.</span><span class="nx">id</span><span class="p">}</span><span class="s2">`</span><span class="p">;</span>
+    <span class="nx">listItem</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">link</span><span class="p">);</span>
+    <span class="nx">tocList</span><span class="p">.</span><span class="nf">appendChild</span><span class="p">(</span><span class="nx">listItem</span><span class="p">);</span>
+    <span class="nx">tempTocData</span><span class="p">.</span><span class="nf">push</span><span class="p">({</span>
+        <span class="na">level</span><span class="p">:</span> <span class="nx">level</span><span class="p">,</span>
+        <span class="na">dom</span><span class="p">:</span> <span class="nx">listItem</span>
+    <span class="p">})</span>
+<span class="p">});</span>
+</code></pre></div></div>
+
+<h3 id="22-调整目录格式">2.2 调整目录格式</h3>
+<p>根据上一步获取的目录层级，设置左边距，使目录结构看起来更加清晰。</p>
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">minLevel</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">min</span><span class="p">(...</span><span class="nx">tempTocData</span><span class="p">.</span><span class="nf">map</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="nx">item</span><span class="p">.</span><span class="nx">level</span><span class="p">))</span>
+<span class="nx">tempTocData</span><span class="p">.</span><span class="nf">forEach</span><span class="p">(</span><span class="nx">item</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">diff</span> <span class="o">=</span> <span class="nx">item</span><span class="p">.</span><span class="nx">level</span> <span class="o">-</span> <span class="nx">minLevel</span>
+    <span class="nx">item</span><span class="p">.</span><span class="nx">dom</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">marginLeft</span> <span class="o">=</span> <span class="nx">diff</span> <span class="o">*</span> <span class="mi">20</span> <span class="o">+</span> <span class="dl">"</span><span class="s2">px</span><span class="dl">"</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">diff</span> <span class="o">===</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">item</span><span class="p">.</span><span class="nx">dom</span><span class="p">.</span><span class="nx">classList</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="dl">"</span><span class="s2">root-toc</span><span class="dl">"</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+</code></pre></div></div>
+
+<h3 id="23-判断文章页并使用目录">2.3 判断文章页并使用目录</h3>
+<p>将该目录组件封装成了<code class="language-plaintext highlighter-rouge">table_of_content.html</code>组件，然后在文章页引入该组件。判断当前页面是否是文章的方式是判断<code class="language-plaintext highlighter-rouge">page.id</code>或<code class="language-plaintext highlighter-rouge">page.date</code>是否存在。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{% if page.id or page.date %}
+    {% include table_of_content.html %}
+{% endif %}
+</code></pre></div></div>
+
+<h2 id="3-样式调整">3. 样式调整</h2>
+<h3 id="31-平滑滚动">3.1 平滑滚动</h3>
+<p>点击目录跳转到相应标题时，添加平滑滚动效果。</p>
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">html</span><span class="o">,</span> <span class="nt">body</span> <span class="p">{</span>
+    <span class="py">scroll-behavior</span><span class="p">:</span> <span class="n">smooth</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<h3 id="32-目录定位方式">3.2 目录定位方式</h3>
+<p>我想把目录固定放在页面最左侧，不随滚动条滚动，本来想设置<code class="language-plaintext highlighter-rouge">position: fixed</code>，但是由于我页面的整体布局是有一个<code class="language-plaintext highlighter-rouge">header</code>导航栏，而且导航栏已经设置成了会随滚动条滚动，并非一直固定在页面顶部。所以如果此时目录是<code class="language-plaintext highlighter-rouge">fixed</code>定位，会出现目录和导航栏重叠的情况，而且整体观感也不好。所以我选择了<code class="language-plaintext highlighter-rouge">sticky</code>定位，目的是当导航栏滚动出屏幕前，目录也会随着滚动，当导航栏滚动到屏幕外时，目录会固定在页面最上方。这样既不会和导航栏重叠，浏览起来也比较舒服。</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"toc-container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"toc-header"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h3&gt;</span>目录导航<span class="nt">&lt;/h3&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;ul</span> <span class="na">id=</span><span class="s">"toc-list"</span><span class="nt">&gt;&lt;/ul&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+</code></pre></div></div>
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.toc-container</span> <span class="p">{</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="n">sticky</span><span class="p">;</span>
+    <span class="nl">position</span><span class="p">:</span> <span class="n">-webkit-sticky</span><span class="p">;</span> <span class="c">/* 兼容 Safari */</span>
+    <span class="nl">top</span><span class="p">:</span> <span class="m">30px</span><span class="p">;</span>
+    <span class="nl">padding-top</span><span class="p">:</span> <span class="m">10px</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nf">#toc-list</span> <span class="p">{</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">70vh</span><span class="p">;</span>
+    <span class="nl">overflow-y</span><span class="p">:</span> <span class="nb">auto</span><span class="p">;</span>
+    <span class="nl">list-style</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+    <span class="nl">margin</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+    <span class="nl">padding</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h2 id="4-效果展示">4. 效果展示</h2>
+<p><img src="/post_assets/images/2023/10/13-table-of-content.gif" alt="效果展示" /></p>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/14/%E5%AF%BC%E8%88%AA%E6%A0%8F%E6%89%8B%E6%9C%BA%E7%AB%AF%E8%87%AA%E9%80%82%E5%BA%94.html" title="导航栏手机端自适应">导航栏手机端自适应</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/12/jekyll%E5%AE%9E%E7%8E%B0%E6%96%87%E7%AB%A0%E6%90%9C%E7%B4%A2%E5%8A%9F%E8%83%BD.html"
+      title="jekyll实现文章搜索功能">jekyll实现文章搜索功能</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-10-13】 jekyll实现显示文章目录"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

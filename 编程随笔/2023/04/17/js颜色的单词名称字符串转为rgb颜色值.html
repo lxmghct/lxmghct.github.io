@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>js颜色的单词名称字符串转为rgb颜色值 | lxmghct's blog</title>
+  <meta name="description"
+    content="本文首次发布于博客园：https://www.cnblogs.com/lxm-cnblog/p/17328033.html现在转移到 github pages 上。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/04/17/js%E9%A2%9C%E8%89%B2%E7%9A%84%E5%8D%95%E8%AF%8D%E5%90%8D%E7%A7%B0%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BD%AC%E4%B8%BArgb%E9%A2%9C%E8%89%B2%E5%80%BC.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">js颜色的单词名称字符串转为rgb颜色值</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-04-17 15:50
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="编程随笔">编程随笔</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="前端">前端</a>
+          
+          <a data-tag="js">js</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p>本文首次发布于博客园：<a href="https://www.cnblogs.com/lxm-cnblog/p/17328033.html">https://www.cnblogs.com/lxm-cnblog/p/17328033.html</a>
+现在转移到 github pages 上。</p>
+
+<h1 id="js颜色的单词名称字符串转为rgb颜色值">js颜色的单词名称字符串转为rgb颜色值</h1>
+<p>将js单词名称如red,green,blue转为rgb颜色值, 暂时没找到什么特别的方法。网上找到了颜色名称与rgb值的对应表，然后构造成map获取rgb值。
+代码放在: <a href="https://github.com/lxmghct/my-vue-components">https://github.com/lxmghct/my-vue-components</a>的 src/utils/color_convert.js 下。</p>
+
+<p>完整代码如下：</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">name2rgbMap</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="dl">'</span><span class="s1">aliceblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(240,248,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">antiquewhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(250,235,215)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">aqua</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,255,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">auqamarin</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(127,255,170)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">azure</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(240,255,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">beige</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(107,142,35)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">bisque</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,228,196)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">black</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,0,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">blanchedalmond</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,235,205)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">blue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,0,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">blueviolet</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(138,43,226)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">brown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(165,42,42)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">brulywood</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(222,184,135)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cadetblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(95,158,160)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">chartreuse</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(127,255,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">chocolate</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(210,105,30)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">coral</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,127,80)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cornflowerblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(100,149,237)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cornislk</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,248,220)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">crimson</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(220,20,60)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cyan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,255,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,0,139)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkcyan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,139,139)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkgray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(169,169,169)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,100,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkkhaki</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(189,183,107)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkmagenta</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(139,0,139)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkorange</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,140,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkorchid</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(153,50,204)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(139,0,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darksalmon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(233,150,122)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkseagreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(143,188,143)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkslateblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(72,61,139)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkslategray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(47,79,79)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkturquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,206,209)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkvoilet</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(148,0,211)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">deeppink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,20,147)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">deepskyblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,191,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">dimgray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(105,105,105)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">doderblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(30,144,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">firebrick</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(178,34,34)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">floralwhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,250,240)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">forestgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(34,139,34)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">fuchsia</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,0,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">gainsboro</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(220,220,220)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">ghostwhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(248,248,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">gold</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,215,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">goldenrod</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(218,165,32)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">gray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(128,128,128)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">green</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,128,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">greenyellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(173,255,47)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">honeydew</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(240,255,240)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">hotpink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,105,180)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">indianred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(205,92,92)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">indigo</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(75,0,130)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">ivory</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,255,240)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">khaki</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(240,230,140)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lavender</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(230,230,250)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lavenderblush</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,240,245)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lawngreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(124,252,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lemonchiffon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,250,205)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(173,216,230)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightcoral</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(240,128,128)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightcyan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(225,255,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightgoldenrodyellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(250,250,210)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(144,238,144)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightgrey</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(211,211,211)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightpink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,182,193)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightsalmon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,160,122)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightseagreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(32,178,170)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightskyblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(135,206,250)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightslategray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(119,136,153)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightsteelblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(176,196,222)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightyellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,255,224)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lime</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,255,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">limegreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(50,205,50)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">linen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(250,240,230)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">magenta</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,0,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">maroon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(128,0,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumaquamarine</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,250,154)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,0,205)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumorchid</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(186,85,211)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumpurple</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(147,112,219)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumslateblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(123,104,238)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumspringgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(245,255,250)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumturquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(72,209,204)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumvioletred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(199,21,133)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">midnightblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(25,25,112)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mintcream</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,255,127)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mistyrose</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,228,225)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">moccasin</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,228,181)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">navajowhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,222,173)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">navy</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,0,128)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">oldlace</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(253,245,230)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">olive</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(128,128,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">olivedrab</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(85,107,47)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">orange</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,165,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">orangered</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,69,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">orchid</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(218,112,214)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">palegodenrod</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(238,232,170)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">palegreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(152,251,152)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">paleturquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(175,238,238)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">palevioletred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(219,112,147)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">papayawhip</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,239,213)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">peachpuff</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,218,185)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">peru</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(205,133,63)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">pink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,192,203)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">plum</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(221,160,221)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">powderblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(176,224,230)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">purple</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(128,0,128)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">red</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,0,0)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">rosybrown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(188,143,143)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">royalblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(65,105,225)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">saddlebrown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(139,69,19)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">salmon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(250,128,114)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">sandybrown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(244,164,96)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">seagreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(46,139,87)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">seashell</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,245,238)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">sienna</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(160,82,45)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">silver</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(192,192,192)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">skyblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(135,206,235)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">slateblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(106,90,205)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">slategray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(112,128,144)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">snow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,250,250)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">springgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(60,179,113)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">steelblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(70,130,180)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">tan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(210,180,140)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">teal</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(0,128,128)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">thistle</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(216,191,216)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">tomato</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,99,71)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">turquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(64,224,208)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">violet</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(238,130,238)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">wheat</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(245,222,179)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">white</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,255,255)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">whitesmoke</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(245,245,245)</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">yellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">rgb(255,255,0)</span><span class="dl">'</span>
+<span class="p">}</span>
+<span class="kd">const</span> <span class="nx">name2hexrgbMap</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="dl">'</span><span class="s1">aliceblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f0f8ff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">antiquewhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#faebd7</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">aqua</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00ffff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">auqamarin</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#7fffaa</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">azure</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f0ffff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">beige</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#6b8e23</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">bisque</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffe4c4</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">black</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#000000</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">blanchedalmond</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffebcd</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">blue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#0000ff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">blueviolet</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#8a2be2</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">brown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#a52a2a</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">brulywood</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#deb887</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cadetblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#5f9ea0</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">chartreuse</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#7fff00</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">chocolate</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#d2691e</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">coral</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff7f50</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cornflowerblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#6495ed</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cornislk</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fff8dc</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">crimson</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#dc143c</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">cyan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00ffff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00008b</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkcyan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#008b8b</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkgray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#a9a9a9</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#006400</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkkhaki</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#bdb76b</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkmagenta</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#8b008b</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkorange</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff8c00</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkorchid</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#9932cc</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#8b0000</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darksalmon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#e9967a</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkseagreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#8fbc8f</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkslateblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#483d8b</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkslategray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#2f4f4f</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkturquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00ced1</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">darkvoilet</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#9400d3</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">deeppink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff1493</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">deepskyblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00bfff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">dimgray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#696969</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">doderblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#1e90ff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">firebrick</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#b22222</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">floralwhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fffaf0</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">forestgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#228b22</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">fuchsia</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff00ff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">gainsboro</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#dcdcdc</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">ghostwhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f8f8ff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">gold</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffd700</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">goldenrod</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#daa520</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">gray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#808080</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">green</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#008000</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">greenyellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#adff2f</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">honeydew</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f0fff0</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">hotpink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff69b4</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">indianred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#cd5c5c</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">indigo</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#4b0082</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">ivory</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fffff0</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">khaki</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f0e68c</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lavender</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#e6e6fa</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lavenderblush</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fff0f5</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lawngreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#7cfc00</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lemonchiffon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fffacd</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#add8e6</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightcoral</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f08080</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightcyan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#e1ffff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightgoldenrodyellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fafad2</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#90ee90</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightgrey</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#d3d3d3</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightpink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffb6c1</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightsalmon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffa07a</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightseagreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#20b2aa</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightskyblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#87cefa</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightslategray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#778899</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightsteelblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#b0c4de</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lightyellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffffe0</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">lime</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00ff00</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">limegreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#32cd32</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">linen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#faf0e6</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">magenta</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff00ff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">maroon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#800000</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumaquamarine</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00fa9a</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#0000cd</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumorchid</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ba55d3</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumpurple</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#9370db</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumslateblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#7b68ee</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumspringgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f5fffa</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumturquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#48d1cc</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mediumvioletred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#c71585</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">midnightblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#191970</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mintcream</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#00ff7f</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">mistyrose</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffe4e1</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">moccasin</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffe4b5</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">navajowhite</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffdead</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">navy</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#000080</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">oldlace</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fdf5e6</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">olive</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#808000</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">olivedrab</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#556b2f</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">orange</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffa500</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">orangered</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff4500</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">orchid</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#da70d6</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">palegodenrod</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#eee8aa</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">palegreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#98fb98</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">paleturquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#afeeee</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">palevioletred</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#db7093</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">papayawhip</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffefd5</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">peachpuff</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffdab9</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">peru</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#cd853f</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">pink</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffc0cb</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">plum</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#dda0dd</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">powderblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#b0e0e6</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">purple</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#800080</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">red</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff0000</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">rosybrown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#bc8f8f</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">royalblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#4169e1</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">saddlebrown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#8b4513</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">salmon</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fa8072</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">sandybrown</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f4a460</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">seagreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#2e8b57</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">seashell</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fff5ee</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">sienna</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#a0522d</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">silver</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#c0c0c0</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">skyblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#87ceeb</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">slateblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#6a5acd</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">slategray</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#708090</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">snow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#fffafa</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">springgreen</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#3cb371</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">steelblue</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#4682b4</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">tan</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#d2b48c</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">teal</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#008080</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">thistle</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#d8bfd8</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">tomato</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ff6347</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">turquoise</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#40e0d0</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">violet</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ee82ee</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">wheat</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f5deb3</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">white</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffffff</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">whitesmoke</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#f5f5f5</span><span class="dl">'</span><span class="p">,</span>
+  <span class="dl">'</span><span class="s1">yellow</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">#ffff00</span><span class="dl">'</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">rgbReg</span> <span class="o">=</span> <span class="sr">/</span><span class="se">\s</span><span class="sr">*rgb</span><span class="se">\(\s</span><span class="sr">*</span><span class="se">(\d</span><span class="sr">+</span><span class="se">)\s</span><span class="sr">*,</span><span class="se">\s</span><span class="sr">*</span><span class="se">(\d</span><span class="sr">+</span><span class="se">)\s</span><span class="sr">*,</span><span class="se">\s</span><span class="sr">*</span><span class="se">(\d</span><span class="sr">+</span><span class="se">)\s</span><span class="sr">*</span><span class="se">\)\s</span><span class="sr">*/</span>
+<span class="kd">const</span> <span class="nx">rgbaReg</span> <span class="o">=</span> <span class="sr">/</span><span class="se">\s</span><span class="sr">*rgba</span><span class="se">\(\s</span><span class="sr">*</span><span class="se">(\d</span><span class="sr">+</span><span class="se">)\s</span><span class="sr">*,</span><span class="se">\s</span><span class="sr">*</span><span class="se">(\d</span><span class="sr">+</span><span class="se">)\s</span><span class="sr">*,</span><span class="se">\s</span><span class="sr">*</span><span class="se">(\d</span><span class="sr">+</span><span class="se">)\s</span><span class="sr">*,</span><span class="se">\s</span><span class="sr">*</span><span class="se">(\d</span><span class="sr">+</span><span class="se">)\s</span><span class="sr">*</span><span class="se">\)\s</span><span class="sr">*/</span>
+<span class="kd">const</span> <span class="nx">hexReg</span> <span class="o">=</span> <span class="sr">/</span><span class="se">\s</span><span class="sr">*#</span><span class="se">([</span><span class="sr">0-9a-fA-F</span><span class="se">]{3}</span><span class="sr">|</span><span class="se">[</span><span class="sr">0-9a-fA-F</span><span class="se">]{6})\s</span><span class="sr">*/</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nf">getRgbColor</span><span class="p">(</span><span class="nx">colorString</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">rgbReg</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span><span class="nx">colorString</span><span class="p">)</span> <span class="o">||</span> <span class="nx">rgbaReg</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span><span class="nx">colorString</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">colorString</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\s</span><span class="sr">*/g</span><span class="p">,</span> <span class="dl">''</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">hexReg</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span><span class="nx">colorString</span><span class="p">))</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">hex</span> <span class="o">=</span> <span class="nx">colorString</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\s</span><span class="sr">*/g</span><span class="p">,</span> <span class="dl">''</span><span class="p">)</span>
+    <span class="k">if </span><span class="p">(</span><span class="nx">hex</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">hex</span> <span class="o">=</span> <span class="nx">hex</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/#</span><span class="se">([</span><span class="sr">0-9a-fA-F</span><span class="se">])([</span><span class="sr">0-9a-fA-F</span><span class="se">])([</span><span class="sr">0-9a-fA-F</span><span class="se">])</span><span class="sr">/g</span><span class="p">,</span> <span class="dl">'</span><span class="s1">#$1$1$2$2$3$3</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="nx">hex</span> <span class="o">=</span> <span class="nx">hex</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="dl">'</span><span class="s1">#</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">0x</span><span class="dl">'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="s2">`rgb(</span><span class="p">${[(</span><span class="nx">hex</span> <span class="o">&amp;</span> <span class="mh">0xff0000</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">16</span><span class="p">,</span> <span class="p">(</span><span class="nx">hex</span> <span class="o">&amp;</span> <span class="mh">0xff00</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">,</span> <span class="nx">hex</span> <span class="o">&amp;</span> <span class="mh">0xff</span><span class="p">].</span><span class="nf">join</span><span class="p">(</span><span class="dl">'</span><span class="s1">,</span><span class="dl">'</span><span class="p">)}</span><span class="s2">)`</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">color</span> <span class="o">=</span> <span class="nx">name2rgbMap</span><span class="p">[</span><span class="nx">colorString</span><span class="p">.</span><span class="nf">toLowerCase</span><span class="p">()]</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">color</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">color</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="kc">null</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nf">getHexColor</span><span class="p">(</span><span class="nx">colorString</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">hexReg</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span><span class="nx">colorString</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">colorString</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\s</span><span class="sr">*/g</span><span class="p">,</span> <span class="dl">''</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">rgbReg</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span><span class="nx">colorString</span><span class="p">)</span> <span class="o">||</span> <span class="nx">rgbaReg</span><span class="p">.</span><span class="nf">test</span><span class="p">(</span><span class="nx">colorString</span><span class="p">))</span> <span class="p">{</span>
+    <span class="nx">colorString</span> <span class="o">=</span> <span class="nx">colorString</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">\s</span><span class="sr">*/g</span><span class="p">,</span> <span class="dl">''</span><span class="p">)</span>
+    <span class="kd">let</span> <span class="nx">color</span> <span class="o">=</span> <span class="nx">colorString</span><span class="p">.</span><span class="nf">match</span><span class="p">(</span><span class="nx">rgbReg</span><span class="p">)</span> <span class="o">||</span> <span class="nx">colorString</span><span class="p">.</span><span class="nf">match</span><span class="p">(</span><span class="nx">rgbaReg</span><span class="p">)</span>
+    <span class="c1">// color[0] is the whole string, [1, 2, 3] is the rgb</span>
+    <span class="kd">let</span> <span class="nx">r</span> <span class="o">=</span> <span class="nf">parseInt</span><span class="p">(</span><span class="nx">color</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+    <span class="kd">let</span> <span class="nx">g</span> <span class="o">=</span> <span class="nf">parseInt</span><span class="p">(</span><span class="nx">color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+    <span class="kd">let</span> <span class="nx">b</span> <span class="o">=</span> <span class="nf">parseInt</span><span class="p">(</span><span class="nx">color</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span> <span class="o">&amp;</span> <span class="mh">0xff</span>
+    <span class="kd">const</span> <span class="nx">format</span> <span class="o">=</span> <span class="p">(</span><span class="nx">num</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">str</span> <span class="o">=</span> <span class="nx">num</span><span class="p">.</span><span class="nf">toString</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+      <span class="k">return</span> <span class="nx">str</span><span class="p">.</span><span class="nx">length</span> <span class="o">===</span> <span class="mi">1</span> <span class="p">?</span> <span class="s2">`0</span><span class="p">${</span><span class="nx">str</span><span class="p">}</span><span class="s2">`</span> <span class="p">:</span> <span class="nx">str</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="s2">`#</span><span class="p">${[</span><span class="nx">r</span><span class="p">,</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">b</span><span class="p">].</span><span class="nf">map</span><span class="p">(</span><span class="nx">format</span><span class="p">).</span><span class="nf">join</span><span class="p">(</span><span class="dl">''</span><span class="p">)}</span><span class="s2">`</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">color</span> <span class="o">=</span> <span class="nx">name2hexrgbMap</span><span class="p">[</span><span class="nx">colorString</span><span class="p">.</span><span class="nf">toLowerCase</span><span class="p">()]</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">color</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nf">getHexColor</span><span class="p">(</span><span class="nx">color</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="kc">null</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="nx">getRgbColor</span><span class="p">,</span>
+  <span class="nx">getHexColor</span>
+<span class="p">}</span>
+
+</code></pre></div></div>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/04/21/%E8%A7%A3%E5%86%B3http%E4%B8%8Bnavigator.clipboard%E4%B8%BAundefined%E7%9A%84%E9%97%AE%E9%A2%98.html" title="解决http下navigator.clipboard为undefined的问题">解决http下navigator.clipboard为undefined的问题</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E6%8A%80%E6%9C%AF%E6%8E%A2%E7%B4%A2/2023/04/15/vue%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AF%86%E7%A0%81%E8%BE%93%E5%85%A5%E6%A1%86%E8%A7%A3%E5%86%B3%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%A1%AB%E5%85%85%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98.html"
+      title="vue自定义密码输入框解决浏览器自动填充密码的问题">vue自定义密码输入框解决浏览器自动填充密码的问题</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-04-17】 js颜色的单词名称字符串转为rgb颜色值"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

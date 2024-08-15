@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>使用jekyll和github pages搭建个人博客 | lxmghct's blog</title>
+  <meta name="description"
+    content="Jekyll 是一个静态网站生成器，它可以将文本文档（如 Markdown 或 Textile）和 HTML 文件通过一些处理生成一个有机整体的 HTML 语言的网站。Jekyll 的核心是一个文本转换引擎，它支持多种文本标记语言，例如 Markdown 和 HTML，并通过 Liquid 渲染器转化成一个完整的...">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/10/12/%E4%BD%BF%E7%94%A8jekyll%E5%92%8Cgithub-pages%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">使用jekyll和github pages搭建个人博客</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-10-12 06:00
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="开发日志">开发日志</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="jekyll">jekyll</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p><strong>Jekyll</strong> 是一个静态网站生成器，它可以将文本文档（如 Markdown 或 Textile）和 HTML 文件通过一些处理生成一个有机整体的 HTML 语言的网站。Jekyll 的核心是一个文本转换引擎，它支持多种文本标记语言，例如 Markdown 和 HTML，并通过 Liquid 渲染器转化成一个完整的可发布的静态网站。</p>
+
+<p><strong>GitHub Pages</strong> 是一个由 GitHub 提供的静态网站托管服务，它允许用户在 GitHub 上托管自己的静态网站，并提供了一些域名配置和自定义选项。用户可以通过 GitHub Pages 托管个人博客、项目文档等静态网站内容。</p>
+
+<p>下面我将介绍一下自己搭建博客的过程。</p>
+
+<h2 id="1-创建github-pages仓库">1. 创建GitHub Pages仓库</h2>
+<p>首先，在GitHub上创建一个仓库，用于存放博客内容。在仓库名为<code class="language-plaintext highlighter-rouge">username.github.io</code>，其中<code class="language-plaintext highlighter-rouge">username</code>是GitHub用户名。比如我的是<code class="language-plaintext highlighter-rouge">lxmghct.github.io</code>。注意仓库的访问权限要设置为<code class="language-plaintext highlighter-rouge">Public</code>。在该仓库的settings中，可以修改github pages的一些配置，如主题、分支、域名等。</p>
+
+<p><img src="/post_assets/images/2023/10/12-github-page-setting.png" alt="github-page-setting" /></p>
+
+<h2 id="2-安装环境">2. 安装环境</h2>
+<p>本地搭建Jekyll环境，可以在本地预览博客效果，也可以在本地编辑博客内容。</p>
+<h3 id="21-安装ruby">2.1 安装Ruby</h3>
+<p>Ruby官网下载地址：<a href="https://rubyinstaller.org/downloads/">https://rubyinstaller.org/downloads/</a></p>
+
+<p><img src="/post_assets/images/2023/10/12-ruby-install.png" alt="Ruby Install" style="zoom: 75%;" /></p>
+
+<p>安装完成后，可以在命令行中输入<code class="language-plaintext highlighter-rouge">ruby -v</code>查看版本。</p>
+
+<h3 id="22-安装rubygems">2.2 安装rubygems</h3>
+<p>RubyGems 是 Ruby 的一个包管理器，它提供了一个标准的格式来打包 Ruby 程序和库，还提供了一个管理这些包的工具。RubyGems 是一个用于分发 Ruby 程序和库的标准格式，它可以自动下载、安装、管理 Ruby 程序和库。
+RubyGems 官网下载地址：<a href="https://rubygems.org/pages/download">https://rubygems.org/pages/download</a></p>
+
+<p>下载后解压后，进入解压目录，执行命令：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>D:<span class="se">\r</span>ubygems-3.4.19<span class="se">\</span>
+ruby setup.rb
+gem <span class="nt">-v</span> <span class="c"># 查看版本</span>
+</code></pre></div></div>
+
+<h3 id="23-安装jekyll">2.3 安装Jekyll</h3>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gem <span class="nb">install </span>jekyll
+jekyll <span class="nt">-v</span> <span class="c"># 查看版本</span>
+</code></pre></div></div>
+
+<h2 id="3-创建并运行博客">3. 创建并运行博客</h2>
+
+<h3 id="31-创建博客">3.1 创建博客</h3>
+<p>可以使用Jekyll提供的命令创建博客：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jekyll new myblog
+</code></pre></div></div>
+
+<p>也可以fork一个现成的博客模板，然后clone到本地。</p>
+
+<p>jekyll的目录结构如下：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">_config.yml</span><span class="pi">:</span> <span class="s">存储配置数据，例如网站主题，名称，介绍，域名，Github用户名等。</span>
+<span class="na">_drafts</span><span class="pi">:</span> <span class="s">存放未发布的文章，这些文件的格式中都没有日期，例如 title.MARKUP。</span>
+<span class="na">_includes</span><span class="pi">:</span> <span class="s">可以加载这些包含部分到你的布局或者文章中以方便重用。例如，可以用这个标签 {% include file.ext %} 来把文件 _includes/file.ext 包含进来。</span>
+<span class="na">_layouts</span><span class="pi">:</span> <span class="s">这是包裹在文章外部的模板。布局可以在 YAML 头信息中根据不同文章进行选择。例如，标签 {{ content }} 可以将 content 插入页面中。</span>
+<span class="na">_posts: 这里放的就是你的文章了。文件格式很重要，必须要符合</span><span class="pi">:</span> <span class="s">YEAR-MONTH-DAY-title.MARKUP。</span>
+<span class="na">_site</span><span class="pi">:</span> <span class="s">一旦 Jekyll 完成转换，就会将生成的页面放在这里（默认）。</span>
+</code></pre></div></div>
+
+<h3 id="32-运行博客">3.2 运行博客</h3>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>myblog
+jekyll server
+</code></pre></div></div>
+<p>然后在浏览器中输入<code class="language-plaintext highlighter-rouge">http://localhost:4000</code>，就可以看到博客的效果了。如果需要修改端口可以在<code class="language-plaintext highlighter-rouge">_config.yml</code>中修改<code class="language-plaintext highlighter-rouge">port</code>字段。</p>
+
+<ol>
+  <li>每次修改代码后，无需重启服务，刷新浏览器即可看到效果。如果修改了<code class="language-plaintext highlighter-rouge">_config.yml</code>文件，需要重启服务。</li>
+  <li>如果在博客代码块中出现liquid语法，可以在前后加上<code class="language-plaintext highlighter-rouge">{% raw %}</code>和<code class="language-plaintext highlighter-rouge">{% endraw %}</code>，使其不被解析。如果想要显示<code class="language-plaintext highlighter-rouge">{% raw %}</code>，可以使用如下代码:</li>
+</ol>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{% assign openTag = '{%' %}
+{{ openTag }} raw %}
+...
+{{ openTag }} endraw %}
+</code></pre></div></div>
+
+<h2 id="4-发布博客">4. 发布博客</h2>
+<p>将博客内容提交到GitHub仓库中，每次提交代码都会触发GitHub Pages的构建，大约1-2分钟后，就可以在<code class="language-plaintext highlighter-rouge">https://username.github.io</code>上看到博客的效果了。</p>
+
+<h2 id="5-其他说明">5. 其他说明</h2>
+<ol>
+  <li>Github Pages 并不是无限存储和无限流量的静态站点服务，一些限制如下：
+    <ul>
+      <li>仓库大小限制为1GB</li>
+      <li>每月流量限制为100GB</li>
+      <li>每小时构建限制为10次
+<br />更多信息可以参考github官网说明<a href="https://link.zhihu.com/?target=https%3A//help.github.com/articles/what-is-github-pages/%23usage-limits">usage-limits</a>。</li>
+    </ul>
+  </li>
+  <li>如果需要使用自定义域名，可以在仓库的settings中进行配置。或者在根目录下创建一个名为<code class="language-plaintext highlighter-rouge">CNAME</code>的文件，文件内容为自定义域名。</li>
+</ol>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/10/12/jekyll%E6%9E%84%E5%BB%BA%E5%8D%9A%E5%AE%A2%E8%BF%87%E7%A8%8B%E4%B8%AD%E9%81%87%E5%88%B0%E7%9A%84%E4%B8%80%E4%BA%9B%E9%97%AE%E9%A2%98.html" title="jekyll构建博客过程中遇到的一些问题">jekyll构建博客过程中遇到的一些问题</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2023/09/17/linux%E9%9D%9Eroot%E7%94%A8%E6%88%B7%E5%AE%89%E8%A3%85python3.8.html"
+      title="linux非root用户安装python3.8">linux非root用户安装python3.8</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-10-12】 使用jekyll和github pages搭建个人博客"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

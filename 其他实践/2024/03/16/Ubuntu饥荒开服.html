@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Ubuntu饥荒开服 | lxmghct's blog</title>
+  <meta name="description"
+    content="记录一下自己使用Ubuntu 22.04开饥荒联机版服务器的过程。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2024/03/16/Ubuntu%E9%A5%A5%E8%8D%92%E5%BC%80%E6%9C%8D.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Ubuntu饥荒开服</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2024-03-16 11:30
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="其他实践">其他实践</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="ubuntu">ubuntu</a>
+          
+          <a data-tag="饥荒">饥荒</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p>记录一下自己使用Ubuntu 22.04开饥荒联机版服务器的过程。</p>
+
+<h2 id="1-下载steamcmd">1. 下载steamcmd</h2>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz
+<span class="nb">tar</span> <span class="nt">-xvzf</span> steamcmd_linux.tar.gz
+</code></pre></div></div>
+
+<h2 id="2-安装依赖">2. 安装依赖</h2>
+<p>如果直接运行<code class="language-plaintext highlighter-rouge">./steamcmd.sh</code>一般会报下面的错：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./steamcmd.sh: line 37: /root/games/steamcmd/linux32/steamcmd: No such file or directory
+</code></pre></div></div>
+<p>我使用的是Ubuntu 22.04, 安装依赖如下：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>add-apt-repository multiverse
+<span class="nb">sudo </span>dpkg <span class="nt">--add-architecture</span> i386
+<span class="nb">sudo </span>apt update
+<span class="nb">sudo </span>apt <span class="nb">install </span>libstdc++6 libgcc1 libcurl4-gnutls-dev:i386 lib32z1
+</code></pre></div></div>
+
+<h2 id="3-运行">3. 运行</h2>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./steamcmd.sh
+</code></pre></div></div>
+<p>如果运行成功，会自动开始下载更新，下载完成后会出现<code class="language-plaintext highlighter-rouge">Steam&gt;</code>提示符。
+<img src="/post_assets/images/2024/03/16-steamcmd-run.png" alt="image1" />
+接着输入下面的命令：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>force_install_dir ../dontstarvetogether
+login anonymous
+app_update 343050 validate
+quit
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">app_update 343050 validate</code>表示安装饥荒联机版，343050是饥荒联机版的appid。
+注意先用<code class="language-plaintext highlighter-rouge">force_install_dir</code>指定安装目录，然后<code class="language-plaintext highlighter-rouge">login anonymous</code>登录，不然会出现警告：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Steam&gt;force_install_dir ../dontstarvetogether
+Please use force_install_dir before logon!
+</code></pre></div></div>
+<p>如果后面需要更新饥荒服务端，重新执行这几个命令即可。</p>
+
+<h2 id="4-创建世界">4. 创建世界</h2>
+<p>进入饥荒联机版创建一个世界，然后退出游戏，会在<code class="language-plaintext highlighter-rouge">C:/Users/{用户名}/Documents/Klei/DoNotStarveTogether/{id}/</code>目录下生成一个<code class="language-plaintext highlighter-rouge">cluster_1</code>文件夹，将这个文件夹拷贝到服务器上的<code class="language-plaintext highlighter-rouge">~/.klei/DoNotStarveTogether/</code>目录下。可以使用任意文件传输工具，我使用的是vscode的remote ssh插件，直接拖拽文件即可。也可以用scp命令：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>scp <span class="nt">-r</span> cluster_1 root@<span class="o">{</span>服务器ip<span class="o">}</span>:~/.klei/DoNotStarveTogether/
+</code></pre></div></div>
+
+<h2 id="5-获取服务器令牌和klie账号id">5. 获取服务器令牌和klie账号id</h2>
+<p>从饥荒联机版游戏首页左下角的账号进入到klei的账号界面，然后进入饥荒游戏服务器页面，或者直接访问<a href="https://accounts.klei.com/account/game/servers?game=DontStarveTogether">https://accounts.klei.com/account/game/servers?game=DontStarveTogether</a>
+<img src="/post_assets/images/2024/03/16-klei-server-list.png" alt="服务器" /></p>
+
+<p>创建服务器，然后复制服务器票据。
+<img src="/post_assets/images/2024/03/16-klei-server-token.png" alt="服务器票据" /></p>
+
+<h2 id="6-修改配置文件">6. 修改配置文件</h2>
+<p>进入服务器的<code class="language-plaintext highlighter-rouge">~/.klei/DoNotStarveTogether/cluster_1</code>目录。
+<img src="/post_assets/images/2024/03/16-cluster-dir.png" alt="存档目录结构" /></p>
+<ol>
+  <li>在该目录下创建一个<code class="language-plaintext highlighter-rouge">cluster_token.txt</code>文件，内容为上一步获取的服务器票据。</li>
+  <li>在该目录下创建一个<code class="language-plaintext highlighter-rouge">adminlist.txt</code>文件，内容为你的klei账号id。如果需要添加多个管理员，其他人的klei账号id也同样方式获取，然后一行一个id写入<code class="language-plaintext highlighter-rouge">adminlist.txt</code>文件。
+获取方式为：从饥荒联机版游戏首页左下角的账号进入到klei的账号界面，或者直接访问<a href="https://accounts.klei.com/account/info">https://accounts.klei.com/account/info</a>获取服务器令牌。
+<img src="/post_assets/images/2024/03/16-klei-user-info.png" alt="个人账号" /></li>
+  <li>修改<code class="language-plaintext highlighter-rouge">cluster.ini</code>文件，修改<code class="language-plaintext highlighter-rouge">cluster_name</code>(服务器名称)、<code class="language-plaintext highlighter-rouge">cluster_password</code>(服务器密码)、<code class="language-plaintext highlighter-rouge">max_players</code>(最大玩家数)等参数。
+```ini
+[GAMEPLAY]
+game_mode = survival
+max_players = 6
+pvp = false
+pause_when_empty = true</li>
+</ol>
+
+<p>[NETWORK]
+lan_only_cluster = false
+cluster_password = my_password
+cluster_description = 
+cluster_name = 饥荒服务器名称
+offline_cluster = false
+cluster_language = zh
+cluster_cloud_id = CCF1ED350800900F</p>
+
+<p>[MISC]
+console_enabled = true</p>
+
+<p>[SHARD]
+shard_enabled = true
+bind_ip = 127.0.0.1
+master_ip = 127.0.0.1
+master_port = 10888
+cluster_key = defaultPass</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+## 7. 创建启动脚本
+可以直接获取官网的启动脚本：
+```shell
+wget https://accounts.klei.com/assets/gamesetup/linux/run_dedicated_servers.sh
+</code></pre></div></div>
+<p>内容如下:</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/bash</span>
+
+<span class="nv">steamcmd_dir</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/steamcmd"</span>
+<span class="nv">install_dir</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/dontstarvetogether_dedicated_server"</span>
+<span class="nv">cluster_name</span><span class="o">=</span><span class="s2">"MyDediServer"</span>
+<span class="nv">dontstarve_dir</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/.klei/DoNotStarveTogether"</span>
+
+<span class="k">function </span>fail<span class="o">()</span>
+<span class="o">{</span>
+	<span class="nb">echo </span>Error: <span class="s2">"</span><span class="nv">$@</span><span class="s2">"</span> <span class="o">&gt;</span>&amp;2
+	<span class="nb">exit </span>1
+<span class="o">}</span>
+
+<span class="k">function </span>check_for_file<span class="o">()</span>
+<span class="o">{</span>
+	<span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-e</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+		</span>fail <span class="s2">"Missing file: </span><span class="nv">$1</span><span class="s2">"</span>
+	<span class="k">fi</span>
+<span class="o">}</span>
+
+<span class="nb">cd</span> <span class="s2">"</span><span class="nv">$steamcmd_dir</span><span class="s2">"</span> <span class="o">||</span> fail <span class="s2">"Missing </span><span class="nv">$steamcmd_dir</span><span class="s2"> directory!"</span>
+
+check_for_file <span class="s2">"steamcmd.sh"</span>
+check_for_file <span class="s2">"</span><span class="nv">$dontstarve_dir</span><span class="s2">/</span><span class="nv">$cluster_name</span><span class="s2">/cluster.ini"</span>
+check_for_file <span class="s2">"</span><span class="nv">$dontstarve_dir</span><span class="s2">/</span><span class="nv">$cluster_name</span><span class="s2">/cluster_token.txt"</span>
+check_for_file <span class="s2">"</span><span class="nv">$dontstarve_dir</span><span class="s2">/</span><span class="nv">$cluster_name</span><span class="s2">/Master/server.ini"</span>
+check_for_file <span class="s2">"</span><span class="nv">$dontstarve_dir</span><span class="s2">/</span><span class="nv">$cluster_name</span><span class="s2">/Caves/server.ini"</span>
+
+./steamcmd.sh +force_install_dir <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">"</span> +login anonymous +app_update 343050 validate +quit
+
+check_for_file <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/bin64"</span>
+
+<span class="nb">cd</span> <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/bin64"</span> <span class="o">||</span> fail
+
+<span class="nv">run_shared</span><span class="o">=(</span>./dontstarve_dedicated_server_nullrenderer_x64<span class="o">)</span>
+run_shared+<span class="o">=(</span><span class="nt">-console</span><span class="o">)</span>
+run_shared+<span class="o">=(</span><span class="nt">-cluster</span> <span class="s2">"</span><span class="nv">$cluster_name</span><span class="s2">"</span><span class="o">)</span>
+run_shared+<span class="o">=(</span><span class="nt">-monitor_parent_process</span> <span class="nv">$$</span><span class="o">)</span>
+
+<span class="s2">"</span><span class="k">${</span><span class="nv">run_shared</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-shard</span> Caves  | <span class="nb">sed</span> <span class="s1">'s/^/Caves:  /'</span> &amp;
+<span class="s2">"</span><span class="k">${</span><span class="nv">run_shared</span><span class="p">[@]</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-shard</span> Master | <span class="nb">sed</span> <span class="s1">'s/^/Master: /'</span>
+
+</code></pre></div></div>
+<p>修改前面四个变量值为自己设置的目录，比如我的是：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># steamcmd安装目录</span>
+<span class="nv">steamcmd_dir</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/games/steamcmd"</span>
+<span class="c"># 饥荒服务器安装目录</span>
+<span class="nv">install_dir</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/games/dontstarvetogether"</span>
+<span class="c"># 存档目录名称</span>
+<span class="nv">cluster_name</span><span class="o">=</span><span class="s2">"Cluster_1"</span>
+<span class="c"># 存档位置</span>
+<span class="nv">dontstarve_dir</span><span class="o">=</span><span class="s2">"</span><span class="nv">$HOME</span><span class="s2">/.klei/DoNotStarveTogether"</span>
+</code></pre></div></div>
+<p>然后给脚本添加执行权限：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">chmod</span> +x run_dedicated_servers.sh
+</code></pre></div></div>
+
+<p><strong>注意</strong>，官方给的脚本每次启动时都会检查更新，如果不想检查更新，可以把执行<code class="language-plaintext highlighter-rouge">./steamcmd.sh</code>的那一行注释掉，然后手动更新一次即可。注意更新的时候如果加了模组，那么模组设置文件<code class="language-plaintext highlighter-rouge">dedicated_server_mods_setup.lua</code>会被覆盖。所以我对这部分稍微修改了一下：</p>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检查更新</span>
+<span class="k">if</span> <span class="o">[</span> <span class="nv">$# </span><span class="nt">-ge</span> 1 <span class="o">]</span> <span class="o">&amp;&amp;</span> <span class="o">[</span> <span class="s2">"</span><span class="nv">$1</span><span class="s2">"</span> <span class="nt">-eq</span> 1 <span class="o">]</span><span class="p">;</span> <span class="k">then</span>
+    <span class="c"># 备份dedicated_server_mods_setup.lua文件</span>
+    <span class="k">if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/mods/dedicated_server_mods_setup.lua"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">cp</span> <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/mods/dedicated_server_mods_setup.lua"</span> <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/mods/dedicated_server_mods_setup.lua.bak"</span>
+    <span class="k">fi</span>
+    
+    <span class="c"># 执行steamcmd.sh</span>
+    ./steamcmd.sh +force_install_dir <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">"</span> +login anonymous +app_update 343050 validate +quit
+    
+    <span class="c"># 恢复备份的dedicated_server_mods_setup.lua文件</span>
+    <span class="k">if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/mods/dedicated_server_mods_setup.lua.bak"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+        </span><span class="nb">mv</span> <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/mods/dedicated_server_mods_setup.lua.bak"</span> <span class="s2">"</span><span class="nv">$install_dir</span><span class="s2">/mods/dedicated_server_mods_setup.lua"</span>
+    <span class="k">fi
+fi</span>
+</code></pre></div></div>
+<p>可以在执行脚本时加上参数<code class="language-plaintext highlighter-rouge">1</code>，表示检查更新，不加参数表示不检查更新。更新时候会先备份<code class="language-plaintext highlighter-rouge">dedicated_server_mods_setup.lua</code>文件，然后更新完成后再恢复备份的文件。</p>
+
+<h2 id="8-添加模组">8. 添加模组</h2>
+<p>找到自己存档的<code class="language-plaintext highlighter-rouge">modoverrides.lua</code>文件，比如我的是<code class="language-plaintext highlighter-rouge">~/.klei/DoNotStarveTogether/cluster_1/</code>目录下的<code class="language-plaintext highlighter-rouge">Master</code>和<code class="language-plaintext highlighter-rouge">Caves</code>目录下的<code class="language-plaintext highlighter-rouge">modoverrides.lua</code>文件，如果创建世界的时候添加了模组，里面会有模组的配置信息，比如我这里添加了两个模组：</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">return</span> <span class="p">{</span>
+  <span class="p">[</span><span class="s2">"workshop-1998081438"</span><span class="p">]</span><span class="o">=</span><span class="p">{</span> <span class="n">configuration_options</span><span class="o">=</span><span class="p">{</span> <span class="n">StackMode</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span> <span class="n">StackRadius</span><span class="o">=</span><span class="mi">10</span> <span class="p">},</span> <span class="n">enabled</span><span class="o">=</span><span class="kc">true</span> <span class="p">},</span>
+  <span class="p">[</span><span class="s2">"workshop-378160973"</span><span class="p">]</span><span class="o">=</span><span class="p">{</span>
+    <span class="n">configuration_options</span><span class="o">=</span><span class="p">{</span>
+      <span class="n">ENABLEPINGS</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+      <span class="n">FIREOPTIONS</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+      <span class="n">OVERRIDEMODE</span><span class="o">=</span><span class="kc">false</span><span class="p">,</span>
+      <span class="n">SHAREMINIMAPPROGRESS</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+      <span class="n">SHOWFIREICONS</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+      <span class="n">SHOWPLAYERICONS</span><span class="o">=</span><span class="kc">true</span><span class="p">,</span>
+      <span class="n">SHOWPLAYERSOPTIONS</span><span class="o">=</span><span class="mi">2</span> 
+    <span class="p">},</span>
+    <span class="n">enabled</span><span class="o">=</span><span class="kc">true</span> 
+  <span class="p">}</span> 
+<span class="p">}</span>
+</code></pre></div></div>
+<p>这里面的<code class="language-plaintext highlighter-rouge">1998081438</code>和<code class="language-plaintext highlighter-rouge">378160973</code>是模组的id，也可以在<a href="https://steamcommunity.com/app/322330/workshop/">https://steamcommunity.com/app/322330/workshop/</a>搜索模组，然后在url中找到模组的id。</p>
+
+<p>然后进入到饥荒服务器安装目录<code class="language-plaintext highlighter-rouge">~/games/dontstarvetogether/mods</code>目录，修改<code class="language-plaintext highlighter-rouge">dedicated_server_mods_setup.lua</code>文件，添加模组id：</p>
+<div class="language-lua highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">ServerModSetup</span><span class="p">(</span><span class="s2">"1998081438"</span><span class="p">)</span>
+<span class="n">ServerModSetup</span><span class="p">(</span><span class="s2">"378160973"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p><strong>注意</strong>, 如果加了模组，那么<code class="language-plaintext highlighter-rouge">Master</code>和<code class="language-plaintext highlighter-rouge">Caves</code>目录下的<code class="language-plaintext highlighter-rouge">modoverrides.lua</code>文件中的模组配置都要配置好，不然在切换世界的时候会直接卡死。</p>
+
+<h2 id="9-启动服务器">9. 启动服务器</h2>
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./run_dedicated_servers.sh
+</code></pre></div></div>
+<p>一般来说需要给服务器开放以下端口：</p>
+<ol>
+  <li>udp 10999 主世界, 在<code class="language-plaintext highlighter-rouge">Master/server.ini</code>文件中设置</li>
+  <li>udp 10998 洞穴, 在<code class="language-plaintext highlighter-rouge">Caves/server.ini</code>文件中设置</li>
+  <li>udp+tcp 10888 洞穴连接主世界, 在<code class="language-plaintext highlighter-rouge">cluster.ini</code>文件中设置</li>
+</ol>
+
+<p>经过我自己测试，只开放<code class="language-plaintext highlighter-rouge">10999</code>和<code class="language-plaintext highlighter-rouge">10998</code>两个端口似乎也可以正常运行。</p>
+
+<p>服务器的命令可以在(https://dontstarve.huijiwiki.com/wiki/%E6%8E%A7%E5%88%B6%E5%8F%B0)[https://dontstarve.huijiwiki.com/wiki/%E6%8E%A7%E5%88%B6%E5%8F%B0]找到。</p>
+
+<p>常用命令：</p>
+<ol>
+  <li><code class="language-plaintext highlighter-rouge">c_shutdown(是否保存)</code> 关闭服务器, <code class="language-plaintext highlighter-rouge">true</code>表示保存存档。</li>
+  <li><code class="language-plaintext highlighter-rouge">c_save()</code> 保存进度。</li>
+  <li><code class="language-plaintext highlighter-rouge">c_rollback(天数)</code> 回滚存档。</li>
+  <li><code class="language-plaintext highlighter-rouge">c_reset()</code> 相当于<code class="language-plaintext highlighter-rouge">c_rollabck(0)</code>，回滚到30秒前保存的存档。</li>
+  <li><code class="language-plaintext highlighter-rouge">c_regenerateshard()</code> 重新生成本世界</li>
+  <li><code class="language-plaintext highlighter-rouge">c_regenerateworld()</code> 重新生成服务器的所有世界</li>
+  <li><code class="language-plaintext highlighter-rouge">c_skip(天数)</code> 跳过天数</li>
+</ol>
+
+<h2 id="10-连接服务器">10. 连接服务器</h2>
+<p>可以直接在服务器列表中搜索到自己的服务器，名称就是上面在<code class="language-plaintext highlighter-rouge">cluster.ini</code>文件中设置的<code class="language-plaintext highlighter-rouge">cluster_name</code>。
+如果想直接通过ip连接，可以用下面几种方式(端口号是主世界的端口号):</p>
+<ol>
+  <li>在游戏中按<code class="language-plaintext highlighter-rouge">~</code>键打开控制台，然后输入<code class="language-plaintext highlighter-rouge">c_connect("xx.xx.xx.xx", 10999, "000")</code>，其中<code class="language-plaintext highlighter-rouge">xx.xx.xx.xx</code>是服务器ip，<code class="language-plaintext highlighter-rouge">10999</code>是主世界端口，<code class="language-plaintext highlighter-rouge">000</code>是服务器密码。</li>
+  <li>也可以在steam启动时添加启动参数+connect xx.xx.xx.xx:10999 +password “000”</li>
+  <li>找到电脑上饥荒的启动路径，比如我的是<code class="language-plaintext highlighter-rouge">E:\games\Steam\steamapps\common\Don't Starve Together\bin64\dontstarve_steam_x64.exe</code>，然后把这个exe创建快捷方式，然后右键属性，在目标后面添加<code class="language-plaintext highlighter-rouge"> +connect 47.120.61.78:10999 +password "000"</code>，然后双击这个快捷方式就可以直接连接到服务器了。这种方法记得要先启动steam。</li>
+</ol>
+
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2024/03/21/spring%E7%A6%81%E7%94%A8security.html" title="spring禁用security">spring禁用security</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2024/03/15/%E4%BD%BF%E7%94%A8RestTemplate%E8%BD%AC%E5%8F%91%E8%AF%B7%E6%B1%82.html"
+      title="使用RestTemplate转发请求">使用RestTemplate转发请求</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2024-03-16】 Ubuntu饥荒开服"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>vue自定义密码输入框解决浏览器自动填充密码的问题 | lxmghct's blog</title>
+  <meta name="description"
+    content="本文首次发布于博客园：https://www.cnblogs.com/lxm-cnblog/p/17320432.html现在转移到 github pages 上。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E6%8A%80%E6%9C%AF%E6%8E%A2%E7%B4%A2/2023/04/15/vue%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AF%86%E7%A0%81%E8%BE%93%E5%85%A5%E6%A1%86%E8%A7%A3%E5%86%B3%E6%B5%8F%E8%A7%88%E5%99%A8%E8%87%AA%E5%8A%A8%E5%A1%AB%E5%85%85%E5%AF%86%E7%A0%81%E7%9A%84%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">vue自定义密码输入框解决浏览器自动填充密码的问题</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-04-15 08:51
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="技术探索">技术探索</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="前端">前端</a>
+          
+          <a data-tag="vue">vue</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p>本文首次发布于博客园：<a href="https://www.cnblogs.com/lxm-cnblog/p/17320432.html">https://www.cnblogs.com/lxm-cnblog/p/17320432.html</a>
+现在转移到 github pages 上。</p>
+
+<h2 id="问题描述">问题描述</h2>
+<p>浏览器对于<code class="language-plaintext highlighter-rouge">type="password"</code>的输入框会自动填充密码，但有时出于安全或者其他原因，我们不希望浏览器记住并自动填充密码。通过网上查到的一些解决方案，可以总结出以下几种解决方案(主要用edge浏览器进行测试)：</p>
+<ol>
+  <li>通过<code class="language-plaintext highlighter-rouge">autocomplete="off"</code>/<code class="language-plaintext highlighter-rouge">autocomplete="new-password"</code>来关闭浏览器自动填充密码的功能, 但某些对于浏览器像edge,firfox等，这种方法并不起作用</li>
+  <li>通过<code class="language-plaintext highlighter-rouge">type="text"</code>来解决，当focus时，通过js将<code class="language-plaintext highlighter-rouge">type="text"</code>改为<code class="language-plaintext highlighter-rouge">type="password"</code>。
+    <div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">onfocus=</span><span class="s">"this.type='password'"</span><span class="nt">&gt;</span>
+</code></pre></div>    </div>
+    <p>但同样对某些浏览器不起作用，如edge，在点击输入框时，仍会自动弹出填充密码的提示框。</p>
+  </li>
+  <li>某些浏览器可能只会识别第一个<code class="language-plaintext highlighter-rouge">type="password"</code>的输入框，所以可以在前面添加一些隐藏的<code class="language-plaintext highlighter-rouge">type="password"</code>的输入框，来解决这个问题。
+```html</li>
+</ol>
+<form style="display:none">
+  <input type="password" />
+</form>
+<p><input type="password" style="display:none" />
+<input type="password" /></p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>但同样并不是总是有效，拿edge测试时即使前几个密码输入框没有隐藏，最后一个输入框也会自动填充密码,如图:
+![](/post_assets/images/2023/04/15-password-auto-complete.png)
+
+4. 通过`readonly`属性来解决，初始化时将`readonly`设置为`true`，通过`setTimeout`来延时设置`readonly`为`false`。
+```html
+&lt;input id="passwordInput" type="password" readonly&gt;
+</code></pre></div></div>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">passwordInput</span><span class="dl">'</span><span class="p">).</span><span class="nf">removeAttribute</span><span class="p">(</span><span class="dl">'</span><span class="s1">readonly</span><span class="dl">'</span><span class="p">)</span>
+<span class="p">},</span> <span class="mi">100</span><span class="p">)</span>
+</code></pre></div></div>
+<p>但同样并非总是有效，拿edge测试时，虽然点击输入框时并没有弹出填充密码的提示框，但是在输入框中输入密码然后退格到输入框为空时，又会重新弹出填充密码的提示框。</p>
+
+<p>上述几种方法除了会弹出填充密码的提示框外，在页面跳转或刷新时(如edge浏览器)，都会弹出保存密码的提示框，如图:
+<img src="/post_assets/images/2023/04/15-password-complete-window-show.png" alt="" /></p>
+
+<p>当然，应该还会有其他解决方案我暂时还没找到，如果有的话，欢迎留言。</p>
+
+<h2 id="自定义密码输入框组件解决方案">自定义密码输入框组件解决方案</h2>
+<p>在尝试了上述几种解决方案后，发现效果都不是很好，所以我感觉只有让<code class="language-plaintext highlighter-rouge">input</code>的<code class="language-plaintext highlighter-rouge">type</code>属性始终为<code class="language-plaintext highlighter-rouge">password</code>，才能更有效的解决这个问题。可以考虑自定义一个密码输入框组件，通过某些方法去改变<code class="language-plaintext highlighter-rouge">input</code>的值的显示方式，来达到隐藏密码的效果。
+目前想出了两种方法：一个是不改变<code class="language-plaintext highlighter-rouge">input</code>的值，仅仅隐藏<code class="language-plaintext highlighter-rouge">input</code>的内容，用另一个容器去显示密码或者显示<code class="language-plaintext highlighter-rouge">*</code>；另一个是将实际密码存在另一个变量中，将<code class="language-plaintext highlighter-rouge">input</code>的<code class="language-plaintext highlighter-rouge">value</code>值改成<code class="language-plaintext highlighter-rouge">*</code>来显示。</p>
+
+<h3 id="方案一">方案一</h3>
+<p>可以用两个<code class="language-plaintext highlighter-rouge">input</code>来实现，父容器是<code class="language-plaintext highlighter-rouge">relative</code>定位，两个<code class="language-plaintext highlighter-rouge">input</code>都是<code class="language-plaintext highlighter-rouge">absolute</code>，一个实际的输入框位于上层，设置为透明，另一个用于显示星号的输入框位于下层。</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">v-model=</span><span class="s">"passwordDisplay"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;input</span>
+    <span class="na">v-model=</span><span class="s">"password"</span>
+    <span class="na">class=</span><span class="s">"password"</span>
+    <span class="err">@</span><span class="na">input=</span><span class="s">"passwordDisplay = password.replace(/./g, '*')"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+
+<span class="nt">&lt;style </span><span class="na">scoped</span><span class="nt">&gt;</span>
+<span class="nc">.container</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.container</span> <span class="nt">input</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+  <span class="nl">left</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">12px</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.password</span> <span class="p">{</span>
+  <span class="nl">opacity</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+<p>效果如下图所示：</p>
+
+<p><img src="/post_assets/images/2023/04/15-password-input-1.gif" alt="" /></p>
+
+<p>确实没有弹出密码填充的对话框，但样式上并不是很满意。因为实际的输入框被设置成了透明，且在密码显示框之上，所以光标无法显示出来，且无法进行选中一部分内容。</p>
+
+<h3 id="方案二">方案二</h3>
+<p>跟方案一差不多的方式，用<code class="language-plaintext highlighter-rouge">input</code>来接收用户输入的密码，但仅改变输入内容的透明度, 由于在<code class="language-plaintext highlighter-rouge">opacity</code>为0的情况下设置光标颜色无效，所以要将方案一中的<code class="language-plaintext highlighter-rouge">opacity: 0</code>改为:</p>
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nc">.password</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nb">transparent</span><span class="p">;</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nb">transparent</span><span class="p">;</span>
+  <span class="py">caret-color</span><span class="p">:</span> <span class="m">#000</span><span class="p">;</span> <span class="c">/* 光标颜色 */</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>但是这会有个问题，选中一部分内容时，会导致透明的内容选中后显现出来，如图所示：
+<img src="/post_assets/images/2023/04/15-password-input-2.gif" alt="" /></p>
+
+<p>这种情况下可以考虑监听选中事件，当选中一部分内容时，将后面的星号也选中，同时通过<code class="language-plaintext highlighter-rouge">::selection</code>伪类来设置选中的内容的背景色，让两个选中的内容颜色一致。要实现这种效果，<code class="language-plaintext highlighter-rouge">input</code>显然做不到修改部分内容的背景色，所以可以考虑用<code class="language-plaintext highlighter-rouge">span</code>代替<code class="language-plaintext highlighter-rouge">input</code>，向其<code class="language-plaintext highlighter-rouge">innerHTML</code>中插入带背景色的<code class="language-plaintext highlighter-rouge">span</code>：</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;span</span>
+    <span class="na">ref=</span><span class="s">"passwordInputDisplay"</span>
+    <span class="na">class=</span><span class="s">"password password-input__behind"</span>
+  <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span>
+    <span class="na">v-model=</span><span class="s">"password"</span>
+    <span class="na">class=</span><span class="s">"password password-input__front"</span>
+    <span class="err">@</span><span class="na">focus=</span><span class="s">"isActive = true"</span>
+    <span class="err">@</span><span class="na">blur=</span><span class="s">"isActive = false"</span>
+    <span class="err">@</span><span class="na">input=</span><span class="s">"passwordDisplay = password.replace(/./g, '*')"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;style </span><span class="na">scoped</span><span class="nt">&gt;</span>
+<span class="nd">::selection</span> <span class="p">{</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="m">#409eff</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.container</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">relative</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.password</span> <span class="p">{</span>
+  <span class="nl">position</span><span class="p">:</span> <span class="nb">absolute</span><span class="p">;</span>
+  <span class="nl">left</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">top</span><span class="p">:</span> <span class="m">0</span><span class="p">;</span>
+  <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+  <span class="nl">height</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
+  <span class="nl">font-size</span><span class="p">:</span> <span class="m">12px</span><span class="p">;</span>
+  <span class="nl">font-family</span><span class="p">:</span> <span class="nb">monospace</span><span class="p">;</span> <span class="c">/* 必须用等宽字体 */</span>
+<span class="p">}</span>
+<span class="nc">.password-input__behind</span> <span class="p">{</span>
+  <span class="nl">text-align</span><span class="p">:</span> <span class="nb">left</span><span class="p">;</span>
+  <span class="nl">z-index</span><span class="p">:</span> <span class="m">1</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.password-input__front</span> <span class="p">{</span>
+  <span class="nl">color</span><span class="p">:</span> <span class="nb">transparent</span><span class="p">;</span>
+  <span class="nl">background-color</span><span class="p">:</span> <span class="nb">transparent</span><span class="p">;</span>
+  <span class="py">caret-color</span><span class="p">:</span> <span class="m">#000</span><span class="p">;</span>
+  <span class="nl">z-index</span><span class="p">:</span> <span class="m">2</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">props</span><span class="p">:</span> <span class="p">{</span>
+    <span class="na">value</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">type</span><span class="p">:</span> <span class="nb">String</span><span class="p">,</span>
+      <span class="na">default</span><span class="p">:</span> <span class="dl">''</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nf">handleInput </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">// 删除非法字符(只保留code&gt;=32且code&lt;=126的字符)</span>
+      <span class="kd">const</span> <span class="nx">value</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">target</span><span class="p">.</span><span class="nx">value</span>
+      <span class="kd">const</span> <span class="nx">newValue</span> <span class="o">=</span> <span class="nx">value</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sr">/</span><span class="se">[^\x</span><span class="sr">20-</span><span class="se">\x</span><span class="sr">7E</span><span class="se">]</span><span class="sr">/g</span><span class="p">,</span> <span class="dl">''</span><span class="p">)</span>
+      <span class="k">if </span><span class="p">(</span><span class="nx">newValue</span> <span class="o">!==</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">password</span> <span class="o">=</span> <span class="nx">newValue</span>
+      <span class="p">}</span>
+      <span class="c1">// 发布input事件，从而修改props中的value值</span>
+      <span class="k">this</span><span class="p">.</span><span class="nf">$emit</span><span class="p">(</span><span class="dl">'</span><span class="s1">input</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">password</span><span class="p">)</span>
+    <span class="p">}</span>
+
+  <span class="p">},</span>
+  <span class="nf">created</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">selectionEvent</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">display</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">$refs</span><span class="p">.</span><span class="nx">passwordInputDisplay</span>
+      <span class="nx">display</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">zIndex</span> <span class="o">=</span> <span class="mi">1</span>
+      <span class="nx">display</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplay</span>
+      <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">isActive</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+      <span class="kd">const</span> <span class="nx">selection</span> <span class="o">=</span> <span class="nb">window</span><span class="p">.</span><span class="nf">getSelection</span><span class="p">()</span>
+      <span class="c1">// 如果选中的内容不为空, 则由passwordInputDisplay显示</span>
+      <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">selection</span><span class="p">.</span><span class="nf">toString</span><span class="p">())</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+      <span class="kd">const</span> <span class="nx">input</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">$refs</span><span class="p">.</span><span class="nx">passwordInput</span>
+      <span class="kd">const</span> <span class="nx">start</span> <span class="o">=</span> <span class="nx">input</span><span class="p">.</span><span class="nx">selectionStart</span>
+      <span class="kd">const</span> <span class="nx">end</span> <span class="o">=</span> <span class="nx">input</span><span class="p">.</span><span class="nx">selectionEnd</span>
+      <span class="kd">const</span> <span class="nx">highlightString</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">&lt;span style="background-color: #409eff; color: #fff;"&gt;</span><span class="dl">'</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplay</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nx">start</span><span class="p">,</span> <span class="nx">end</span><span class="p">)</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">&lt;/span&gt;</span><span class="dl">'</span>
+      <span class="nx">display</span><span class="p">.</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplay</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nx">start</span><span class="p">)</span> <span class="o">+</span> <span class="nx">highlightString</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplay</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="nx">end</span><span class="p">)</span>
+      <span class="nx">display</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">zIndex</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="p">}</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">selectionchange</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">selectionEvent</span><span class="p">)</span>
+  <span class="p">},</span>
+  <span class="nf">beforeDestory</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">removeEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">selectionchange</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">selectionEvent</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>需要注意以下几点：</p>
+<ol>
+  <li>监听<code class="language-plaintext highlighter-rouge">select</code>事件不能用<code class="language-plaintext highlighter-rouge">input</code>自带的<code class="language-plaintext highlighter-rouge">onselect</code>或<code class="language-plaintext highlighter-rouge">@select</code>，因为这只会在鼠标松开时触发，并不能实时相应选取区域的变化。所以要监听<code class="language-plaintext highlighter-rouge">selectionchange</code>事件。注意<code class="language-plaintext highlighter-rouge">selectionchange</code>事件在没选中内容时也会触发。</li>
+  <li>由于相比方案一显示了光标，光标的位置会受到实际字符宽度的影响，所以要使星号与其他字符宽度相等，必须使用如<code class="language-plaintext highlighter-rouge">monospace</code>之类的等宽字体，且必须阻止中文字符的输入。</li>
+  <li>修改<code class="language-plaintext highlighter-rouge">innerHtml</code>后需要改变密码显示框的<code class="language-plaintext highlighter-rouge">z-index</code>，否则仍然会被<code class="language-plaintext highlighter-rouge">input</code>中选中的内容覆盖。</li>
+</ol>
+
+<p>效果如下图所示：</p>
+
+<p><img src="/post_assets/images/2023/04/15-password-input-3.gif" alt="" /></p>
+
+<p>这里还有个问题，当输入内容超过了<code class="language-plaintext highlighter-rouge">input</code>的长度，显示上就会出现错误，可以考虑根据字体宽度计算出最大容纳的字符个数，阻止过多字符的输入。也可以在光标移动时同时移动后面的<code class="language-plaintext highlighter-rouge">span</code>，不过逻辑太过复杂没必要。</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">const</span> <span class="nx">width</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">$refs</span><span class="p">.</span><span class="nx">passwordInput</span><span class="p">.</span><span class="nx">clientWidth</span> <span class="o">-</span> <span class="mi">20</span> <span class="c1">// 20为padding</span>
+<span class="kd">const</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">'</span><span class="s1">canvas</span><span class="dl">'</span><span class="p">)</span>
+<span class="kd">const</span> <span class="nx">ctx</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nf">getContext</span><span class="p">(</span><span class="dl">'</span><span class="s1">2d</span><span class="dl">'</span><span class="p">)</span>
+<span class="nx">ctx</span><span class="p">.</span><span class="nx">font</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">16px monospace</span><span class="dl">'</span>
+<span class="kd">const</span> <span class="nx">fontWidth</span> <span class="o">=</span> <span class="nx">ctx</span><span class="p">.</span><span class="nf">measureText</span><span class="p">(</span><span class="dl">'</span><span class="s1">A</span><span class="dl">'</span><span class="p">).</span><span class="nx">width</span>
+<span class="k">this</span><span class="p">.</span><span class="nx">maxLength</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">floor</span><span class="p">(</span><span class="nx">width</span> <span class="o">/</span> <span class="nx">fontWidth</span><span class="p">)</span>
+</code></pre></div></div>
+<p>这里用的是<code class="language-plaintext highlighter-rouge">canvas</code>进行计算字体宽度。</p>
+
+<p>虽然最终实现了目标效果，不过逻辑上还是稍微复杂了点。</p>
+
+<p>完整代码在: <a href="https://github.com/lxmghct/my-vue-components">https://github.com/lxmghct/my-vue-components</a>的 src/components/PasswordInput/PasswordInput1.vue</p>
+
+<h3 id="方案三">方案三</h3>
+<p>只使用一个<code class="language-plaintext highlighter-rouge">input</code>，另外设置一个变量去保存真实密码。这种方法比上述方法逻辑上要稍微简单一些，唯一需要注意的就是当输入框中显示为星号时，如何区分哪些是新输入的内容，因为会有鼠标选中一段内容再删除或输入、粘贴的操作，而新输入的内容中也可能包含星号，所以不能处理的过于简单。最后采用的是监听<code class="language-plaintext highlighter-rouge">selectionchange</code>事件来随时更新光标所在位置，从而区分新输入的内容。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;input</span>
+  <span class="na">ref=</span><span class="s">"passwordInput"</span>
+  <span class="na">v-model=</span><span class="s">"passwordDisplay"</span>
+  <span class="na">autocomplete=</span><span class="s">"off"</span>
+  <span class="err">@</span><span class="na">focus=</span><span class="s">"isActive = true"</span>
+  <span class="err">@</span><span class="na">blur=</span><span class="s">"isActive = false"</span>
+  <span class="err">@</span><span class="na">input=</span><span class="s">"handleInput"</span>
+<span class="nt">&gt;</span>
+</code></pre></div></div>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nf">handleInput </span><span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// 获取新输入的字符</span>
+      <span class="kd">const</span> <span class="nx">tempEnd</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplaylength</span> <span class="o">-</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">password</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="nx">thisselection</span><span class="p">.</span><span class="nx">end</span><span class="p">)</span>
+      <span class="kd">const</span> <span class="nx">newStr</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplay</span><span class="p">.</span><span class="nf">slic</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">start</span><span class="p">,</span> <span class="nx">tempEnd</span><span class="p">)</span>
+      <span class="c1">// 更新输入框的值</span>
+      <span class="kd">const</span> <span class="nx">currentPosition</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">$refspasswordInput</span><span class="p">.</span><span class="nx">selectionStart</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">password</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">password</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="nb">Math</span><span class="p">.</span><span class="nf">min</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">start</span><span class="p">,</span><span class="nx">currentPosition</span><span class="p">))</span> <span class="o">+</span> <span class="nx">newStr</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nf">passwordslice</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">end</span><span class="p">)</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">start</span> <span class="o">=</span> <span class="nx">currentPosition</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">end</span> <span class="o">=</span> <span class="nx">currentPosition</span>
+      <span class="k">this</span><span class="p">.</span><span class="nf">$emit</span><span class="p">(</span><span class="dl">'</span><span class="s1">input</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">password</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="nf">created </span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">selectionEvent</span> <span class="o">=</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">isActive</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+      <span class="kd">const</span> <span class="nx">input</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">$refs</span><span class="p">.</span><span class="nx">passwordInput</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">selection</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="na">start</span><span class="p">:</span> <span class="nx">input</span><span class="p">.</span><span class="nx">selectionStart</span><span class="p">,</span>
+        <span class="na">end</span><span class="p">:</span> <span class="nx">input</span><span class="p">.</span><span class="nx">selectionEnd</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">copyEvent</span> <span class="o">=</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">isActive</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+      <span class="kd">const</span> <span class="nx">clipboardData</span> <span class="o">=</span> <span class="nx">e</span><span class="p">.</span><span class="nx">clipboardData</span> <span class="o">||</span> <span class="nb">window</span><span class="p">.</span><span class="nx">clipboardData</span>
+      <span class="nx">clipboardData</span><span class="p">.</span><span class="nf">setData</span><span class="p">(</span><span class="dl">'</span><span class="s1">text</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">password</span><span class="p">.</span><span class="nf">slice</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">start</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">selection</span><span class="p">.</span><span class="nx">end</span><span class="p">))</span>
+      <span class="nx">e</span><span class="p">.</span><span class="nf">preventDefault</span><span class="p">()</span>
+    <span class="p">}</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">selectionchange</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">selectionEvent</span><span class="p">)</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">copy</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">copyEvent</span><span class="p">)</span>
+  <span class="p">},</span>
+  <span class="nf">beforeDestroy </span><span class="p">()</span> <span class="p">{</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">removeEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">selectionchange</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">selectionEvent</span><span class="p">)</span>
+    <span class="nb">document</span><span class="p">.</span><span class="nf">removeEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">copy</span><span class="dl">'</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">copyEvent</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>有几点需要注意：</p>
+<ul>
+  <li>输入框中选定的内容的起始和结束位置无法通过<code class="language-plaintext highlighter-rouge">window.getSelection().anchorOffset</code>等参数获取(<code class="language-plaintext highlighter-rouge">window.getSelection()</code>的几个offset都是0), 只能通过<code class="language-plaintext highlighter-rouge">input</code>的<code class="language-plaintext highlighter-rouge">selectionStart</code>和<code class="language-plaintext highlighter-rouge">selectionEnd</code>可以拿到当前选中区域的起始和结束位置。</li>
+  <li>由于输入框内实际显示的是星号，所以复制时若不处理则复制的也是星号，所以需要监听复制事件，将实际密码写入剪贴板。剪贴板通过<code class="language-plaintext highlighter-rouge">e.clipboardData || window.clipboardData</code>获取。</li>
+</ul>
+
+<p>相比于方案二，这种方法无需要求一定要等宽字体，也无需另外去处理选中内容的事件，唯一多出的地方就是对输入框实际值的处理，包括输入和复制，而这里的逻辑显然比方案二中修改样式容易的多。</p>
+
+<p>效果上跟方案二基本差不多，而且没有长度限制，这里用<code class="language-plaintext highlighter-rouge">this.passwordDisplay = '\u2022'.repeat(this.value.length)</code>把星号改成了圆点，如下：
+<img src="/post_assets/images/2023/04/15-password-input-4.gif" alt="" /></p>
+
+<p>完整代码在: <a href="https://github.com/lxmghct/my-vue-components">https://github.com/lxmghct/my-vue-components</a>的 src/components/PasswordInput/PasswordInput2.vue</p>
+
+<h3 id="密码显示与隐藏">密码显示与隐藏</h3>
+<p>点击眼睛图标，切换密码的显示与隐藏状态。</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="na">watch</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nf">value </span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nf">updatePasswordDisplay</span><span class="p">()</span>
+    <span class="p">},</span>
+    <span class="nf">showPassword </span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nf">updatePasswordDisplay</span><span class="p">()</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nf">updatePasswordDisplay </span><span class="p">()</span> <span class="p">{</span>
+      <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">showPassword</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplay</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">value</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// this.passwordDisplay = '*'.repeat(this.value.length)</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">passwordDisplay</span> <span class="o">=</span> <span class="dl">'</span><span class="se">\</span><span class="s1">u2022</span><span class="dl">'</span><span class="p">.</span><span class="nf">repeat</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">value</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span> <span class="c1">// 圆点</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>眼睛图标可以用图标库或者导入图片，我这里用的是<code class="language-plaintext highlighter-rouge">svg</code>，眼睛图标的<code class="language-plaintext highlighter-rouge">svg</code>可以通过一些转换工具来实现，这里推荐一个网站: <a href="https://picsvg.com/">https://picsvg.com/</a></p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"password-input__eye-wrap"</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;div</span>
+      <span class="na">class=</span><span class="s">"password-input__eye"</span>
+      <span class="err">@</span><span class="na">click=</span><span class="s">"showPassword = !showPassword"</span>
+  <span class="nt">&gt;</span>
+      <span class="nt">&lt;svg</span> <span class="na">version=</span><span class="s">"1.0"</span> <span class="na">xmlns=</span><span class="s">"http://www.w3.org/2000/svg"</span>
+      <span class="na">width=</span><span class="s">"58.000000pt"</span> <span class="na">height=</span><span class="s">"50.000000pt"</span> <span class="na">viewBox=</span><span class="s">"0 0 58.000000 50.000000"</span>
+      <span class="na">preserveAspectRatio=</span><span class="s">"xMidYMid meet"</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;g</span> <span class="na">transform=</span><span class="s">"translate(0.000000,50.000000) scale(0.100000,-0.100000)"</span>
+          <span class="na">fill=</span><span class="s">"#000000"</span> <span class="na">stroke=</span><span class="s">"none"</span><span class="nt">&gt;</span>
+              <span class="nt">&lt;path</span> <span class="na">d=</span><span class="s">"M228 390 c-61 -19 -148 -96 -148 -130 0 -21 61 -87 103 -110 50 -29
+              127 -32 173 -8 39 21 114 98 114 118 0 19 -74 97 -111 115 -36 19 -98 26 -131
+              15z m121 -40 c37 -18 91 -72 91 -90 0 -18 -54 -72 -91 -90 -70 -36 -138 -22
+              -206 43 -18 17 -33 38 -33 47 0 19 53 71 95 93 41 22 98 21 144 -3z"</span><span class="nt">/&gt;</span>
+              <span class="nt">&lt;path</span> <span class="na">d=</span><span class="s">"M235 338 c-31 -18 -44 -40 -45 -75 0 -45 9 -62 42 -79 84 -43 168 60
+              106 130 -27 30 -74 41 -103 24z m79 -34 c20 -20 20 -68 0 -88 -35 -35 -104 -6
+              -104 44 0 50 69 79 104 44z"</span><span class="nt">/&gt;</span>
+          <span class="nt">&lt;/g&gt;</span>
+      <span class="nt">&lt;/svg&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;style </span><span class="na">scoped</span><span class="nt">&gt;</span>
+<span class="nc">.password-input__eye-wrap</span> <span class="p">{</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+    <span class="nl">align-items</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">justify-content</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nc">.password-input__eye</span> <span class="p">{</span>
+    <span class="nl">width</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+    <span class="nl">height</span><span class="p">:</span> <span class="m">20px</span><span class="p">;</span>
+    <span class="nl">display</span><span class="p">:</span> <span class="n">flex</span><span class="p">;</span>
+    <span class="nl">align-items</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">justify-content</span><span class="p">:</span> <span class="nb">center</span><span class="p">;</span>
+    <span class="nl">cursor</span><span class="p">:</span> <span class="nb">pointer</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="nt">&lt;/style&gt;</span>
+</code></pre></div></div>
+<p>效果如下：
+<img src="/post_assets/images/2023/04/15-password-input-5.gif" alt="" /></p>
+
+<p>完整代码在: <a href="https://github.com/lxmghct/my-vue-components">https://github.com/lxmghct/my-vue-components</a>的 src/components/PasswordInput/PasswordInput2.vue</p>
+
+<h2 id="总结">总结</h2>
+<p>通过将密码输入框的<code class="language-plaintext highlighter-rouge">type</code>设置为<code class="language-plaintext highlighter-rouge">text</code>，修改样式上的显示，来实现既可以让浏览器不自动填充密码，又可以隐藏密码的效果。</p>
+
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/04/17/js%E9%A2%9C%E8%89%B2%E7%9A%84%E5%8D%95%E8%AF%8D%E5%90%8D%E7%A7%B0%E5%AD%97%E7%AC%A6%E4%B8%B2%E8%BD%AC%E4%B8%BArgb%E9%A2%9C%E8%89%B2%E5%80%BC.html" title="js颜色的单词名称字符串转为rgb颜色值">js颜色的单词名称字符串转为rgb颜色值</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/04/14/%E9%9D%9Eel%E7%BB%84%E4%BB%B6-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%BB%84%E4%BB%B6%E8%A7%A6%E5%8F%91el-form%E7%9A%84%E6%A0%A1%E9%AA%8C.html"
+      title="非el组件、自定义组件触发el-form的校验">非el组件、自定义组件触发el-form的校验</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-04-15】 vue自定义密码输入框解决浏览器自动填充密码的问题"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

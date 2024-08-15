@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>使用windows命令行连接neo4j | lxmghct's blog</title>
+  <meta name="description"
+    content="1. CMD命令提示符连接neo4j(bat脚本)使用下面的脚本可以连接到neo4j数据库，并执行cypher查询，将结果保存到一个文件中。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2024/07/09/%E4%BD%BF%E7%94%A8windows%E5%91%BD%E4%BB%A4%E8%A1%8C%E8%BF%9E%E6%8E%A5neo4j.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">使用windows命令行连接neo4j</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2024-07-09 08:00
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="编程随笔">编程随笔</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="neo4j">neo4j</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h2 id="1-cmd命令提示符连接neo4jbat脚本">1. CMD命令提示符连接neo4j(bat脚本)</h2>
+<p>使用下面的脚本可以连接到neo4j数据库，并执行cypher查询，将结果保存到一个文件中。</p>
+
+<div class="language-bat highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@echo <span class="na">off</span>
+<span class="nb">setlocal</span> <span class="na">enabledelayedexpansion</span>
+
+<span class="c">rem Neo4j credentials and host</span>
+<span class="kd">set</span> <span class="kd">NEO4J_USER</span><span class="o">=</span><span class="kd">neo4j</span>
+<span class="kd">set</span> <span class="kd">NEO4J_PASSWORD</span><span class="o">=</span><span class="kd">neo4j_password</span>
+<span class="kd">set</span> <span class="kd">NEO4J_HOST</span><span class="o">=</span><span class="kd">localhost</span>
+<span class="kd">set</span> <span class="kd">NEO4J_PORT</span><span class="o">=</span><span class="m">7475</span>
+
+<span class="c">rem Backend URL</span>
+<span class="kd">set</span> <span class="kd">BACKEND_URL</span><span class="o">=</span><span class="kd">http</span>://localhost:8089/audit/publishAuditNodes<span class="o">?</span><span class="kd">auditNodeIds</span><span class="o">=</span>
+
+<span class="c">rem Temp file to store result</span>
+<span class="kd">set</span> <span class="kd">RESULT_FILE</span><span class="o">=</span><span class="kd">cypher_result</span>.json
+
+<span class="c">rem Cypher query</span>
+<span class="kd">set</span> <span class="kd">CYPHER_QUERY</span><span class="o">=</span><span class="kd">MATCH</span> <span class="o">(</span><span class="kd">n</span><span class="nl">:Person</span><span class="o">)</span> <span class="se">^
+</span><span class="kd">WHERE</span> <span class="kd">n</span>.name <span class="kd">CONTAINS</span> <span class="s1">'test'</span> <span class="se">^
+</span><span class="kd">RETURN</span> <span class="kd">n</span>
+
+<span class="c">rem Send Cypher request</span>
+<span class="kd">set</span> <span class="kd">CYPHER_REQUEST</span><span class="o">=</span><span class="nb">curl</span> <span class="na">-u </span><span class="vm">%NEO4</span><span class="kd">J_USER</span><span class="err">%</span>:<span class="vm">%NEO4</span><span class="kd">J_PASSWORD</span><span class="err">%</span> <span class="na">-H </span><span class="s2">"Content-Type: application/json"</span> <span class="na">-d </span><span class="s2">"{\"</span><span class="kd">statements</span>\<span class="s2">":[{\"</span><span class="kd">statement</span>\<span class="s2">":\"</span><span class="nv">!CYPHER_QUERY!</span>\<span class="s2">"}]}"</span> <span class="kd">http</span>://<span class="vm">%NEO4</span><span class="kd">J_HOST</span><span class="err">%</span>:<span class="vm">%NEO4</span><span class="kd">J_PORT</span><span class="err">%</span><span class="na">/db/data/transaction/commit
+
+</span><span class="nv">!CYPHER_REQUEST!</span> <span class="o">&gt;</span> <span class="nv">%RESULT_FILE%</span>
+
+</code></pre></div></div>
+
+<p>如果需要进一步对数据处理，可能需要另外安装jq工具。注意CMD命令的<code class="language-plaintext highlighter-rouge">SET /p</code>命令有长度限制（1024个字符），如果查询结果过长，想要保存到变量中得另外处理比如使用数组（参考: <a href="http://www.bathome.net/thread-17887-1-1.html">http://www.bathome.net/thread-17887-1-1.html</a>），这种情况就会比较麻烦。</p>
+
+<h2 id="2-使用powershell连接neo4j">2. 使用powershell连接neo4j</h2>
+<p>powershell 相比命令提示符更加强大，且没有上面的长度限制。可以使用下面的脚本连接neo4j。</p>
+
+<p>比如我现在想从 neo4j 中读取出一些数据并传递给另一个后端服务，可以使用下面的脚本。当数据量较大时如果使用bat脚本就会出现下面的nodeIds被截断的情况，而powershell脚本则不会有这个问题。</p>
+
+<div class="language-powershell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Neo4j credentials and host</span><span class="w">
+</span><span class="nv">$NEO4J_USER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"neo4j"</span><span class="w">
+</span><span class="nv">$NEO4J_PASSWORD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"1qaz@WSX"</span><span class="w">
+</span><span class="nv">$NEO4J_HOST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"localhost"</span><span class="w">
+</span><span class="nv">$NEO4J_PORT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">7475</span><span class="w">
+
+</span><span class="c"># Backend URL</span><span class="w">
+</span><span class="nv">$BACKEND_URL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://localhost:8089/audit/publish?nodeIds="</span><span class="w">
+
+</span><span class="c"># Cypher query</span><span class="w">
+</span><span class="nv">$CYPHER_QUERY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sh">@"
+MATCH (n:Audit{label: 'Relationship', status: 3})
+WITH n, apoc.convert.fromJsonMap(n.info) AS info
+WHERE info.source = 'CBDB'
+RETURN COLLECT(DISTINCT n.nodeId) AS nodeIds
+"@</span><span class="w">
+
+</span><span class="c"># Send Cypher request</span><span class="w">
+</span><span class="nv">$CYPHER_REQUEST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
+    </span><span class="nx">Uri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"http://</span><span class="nv">${NEO4J_HOST}</span><span class="s2">:</span><span class="nv">${NEO4J_PORT}</span><span class="s2">/db/data/transaction/commit"</span><span class="w">
+    </span><span class="nx">Method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"POST"</span><span class="w">
+    </span><span class="nx">Headers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
+        </span><span class="s2">"Content-Type"</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"application/json"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="nx">Body</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
+        </span><span class="nx">statements</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@(@{</span><span class="nx">statement</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$CYPHER_QUERY</span><span class="p">})</span><span class="w">
+    </span><span class="p">}</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="nx">ConvertTo</span><span class="err">-</span><span class="nx">Json</span><span class="w">
+    </span><span class="nx">Credential</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="n">PSCredential</span><span class="p">]</span><span class="err">::</span><span class="nx">new</span><span class="err">(</span><span class="nv">$NEO4J_USER</span><span class="p">,</span><span class="w"> </span><span class="err">(</span><span class="nx">ConvertTo</span><span class="err">-</span><span class="nx">SecureString</span><span class="w"> </span><span class="nv">$NEO4J_PASSWORD</span><span class="w"> </span><span class="err">-</span><span class="nx">AsPlainText</span><span class="w"> </span><span class="err">-</span><span class="nx">Force</span><span class="err">))</span><span class="w">
+</span><span class="p">}</span><span class="w">
+
+</span><span class="nv">$response</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="err">@</span><span class="nx">CYPHER_REQUEST</span><span class="w">
+
+</span><span class="c"># Read nodeIds from response</span><span class="w">
+</span><span class="kr">try</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nv">$nodeIds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">$response</span><span class="o">.</span><span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">-join</span><span class="w"> </span><span class="s1">','</span><span class="w">
+    </span><span class="c"># Output nodeIds</span><span class="w">
+    </span><span class="n">Write-Output</span><span class="w"> </span><span class="s2">"NodeIds: </span><span class="nv">$nodeIds</span><span class="s2">"</span><span class="w">
+    
+    </span><span class="c"># Send POST request to backend</span><span class="w">
+    </span><span class="nv">$BACKEND_REQUEST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">@{</span><span class="w">
+        </span><span class="nx">Uri</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"</span><span class="nv">$BACKEND_URL$nodeIds</span><span class="s2">"</span><span class="w">
+        </span><span class="nx">Method</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">"POST"</span><span class="w">
+    </span><span class="p">}</span><span class="w">
+    </span><span class="n">Invoke-RestMethod</span><span class="w"> </span><span class="err">@</span><span class="nx">BACKEND_REQUEST</span><span class="w">
+</span><span class="p">}</span><span class="w"> </span><span class="kr">catch</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="n">Write-Output</span><span class="w"> </span><span class="s2">"Error parsing response: </span><span class="bp">$_</span><span class="s2">"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2024/07/15/nginx%E9%85%8D%E7%BD%AEproxy_pass%E6%97%B6%E5%87%BA%E7%8E%B0no-live-upstreams-while-connecting-to-upstream.html" title="nginx配置proxy_pass时出现no live upstreams while connecting to upstream">nginx配置proxy_pass时出现no live upstreams while connecting to upstream</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2024/07/02/%E9%A5%A5%E8%8D%92%E5%88%87%E6%8D%A2%E7%A6%BB%E7%BA%BF%E4%B8%8E%E5%9C%A8%E7%BA%BF%E6%A8%A1%E5%BC%8F.html"
+      title="饥荒切换离线与在线模式">饥荒切换离线与在线模式</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2024-07-09】 使用windows命令行连接neo4j"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

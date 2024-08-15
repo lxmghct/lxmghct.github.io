@@ -1,0 +1,78 @@
+/* Pagination */
+
+.my-pagination {
+    margin-top: 0.66em;
+    white-space: nowrap;
+}
+
+.my-pagination__sizes,
+.my-pagination__total,
+.my-pagination__goto {
+    vertical-align: middle;
+    padding: 0 0.33em;
+}
+
+.my-pager {
+    user-select: none;
+    display: inline;
+    text-align: center;
+    line-height: 1.6;
+    vertical-align: middle;
+}
+
+.my-pager li {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 0 0.26em;
+    width: 2em;
+    color: #000;
+    border: 1px solid #3B95B8;
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+@media (max-width: 576px) {
+    .my-pager li {
+        padding: 0;
+    }
+}
+
+.my-pager li:hover {
+    color: #3B95B8;;
+}
+
+.my-pager li.active {
+    color: #fff;
+    background-color: #3B95B8;;
+}
+
+.my-pagination__sizes select {
+    cursor: pointer;
+    width: 2.7em;
+    height: 1.6em;
+    border: 1px solid #3B95B8;;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+.my-pagination__sizes select:focus {
+    outline: none;
+}
+
+.my-pagination__goto input {
+    width: 2em;
+    height: 1.6em;
+    border: 1px solid #3B95B8;;
+    border-radius: 5px;
+    background-color: #fff;
+    text-align: center;
+}
+
+.my-pagination__goto input:focus {
+    outline: none;
+}
+
+.my-pagination-content div.hide {
+    display: none;
+}

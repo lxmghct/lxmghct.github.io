@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>vue使用esri-loader切换底图并添加自定义图片 | lxmghct's blog</title>
+  <meta name="description"
+    content="1. 问题描述我想实现一个能够切换各种地图（如百度、谷歌地图）并在此基础上给上面叠一张某个朝代的地图，且这张朝代地图的经纬度与地图的经纬度相契合。项目是 vue 项目，使用 arcgis api 来实现上述功能。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E6%8A%80%E6%9C%AF%E6%8E%A2%E7%B4%A2/2023/11/25/vue%E4%BD%BF%E7%94%A8esri-loader%E5%88%87%E6%8D%A2%E5%BA%95%E5%9B%BE%E5%B9%B6%E6%B7%BB%E5%8A%A0%E8%87%AA%E5%AE%9A%E4%B9%89%E5%9B%BE%E7%89%87.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">vue使用esri-loader切换底图并添加自定义图片</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2023-11-25 14:00
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="技术探索">技术探索</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="vue">vue</a>
+          
+          <a data-tag="arcgis">arcgis</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h2 id="1-问题描述">1. 问题描述</h2>
+<p>我想实现一个能够切换各种地图（如百度、谷歌地图）并在此基础上给上面叠一张某个朝代的地图，且这张朝代地图的经纬度与地图的经纬度相契合。项目是 vue 项目，使用 arcgis api 来实现上述功能。</p>
+
+<h2 id="2-地图切换">2. 地图切换</h2>
+<h3 id="21-安装-esri-loader">2.1. 安装 esri-loader</h3>
+<p>首先需要引入 arcgis api，然后使用<code class="language-plaintext highlighter-rouge">esri-loader</code>来加载地图。</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>npm <span class="nb">install </span>esri-loader
+</code></pre></div></div>
+
+<h3 id="22-加载地图">2.2. 加载地图</h3>
+<p>通过网上搜索各个地图的api，目前先找了天地图、谷歌、高德地图的api，封装了一个加载地图的方法。</p>
+
+<p>load-map.js</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// load-map.js</span>
+
+<span class="kd">function</span> <span class="nf">getMapOfTianditu</span> <span class="p">(</span><span class="nx">Basemap</span><span class="p">,</span> <span class="nx">WebTileLayer</span><span class="p">,</span> <span class="nx">TileInfo</span><span class="p">,</span> <span class="nx">SpatialReference</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">spatialReference</span> <span class="o">=</span> <span class="nx">SpatialReference</span><span class="p">.</span><span class="nx">WGS84</span>
+  <span class="kd">const</span> <span class="nx">tileInfo</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">TileInfo</span><span class="p">({</span>
+    <span class="na">dpi</span><span class="p">:</span> <span class="mf">90.71428571427429</span><span class="p">,</span>
+    <span class="na">lods</span><span class="p">:</span> <span class="p">[</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">1</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">295828763.79585470937713011037</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.703125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">2</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">147914381.89792735468856505518</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.3515625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">3</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">73957190.948963677344282527592</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.17578125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">4</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">36978595.474481838672141263796</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.087890625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">5</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">18489297.737240919336070631898</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.0439453125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">6</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">9244648.868620459668035315949</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.02197265625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">7</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">4622324.4343102298340176579745</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.010986328125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">8</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">2311162.2171551149170088289872</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.0054931640625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">9</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">1155581.1085775574585044144937</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.00274658203125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">9</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">10</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">577790.55428877872925220724681</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.001373291015625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">11</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">288895.2771443893646261036234</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.0006866455078125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">11</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">12</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">144447.63857219468231305181171</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.00034332275390625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">13</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">72223.819286097341156525905853</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.000171661376953125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">13</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">14</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">36111.909643048670578262952926</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.0000858306884765625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">15</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">18055.954821524335289131476463</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.00004291534423828125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">16</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">9027.977410762167644565738231</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.000021457672119140625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">16</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">17</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">4513.9887053810838222828691158</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.0000107288360595703125</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">17</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">18</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">2256.9943526905419111414345579</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.00000536441802978515625</span> <span class="p">},</span>
+      <span class="p">{</span> <span class="na">level</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="na">levelValue</span><span class="p">:</span> <span class="dl">'</span><span class="s1">19</span><span class="dl">'</span><span class="p">,</span> <span class="na">scale</span><span class="p">:</span> <span class="mf">1128.4971763452709555707172788</span><span class="p">,</span> <span class="na">resolution</span><span class="p">:</span> <span class="mf">0.000002682209014892578125</span> <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="na">size</span><span class="p">:</span> <span class="p">[</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span>
+    <span class="na">origin</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">x</span><span class="p">:</span> <span class="o">-</span><span class="mi">180</span><span class="p">,</span>
+      <span class="na">y</span><span class="p">:</span> <span class="mi">90</span>
+    <span class="p">},</span>
+    <span class="nx">spatialReference</span>
+  <span class="p">})</span>
+
+  <span class="kd">const</span> <span class="nx">webTileLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WebTileLayer</span><span class="p">({</span>
+    <span class="na">urlTemplate</span><span class="p">:</span> <span class="dl">'</span><span class="s1">http://{subDomain}.tianditu.gov.cn/vec_c/wmts?SERVICE=WMTS&amp;REQUEST=GetTile&amp;VERSION=1.0.0&amp;LAYER=vec&amp;STYLE=default&amp;TILEMATRIXSET=c&amp;FORMAT=tiles&amp;TILEMATRIX={level}&amp;TILEROW={row}&amp;TILECOL={col}&amp;tk=b854fdb3a3b2625bd6c8353e83f7cca3</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">subDomains</span><span class="p">:</span> <span class="p">[</span><span class="dl">'</span><span class="s1">t0</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">t1</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">t2</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">t3</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">t4</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">t5</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">t6</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">t7</span><span class="dl">'</span><span class="p">],</span>
+    <span class="nx">tileInfo</span><span class="p">,</span>
+    <span class="nx">spatialReference</span><span class="p">,</span>
+    <span class="na">opacity</span><span class="p">:</span> <span class="mi">1</span>
+  <span class="p">})</span>
+  <span class="kd">const</span> <span class="nx">basemap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Basemap</span><span class="p">({</span>
+    <span class="na">baseLayers</span><span class="p">:</span> <span class="p">[</span><span class="nx">webTileLayer</span><span class="p">]</span>
+  <span class="p">})</span>
+  <span class="k">return</span> <span class="nx">basemap</span>
+<span class="p">}</span>
+
+<span class="kd">function</span> <span class="nf">getMapByUrlTemplate</span> <span class="p">(</span><span class="nx">Basemap</span><span class="p">,</span> <span class="nx">WebTileLayer</span><span class="p">,</span> <span class="nx">urlTemplate</span><span class="p">,</span> <span class="nx">subDomains</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">layerData</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="nx">urlTemplate</span>
+  <span class="p">}</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">subDomains</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">layerData</span><span class="p">.</span><span class="nx">subDomains</span> <span class="o">=</span> <span class="nx">subDomains</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">webTileLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WebTileLayer</span><span class="p">(</span><span class="nx">layerData</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">basemap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Basemap</span><span class="p">({</span>
+    <span class="na">baseLayers</span><span class="p">:</span> <span class="p">[</span><span class="nx">webTileLayer</span><span class="p">]</span>
+  <span class="p">})</span>
+  <span class="k">return</span> <span class="nx">basemap</span>
+<span class="p">}</span>
+
+<span class="kd">const</span> <span class="nx">mapUrlSet</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="dl">'</span><span class="s1">google</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span> <span class="na">url</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://mt1.google.com/vt/lyrs=m&amp;x={col}&amp;y={row}&amp;z={level}</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="c1">// 'google': 'https://mt1.google.com/vt/lyrs=m&amp;x={col}&amp;y={row}&amp;z={level}&amp;s=Galil',</span>
+  <span class="dl">'</span><span class="s1">amap1</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span> <span class="na">url</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://webst01.is.autonavi.com/appmaptile?style=6&amp;x={col}&amp;y={row}&amp;z={level}</span><span class="dl">'</span> <span class="p">},</span>
+  <span class="dl">'</span><span class="s1">amap2</span><span class="dl">'</span><span class="p">:</span> <span class="p">{</span> <span class="na">url</span><span class="p">:</span> <span class="dl">'</span><span class="s1">https://webrd02.is.autonavi.com/appmaptile?lang=zh_cn&amp;size=1&amp;scale=1&amp;style=8&amp;x={col}&amp;y={row}&amp;z={level}</span><span class="dl">'</span> <span class="p">}</span>
+  <span class="c1">// 'tencent': { url: 'https://rt2.map.gtimg.com/tile?z={level}&amp;x={col}&amp;y={row}&amp;type=vector&amp;styleid=3&amp;version=110' }</span>
+<span class="p">}</span>
+
+<span class="k">export</span> <span class="kd">function</span> <span class="nf">loadMap</span> <span class="p">(</span><span class="nx">mapName</span><span class="p">,</span> <span class="nx">Basemap</span><span class="p">,</span> <span class="nx">WebTileLayer</span><span class="p">,</span> <span class="nx">TileInfo</span><span class="p">,</span> <span class="nx">SpatialReference</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="nx">mapUrlSet</span><span class="p">[</span><span class="nx">mapName</span><span class="p">])</span> <span class="p">{</span>
+    <span class="kd">const</span> <span class="nx">temp</span> <span class="o">=</span> <span class="nx">mapUrlSet</span><span class="p">[</span><span class="nx">mapName</span><span class="p">]</span>
+    <span class="k">return</span> <span class="nf">getMapByUrlTemplate</span><span class="p">(</span><span class="nx">Basemap</span><span class="p">,</span> <span class="nx">WebTileLayer</span><span class="p">,</span> <span class="nx">temp</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="nx">temp</span><span class="p">.</span><span class="nx">subDomains</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nf">getMapOfTianditu</span><span class="p">(</span><span class="nx">Basemap</span><span class="p">,</span> <span class="nx">WebTileLayer</span><span class="p">,</span> <span class="nx">TileInfo</span><span class="p">,</span> <span class="nx">SpatialReference</span><span class="p">)</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后在vue里调用这个方法，加载地图。</p>
+
+<p>MapTest.vue</p>
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;template&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"main-container"</span><span class="nt">&gt;</span>
+    <span class="c">&lt;!-- 地图选择 --&gt;</span>
+    <span class="nt">&lt;el-select</span> <span class="na">class=</span><span class="s">"my-select"</span> <span class="na">v-model=</span><span class="s">"currentMapChoice"</span> <span class="na">value-key=</span><span class="s">"key"</span> <span class="na">placeholder=</span><span class="s">"请选择地图"</span> <span class="err">@</span><span class="na">change=</span><span class="s">"handleMapChange"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;el-option</span>
+        <span class="na">v-for=</span><span class="s">"item in mapChoices"</span>
+        <span class="na">:key=</span><span class="s">"item.key"</span>
+        <span class="na">:label=</span><span class="s">"item.name"</span>
+        <span class="na">:value=</span><span class="s">"item"</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;/el-option&gt;</span>
+    <span class="nt">&lt;/el-select&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"map-container"</span><span class="nt">&gt;&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">loadModules</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">esri-loader</span><span class="dl">'</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">loadMap</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">./load-map</span><span class="dl">'</span>
+
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="nf">data </span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="na">mapView</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="na">mapChoices</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">天地图</span><span class="dl">'</span><span class="p">,</span> <span class="na">key</span><span class="p">:</span> <span class="dl">'</span><span class="s1">tianditu</span><span class="dl">'</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">谷歌地图</span><span class="dl">'</span><span class="p">,</span> <span class="na">key</span><span class="p">:</span> <span class="dl">'</span><span class="s1">google</span><span class="dl">'</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">高德地图-卫星</span><span class="dl">'</span><span class="p">,</span> <span class="na">key</span><span class="p">:</span> <span class="dl">'</span><span class="s1">amap1</span><span class="dl">'</span> <span class="p">},</span>
+        <span class="p">{</span> <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">高德地图-街道</span><span class="dl">'</span><span class="p">,</span> <span class="na">key</span><span class="p">:</span> <span class="dl">'</span><span class="s1">amap2</span><span class="dl">'</span> <span class="p">}</span>
+      <span class="p">],</span>
+      <span class="na">currentMapChoice</span><span class="p">:</span> <span class="kc">null</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    
+    <span class="nf">loadMap </span><span class="p">(</span><span class="nx">mapName</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nf">loadModules</span><span class="p">(</span>
+        <span class="p">[</span>
+          <span class="dl">'</span><span class="s1">esri/views/MapView</span><span class="dl">'</span><span class="p">,</span>
+          <span class="dl">'</span><span class="s1">esri/Basemap</span><span class="dl">'</span><span class="p">,</span>
+          <span class="dl">'</span><span class="s1">esri/Map</span><span class="dl">'</span><span class="p">,</span>
+          <span class="dl">'</span><span class="s1">esri/layers/WebTileLayer</span><span class="dl">'</span><span class="p">,</span>
+          <span class="dl">'</span><span class="s1">esri/layers/support/TileInfo</span><span class="dl">'</span><span class="p">,</span>
+          <span class="dl">'</span><span class="s1">esri/geometry/SpatialReference</span><span class="dl">'</span>
+        <span class="p">],</span>
+        <span class="p">{</span> <span class="na">css</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+      <span class="p">).</span><span class="nf">then</span><span class="p">(</span>
+        <span class="p">([</span><span class="nx">MapView</span><span class="p">,</span>
+          <span class="nx">Basemap</span><span class="p">,</span>
+          <span class="nb">Map</span><span class="p">,</span>
+          <span class="nx">WebTileLayer</span><span class="p">,</span>
+          <span class="nx">TileInfo</span><span class="p">,</span>
+          <span class="nx">SpatialReference</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="kd">const</span> <span class="nx">basemap</span> <span class="o">=</span> <span class="nf">loadMap</span><span class="p">(</span><span class="nx">mapName</span><span class="p">,</span> <span class="nx">Basemap</span><span class="p">,</span> <span class="nx">WebTileLayer</span><span class="p">,</span> <span class="nx">TileInfo</span><span class="p">,</span> <span class="nx">SpatialReference</span><span class="p">)</span>
+          <span class="kd">const</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Map</span><span class="p">({</span> <span class="nx">basemap</span> <span class="p">})</span>
+          <span class="kd">const</span> <span class="nx">view</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MapView</span><span class="p">({</span>
+            <span class="nx">map</span><span class="p">,</span>
+            <span class="na">container</span><span class="p">:</span> <span class="dl">'</span><span class="s1">map-container</span><span class="dl">'</span><span class="p">,</span>
+            <span class="na">center</span><span class="p">:</span> <span class="p">[</span><span class="mi">113</span><span class="p">,</span> <span class="mi">36</span><span class="p">],</span>
+            <span class="na">zoom</span><span class="p">:</span> <span class="mi">3</span>
+          <span class="p">})</span>
+          <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span> <span class="o">=</span> <span class="nx">view</span>
+        <span class="p">}</span>
+      <span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nf">handleMapChange </span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nf">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">map-container</span><span class="dl">'</span><span class="p">).</span><span class="nx">innerHTML</span> <span class="o">=</span> <span class="dl">''</span>
+      <span class="k">this</span><span class="p">.</span><span class="nf">loadMap</span><span class="p">(</span><span class="nx">value</span><span class="p">.</span><span class="nx">key</span><span class="p">)</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>效果如下：
+<img src="/post_assets/images/2023/11/25-shift-map.gif" alt="map" /></p>
+
+<h2 id="3-添加各朝代地图">3. 添加各朝代地图</h2>
+<h3 id="31-获取各朝代地图">3.1. 获取各朝代地图</h3>
+<p>从网上搜索谭其骧主编的《中国历史地图集》中找到了各朝代的地图。每张地图上基本都有一部分经纬度信息，可以通过这些信息来定位它在地图上的位置。将每个朝代的地图比对好经纬度后，得到下面的数据:</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nx">mapData</span><span class="p">:</span> <span class="p">[</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">春秋</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">01-20春秋时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">战国</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">01-31战国时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">秦</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">02-3秦时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">汉</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">02-13西汉时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">三国</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">03-3三国时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">东晋</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">东晋十六国时期.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">南北朝</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">04-17宋、魏时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">隋</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">05-3隋时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">唐</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">05-32唐时期全图（一）.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">五代</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">05-82五代十国时期全图.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">北宋</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">辽.北宋时期.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">南宋</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">金.南宋时期.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">元</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">元初期.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">明</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">07-40明时期全图（一）.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">},</span>
+  <span class="p">{</span> <span class="dl">'</span><span class="s1">dynasty</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">清</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">mapName</span><span class="dl">'</span><span class="p">:</span> <span class="dl">'</span><span class="s1">08-3清时期全图（一）.jpg</span><span class="dl">'</span><span class="p">,</span> <span class="na">left</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="na">top</span><span class="p">:</span> <span class="mi">58</span><span class="p">,</span> <span class="na">right</span><span class="p">:</span> <span class="mi">140</span><span class="p">,</span> <span class="na">bottom</span><span class="p">:</span> <span class="mi">17</span> <span class="p">}</span>
+<span class="p">]</span>
+</code></pre></div></div>
+<p><code class="language-plaintext highlighter-rouge">left</code>、<code class="language-plaintext highlighter-rouge">top</code>、<code class="language-plaintext highlighter-rouge">right</code>、<code class="language-plaintext highlighter-rouge">bottom</code>分别表示图片的左上角和右下角的经纬度。</p>
+
+<p>然后将地图部署到<code class="language-plaintext highlighter-rouge">nginx</code>上，通过<code class="language-plaintext highlighter-rouge">nginx</code>的<code class="language-plaintext highlighter-rouge">http://localhost:8084/maps/</code>访问。</p>
+
+<div class="language-nginx highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">server</span> <span class="p">{</span>
+    <span class="kn">listen</span>       <span class="mi">8084</span><span class="p">;</span>
+    <span class="kn">server_name</span>  <span class="s">localhost</span><span class="p">;</span>
+
+    <span class="kn">location</span> <span class="n">/maps</span> <span class="p">{</span>
+      <span class="kn">add_header</span> <span class="s">'Access-Control-Allow-Origin'</span> <span class="s">'*'</span><span class="p">;</span>
+			<span class="kn">root</span>	<span class="s">files</span><span class="p">;</span>
+			<span class="kn">autoindex</span>	<span class="no">on</span><span class="p">;</span>
+		<span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>当然也可以直接用<code class="language-plaintext highlighter-rouge">require</code>来引入图片，我测试时使用的是<code class="language-plaintext highlighter-rouge">nginx</code>。</p>
+
+<h3 id="32-添加朝代地图">3.2. 添加朝代地图</h3>
+<p>目前尝试了以下几种方法：</p>
+
+<h4 id="321-使用esrigraphic来添加图片">3.2.1. 使用<code class="language-plaintext highlighter-rouge">esri/Graphic</code>来添加图片</h4>
+<p>在比较早的版本可以用<code class="language-plaintext highlighter-rouge">esri/layers/MapImageLayer</code>, <code class="language-plaintext highlighter-rouge">esri/layers/MapImage</code>来添加图片，具体操作就是创建一个<code class="language-plaintext highlighter-rouge">MapImageLayer</code>图层并添加到地图中，然后调用它的<code class="language-plaintext highlighter-rouge">addImage</code>方法添加一个<code class="language-plaintext highlighter-rouge">MapImage</code>。我试过这种方式，发现一个很大的问题就是图片的分辨率很糟糕，放大图片后原本图片中的信息基本看不清楚。</p>
+
+<p>我现在使用的是<code class="language-plaintext highlighter-rouge">esri-loader v3.7.0</code>，这个版本的<code class="language-plaintext highlighter-rouge">MapImage</code>移到了<code class="language-plaintext highlighter-rouge">esri/layers/support/MapImage</code>，且它的<code class="language-plaintext highlighter-rouge">MapImageLayer</code>已经没有<code class="language-plaintext highlighter-rouge">addImage</code>方法了，所以我采用了另一种方式，就是使用<code class="language-plaintext highlighter-rouge">esri/Graphic</code>来添加图片。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">getPictureSize </span><span class="p">(</span><span class="nx">mapData</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">scale</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nf">calculateScale</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">width</span> <span class="o">=</span> <span class="p">(</span><span class="nx">mapData</span><span class="p">.</span><span class="nx">right</span> <span class="o">-</span> <span class="nx">mapData</span><span class="p">.</span><span class="nx">left</span><span class="p">)</span> <span class="o">*</span> <span class="nx">scale</span><span class="p">.</span><span class="nx">x</span>
+  <span class="kd">const</span> <span class="nx">height</span> <span class="o">=</span> <span class="p">(</span><span class="nx">mapData</span><span class="p">.</span><span class="nx">top</span> <span class="o">-</span> <span class="nx">mapData</span><span class="p">.</span><span class="nx">bottom</span><span class="p">)</span> <span class="o">*</span> <span class="nx">scale</span><span class="p">.</span><span class="nx">y</span>
+  <span class="k">return</span> <span class="p">{</span>
+    <span class="na">width</span><span class="p">:</span> <span class="s2">`</span><span class="p">${</span><span class="nx">width</span><span class="p">}</span><span class="s2">px`</span><span class="p">,</span>
+    <span class="na">height</span><span class="p">:</span> <span class="s2">`</span><span class="p">${</span><span class="nx">height</span><span class="p">}</span><span class="s2">px`</span>
+  <span class="p">}</span>
+<span class="p">},</span>
+<span class="nf">generatePictureSymbol </span><span class="p">(</span><span class="nx">mapData</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">size</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nf">getPictureSize</span><span class="p">(</span><span class="nx">mapData</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">pictureSymbol</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">picture-marker</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">url</span><span class="p">:</span> <span class="s2">`</span><span class="p">${</span><span class="k">this</span><span class="p">.</span><span class="nx">mapRootUrl</span><span class="p">}${</span><span class="nx">mapData</span><span class="p">.</span><span class="nx">mapName</span><span class="p">}</span><span class="s2">`</span><span class="p">,</span>
+    <span class="p">...</span><span class="nx">size</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">point</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">type</span><span class="p">:</span> <span class="dl">"</span><span class="s2">point</span><span class="dl">"</span><span class="p">,</span>
+    <span class="na">longitude</span><span class="p">:</span> <span class="nx">mapData</span><span class="p">.</span><span class="nx">left</span> <span class="o">+</span> <span class="p">(</span><span class="nx">mapData</span><span class="p">.</span><span class="nx">right</span> <span class="o">-</span> <span class="nx">mapData</span><span class="p">.</span><span class="nx">left</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+    <span class="na">latitude</span><span class="p">:</span> <span class="nx">mapData</span><span class="p">.</span><span class="nx">top</span> <span class="o">+</span> <span class="p">(</span><span class="nx">mapData</span><span class="p">.</span><span class="nx">bottom</span> <span class="o">-</span> <span class="nx">mapData</span><span class="p">.</span><span class="nx">top</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+  <span class="p">}</span>
+  <span class="k">return</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nc">Graphic</span><span class="p">({</span>
+    <span class="na">geometry</span><span class="p">:</span> <span class="nx">point</span><span class="p">,</span>
+    <span class="na">symbol</span><span class="p">:</span> <span class="nx">pictureSymbol</span><span class="p">,</span>
+  <span class="p">})</span>
+<span class="p">},</span>    
+<span class="nf">handleDynastyChange </span><span class="p">()</span> <span class="p">{</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nf">removeAll</span><span class="p">()</span>
+  <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">.</span><span class="nx">dynasty</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">无</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nx">graphics</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nf">generatePictureSymbol</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">))</span>
+<span class="p">},</span>
+<span class="nf">loadMap </span><span class="p">(</span><span class="nx">mapName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nf">loadModules</span><span class="p">(</span>
+    <span class="p">[</span> <span class="p">...,</span> <span class="dl">'</span><span class="s1">esri/Graphic</span><span class="dl">'</span> <span class="p">],</span>
+    <span class="p">{</span> <span class="na">css</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+  <span class="p">).</span><span class="nf">then</span><span class="p">(</span>
+    <span class="p">([...,</span> <span class="nx">Graphic</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">Graphic</span> <span class="o">=</span> <span class="nx">Graphic</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span> <span class="o">=</span> <span class="nx">view</span>
+      <span class="nx">view</span><span class="p">.</span><span class="nf">watch</span><span class="p">(</span><span class="dl">'</span><span class="s1">scale</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nf">handleDynastyChange</span><span class="p">()</span>
+      <span class="p">})</span>
+    <span class="p">}</span>
+  <span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+<p>清除图片用<code class="language-plaintext highlighter-rouge">this.mapView.graphics.removeAll()</code>，添加图片用<code class="language-plaintext highlighter-rouge">this.mapView.graphics.add()</code>，这样就可以在地图上添加图片了。记得监听地图的<code class="language-plaintext highlighter-rouge">scale</code>事件，因为地图缩放时，图片的大小也需要相应的改变。</p>
+
+<p>效果如下：
+<img src="/post_assets/images/2023/11/25-picture-symbol.gif" alt="map" /></p>
+
+<p>这种方式的缺陷也很明显，一是缩放时动画不流畅，二是图片的分辨率不高，放大后看不清楚。</p>
+
+<h4 id="322-在地图上添加一个div来放置图片">3.2.2. 在地图上添加一个<code class="language-plaintext highlighter-rouge">div</code>来放置图片</h4>
+<p>在<code class="language-plaintext highlighter-rouge">map-container</code>外面添加一个<code class="language-plaintext highlighter-rouge">relative</code>定位的<code class="language-plaintext highlighter-rouge">div</code>，然后在这个<code class="language-plaintext highlighter-rouge">div</code>里面添加一个<code class="language-plaintext highlighter-rouge">absolute</code>定位的<code class="language-plaintext highlighter-rouge">div</code>用于放置图片，图片设置一定的透明度。图片的大小和位置通过计算经纬度来确定。这里我采用的方式是随便在地图上取两个点，然后计算这两个点的经纬度与屏幕坐标的比例，然后根据这个比例来计算图片的位置。</p>
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">calculateScale </span><span class="p">(</span><span class="nx">mapView</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">mapPoint1</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">x</span><span class="p">:</span> <span class="mi">103</span><span class="p">,</span>
+    <span class="na">y</span><span class="p">:</span> <span class="mi">33</span><span class="p">,</span>
+    <span class="na">spatialReference</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">wkid</span><span class="p">:</span> <span class="mi">4326</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">mapPoint2</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">x</span><span class="p">:</span> <span class="mi">113</span><span class="p">,</span>
+    <span class="na">y</span><span class="p">:</span> <span class="mi">43</span><span class="p">,</span>
+    <span class="na">spatialReference</span><span class="p">:</span> <span class="p">{</span>
+      <span class="na">wkid</span><span class="p">:</span> <span class="mi">4326</span>
+    <span class="p">}</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">screenPoint1</span> <span class="o">=</span> <span class="nx">mapView</span><span class="p">.</span><span class="nf">toScreen</span><span class="p">(</span><span class="nx">mapPoint1</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">screenPoint2</span> <span class="o">=</span> <span class="nx">mapView</span><span class="p">.</span><span class="nf">toScreen</span><span class="p">(</span><span class="nx">mapPoint2</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">scaleX</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="nx">screenPoint1</span><span class="p">.</span><span class="nx">x</span> <span class="o">-</span> <span class="nx">screenPoint2</span><span class="p">.</span><span class="nx">x</span><span class="p">)</span> <span class="o">/</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="nx">mapPoint1x</span> <span class="o">-</span> <span class="nx">mapPoint2</span><span class="p">.</span><span class="nx">x</span><span class="p">)</span>
+  <span class="kd">const</span> <span class="nx">scaleY</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="nx">screenPoint1</span><span class="p">.</span><span class="nx">y</span> <span class="o">-</span> <span class="nx">screenPoint2</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span> <span class="o">/</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="nx">mapPoint1y</span> <span class="o">-</span> <span class="nx">mapPoint2</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span>
+  <span class="k">return</span> <span class="p">{</span> <span class="na">x</span><span class="p">:</span> <span class="nx">scaleX</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="nx">scaleY</span> <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>然后分别计算图片的左上角和右下角的经纬度，然后通过这两个经纬度来计算图片的位置。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">updateImagePosition </span><span class="p">(</span><span class="nx">mapView</span><span class="p">,</span> <span class="nx">leftTop</span><span class="p">,</span> <span class="nx">rightBottom</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">mapView</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+  <span class="kd">let</span> <span class="nx">scale</span>
+  <span class="k">try</span> <span class="p">{</span>
+    <span class="nx">scale</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nf">calculateScale</span><span class="p">(</span><span class="nx">mapView</span><span class="p">)</span>
+  <span class="p">}</span> <span class="k">catch </span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">imgWidth</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="nx">leftTop</span><span class="p">.</span><span class="nx">x</span> <span class="o">-</span> <span class="nx">rightBottom</span><span class="p">.</span><span class="nx">x</span><span class="p">)</span> <span class="o">*</span> <span class="nx">scale</span><span class="p">.</span><span class="nx">x</span>
+  <span class="kd">const</span> <span class="nx">imgHeight</span> <span class="o">=</span> <span class="nb">Math</span><span class="p">.</span><span class="nf">abs</span><span class="p">(</span><span class="nx">leftTop</span><span class="p">.</span><span class="nx">y</span> <span class="o">-</span> <span class="nx">rightBottom</span><span class="p">.</span><span class="nx">y</span><span class="p">)</span> <span class="o">*</span> <span class="nx">scale</span><span class="p">.</span><span class="nx">y</span>
+  <span class="kd">const</span> <span class="nx">newLeftTop</span> <span class="o">=</span> <span class="nx">mapView</span><span class="p">.</span><span class="nf">toScreen</span><span class="p">({</span><span class="na">x</span><span class="p">:</span> <span class="nx">leftTop</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="nx">leftTop</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="na">spatialReference</span><span class="p">:</span> <span class="p">{</span> <span class="na">wkid</span><span class="p">:</span> <span class="mi">4326</span> <span class="p">}})</span> <span class="c1">// 左上角</span>
+  <span class="kd">const</span> <span class="nx">img</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">.image-layer</span><span class="dl">'</span><span class="p">)</span>
+  <span class="k">if </span><span class="p">(</span><span class="o">!</span><span class="nx">img</span><span class="p">)</span> <span class="p">{</span> <span class="k">return</span> <span class="p">}</span>
+  <span class="nx">img</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">imgWidth</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">px</span><span class="dl">'</span>
+  <span class="nx">img</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">imgHeight</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">px</span><span class="dl">'</span>
+  <span class="nx">img</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">left</span> <span class="o">=</span> <span class="nx">newLeftTop</span><span class="p">.</span><span class="nx">x</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">px</span><span class="dl">'</span>
+  <span class="nx">img</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">top</span> <span class="o">=</span> <span class="nx">newLeftTop</span><span class="p">.</span><span class="nx">y</span> <span class="o">+</span> <span class="dl">'</span><span class="s1">px</span><span class="dl">'</span>
+<span class="p">},</span>
+<span class="nf">updateImage </span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">const</span> <span class="nx">mapView</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span>
+  <span class="kd">const</span> <span class="nx">leftTop</span> <span class="o">=</span> <span class="p">{</span> <span class="na">x</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">.</span><span class="nx">top</span> <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">rightBottom</span> <span class="o">=</span> <span class="p">{</span> <span class="na">x</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">.</span><span class="nx">right</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">.</span><span class="nx">bottom</span> <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nf">updateImagePosition</span><span class="p">(</span><span class="nx">mapView</span><span class="p">,</span> <span class="nx">leftTop</span><span class="p">,</span> <span class="nx">rightBottom</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>还有一个需要处理的问题就是图片如果覆盖在地图之上，那么像移动地图和缩放地图这些操作就会被图片给遮挡住，而给图片添加<code class="language-plaintext highlighter-rouge">pointer-events: none</code>的样式似乎无法让鼠标事件穿透图片。所以打算采用事件传递的方式，当鼠标在图片上时，将事件传递给地图。</p>
+
+<div class="language-html highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;template&gt;</span>
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"outer-container"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">id=</span><span class="s">"map-container"</span><span class="nt">&gt;&lt;/div&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"image-layer"</span>
+      <span class="err">@</span><span class="na">wheel.stop=</span><span class="s">"dispatchEventToMap($event, 'wheel')"</span>
+      <span class="err">@</span><span class="na">mousedown.stop=</span><span class="s">"handleImageLayerMouseDown"</span>
+      <span class="err">@</span><span class="na">mouseup.stop=</span><span class="s">"handleImageLayerMouseUp"</span>
+      <span class="err">@</span><span class="na">mousemove.stop=</span><span class="s">"handleImageLayerMouseMove"</span>
+      <span class="err">@</span><span class="na">mouseleave.stop=</span><span class="s">"handleImageLayerMouseUp"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+<span class="nt">&lt;/template&gt;</span>
+
+<span class="nt">&lt;script&gt;</span>
+<span class="k">import</span> <span class="p">{</span> <span class="nx">loadModules</span> <span class="p">}</span> <span class="k">from</span> <span class="dl">'</span><span class="s1">esri-loader</span><span class="dl">'</span>
+  
+<span class="k">export</span> <span class="k">default</span> <span class="p">{</span>
+  <span class="nf">data</span><span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="na">mapView</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+      <span class="na">mouseDown</span><span class="p">:</span> <span class="kc">false</span><span class="p">,</span>
+      <span class="na">mouseDownPoint</span><span class="p">:</span> <span class="p">{</span> <span class="na">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="mi">0</span> <span class="p">},</span>
+      <span class="na">mouseDownMapCenter</span><span class="p">:</span> <span class="p">{</span> <span class="na">x</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="mi">0</span> <span class="p">},</span>
+      <span class="c1">// other data</span>
+    <span class="p">}</span>
+  <span class="p">},</span>
+  <span class="na">methods</span><span class="p">:</span> <span class="p">{</span>
+    <span class="nf">dispatchEventToMap </span><span class="p">(</span><span class="nx">event</span><span class="p">,</span> <span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">mouseDown</span> <span class="o">=</span> <span class="kc">false</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cursor</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">default</span><span class="dl">'</span>
+      <span class="kd">const</span> <span class="nx">tempCanvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelector</span><span class="p">(</span><span class="dl">'</span><span class="s1">#map-container .esri-view-root .esri-view-surface canvas</span><span class="dl">'</span><span class="p">)</span>
+      <span class="kd">let</span> <span class="nx">tempEvent</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WheelEvent</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">event</span><span class="p">)</span>
+      <span class="nx">tempCanvas</span><span class="p">.</span><span class="nf">dispatchEvent</span><span class="p">(</span><span class="nx">tempEvent</span><span class="p">)</span>
+    <span class="p">},</span>
+    <span class="nf">handleImageLayerMouseDown </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">mouseDown</span> <span class="o">=</span> <span class="kc">true</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">mouseDownPoint</span> <span class="o">=</span> <span class="p">{</span> <span class="na">x</span><span class="p">:</span> <span class="nx">event</span><span class="p">.</span><span class="nx">clientX</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="nx">event</span><span class="p">.</span><span class="nx">clientY</span> <span class="p">}</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">mouseDownMapCenter</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nx">center</span>
+    <span class="p">},</span>
+    <span class="nf">handleImageLayerMouseUp </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">mouseDown</span> <span class="o">=</span> <span class="kc">false</span>
+      <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cursor</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">default</span><span class="dl">'</span>
+    <span class="p">},</span>
+    <span class="nf">handleImageLayerMouseMove </span><span class="p">(</span><span class="nx">event</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">mouseDown</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">const</span> <span class="nx">deltaX</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">clientX</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">mouseDownPoint</span><span class="p">.</span><span class="nx">x</span>
+        <span class="kd">const</span> <span class="nx">deltaY</span> <span class="o">=</span> <span class="nx">event</span><span class="p">.</span><span class="nx">clientY</span> <span class="o">-</span> <span class="k">this</span><span class="p">.</span><span class="nx">mouseDownPoint</span><span class="p">.</span><span class="nx">y</span>
+        <span class="c1">// 将鼠标形状设置为move</span>
+        <span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">.</span><span class="nx">style</span><span class="p">.</span><span class="nx">cursor</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">grab</span><span class="dl">'</span>
+        <span class="kd">const</span> <span class="nx">originCenter</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nf">toScreen</span><span class="p">({</span>
+          <span class="na">x</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mouseDownMapCenter</span><span class="p">.</span><span class="nx">longitude</span><span class="p">,</span>
+          <span class="na">y</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">mouseDownMapCenter</span><span class="p">.</span><span class="nx">latitude</span><span class="p">,</span>
+          <span class="na">spatialReference</span><span class="p">:</span> <span class="p">{</span>
+            <span class="na">wkid</span><span class="p">:</span> <span class="mi">4326</span>
+          <span class="p">}</span>
+        <span class="p">})</span>
+        <span class="kd">const</span> <span class="nx">newCenter</span> <span class="o">=</span> <span class="p">{</span>
+          <span class="na">x</span><span class="p">:</span> <span class="nx">originCenter</span><span class="p">.</span><span class="nx">x</span> <span class="o">-</span> <span class="nx">deltaX</span><span class="p">,</span>
+          <span class="na">y</span><span class="p">:</span> <span class="nx">originCenter</span><span class="p">.</span><span class="nx">y</span> <span class="o">-</span> <span class="nx">deltaY</span>
+        <span class="p">}</span>
+        <span class="kd">const</span> <span class="nx">newCenterMapPoint</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nf">toMap</span><span class="p">(</span><span class="nx">newCenter</span><span class="p">)</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nx">center</span> <span class="o">=</span> <span class="p">[</span><span class="nx">newCenterMapPoint</span><span class="p">.</span><span class="nx">longitude</span><span class="p">,</span> <span class="nx">newCenterMapPoint</span><span class="p">.</span><span class="nx">latitude</span><span class="p">]</span>
+      <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="c1">// other methods</span>
+  <span class="p">},</span>
+  <span class="nf">loadMap </span><span class="p">(</span><span class="nx">mapName</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nf">loadModules</span><span class="p">(</span>
+      <span class="p">...</span>
+    <span class="p">).</span><span class="nf">then</span><span class="p">(</span>
+      <span class="p">(...)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">view</span><span class="p">.</span><span class="nf">watch</span><span class="p">(</span><span class="dl">'</span><span class="s1">scale</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nf">updateImage</span><span class="p">()</span>
+        <span class="p">})</span>
+
+        <span class="c1">// 移动地图</span>
+        <span class="nx">view</span><span class="p">.</span><span class="nf">watch</span><span class="p">(</span><span class="dl">'</span><span class="s1">center</span><span class="dl">'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+          <span class="k">this</span><span class="p">.</span><span class="nf">updateImage</span><span class="p">()</span>
+        <span class="p">})</span>
+
+        <span class="k">this</span><span class="p">.</span><span class="nf">updateImage</span><span class="p">()</span>
+      <span class="p">}</span>
+    <span class="p">)</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>鼠标滚轮缩放事件可以直接传递给地图，但是鼠标移动事件需要计算移动的距离，然后通过计算得到新的地图中心点。所以我在<code class="language-plaintext highlighter-rouge">mousemove</code>事件中计算了鼠标移动的距离，然后通过这个距离来计算新的地图中心点，然后将地图的中心点设置为这个新的中心点，同时将鼠标形状设置为<code class="language-plaintext highlighter-rouge">grab</code>。相应的在触发地图的<code class="language-plaintext highlighter-rouge">scale</code>和<code class="language-plaintext highlighter-rouge">center</code>事件时，也需要更新图片的位置。</p>
+
+<p><code class="language-plaintext highlighter-rouge">esri-loader</code>地图上自带了缩放的加号和减号图标，上述方式图片会覆盖在这两个图标之上，所以需要将这两个图标隐藏掉。</p>
+
+<div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">#map-container</span> <span class="o">&gt;&gt;&gt;</span> <span class="nc">.esri-ui-top-left</span> <span class="p">{</span>
+  <span class="nl">display</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>效果如下：
+<img src="/post_assets/images/2023/11/25-image-above-map.gif" alt="map" /></p>
+
+<p>相比上面的方法，图片分辨率没有太大问题，移动和缩放也相当流畅。但在后续的一些操作中，比如我想给地图加一些点或者线，这些点或线会被图片遮挡住，处理起来也比较麻烦。</p>
+
+<h4 id="323-使用esribasedynamiclayer">3.2.3. 使用<code class="language-plaintext highlighter-rouge">esri/BaseDynamicLayer</code></h4>
+<p><code class="language-plaintext highlighter-rouge">BaseDynamicLayer</code>是一个抽象类，可以通过继承这个类来实现自定义图层。官方文档：<a href="https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-BaseDynamicLayer.html">https://developers.arcgis.com/javascript/latest/api-reference/esri-layers-BaseDynamicLayer.html</a>。</p>
+
+<div class="language-js highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">handleDynastyChange </span><span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// 清除之前的图片</span>
+  <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">currentPictureLayer</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nx">map</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">currentPictureLayer</span><span class="p">)</span>
+  <span class="p">}</span>
+  <span class="k">if </span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">.</span><span class="nx">dynasty</span> <span class="o">===</span> <span class="dl">'</span><span class="s1">无</span><span class="dl">'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span>
+  <span class="p">}</span>
+  <span class="kd">const</span> <span class="nx">pictureUrl</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapRootUrl</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span><span class="p">.</span><span class="nx">mapName</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">currentPictureLayer</span> <span class="o">=</span> <span class="k">new</span> <span class="k">this</span><span class="p">.</span><span class="nc">MyCustomDynamicLayer</span><span class="p">({</span>
+    <span class="nx">pictureUrl</span><span class="p">,</span> <span class="na">mapData</span><span class="p">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">currentMapData</span>
+  <span class="p">})</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span><span class="p">.</span><span class="nx">map</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">currentPictureLayer</span><span class="p">)</span>
+<span class="p">},</span>
+<span class="nf">loadMap </span><span class="p">(</span><span class="nx">mapName</span><span class="p">)</span> <span class="p">{</span>
+  <span class="nf">loadModules</span><span class="p">(</span>
+    <span class="p">[</span>
+      <span class="p">...,</span>
+      <span class="dl">'</span><span class="s1">esri/layers/BaseDynamicLayer</span><span class="dl">'</span><span class="p">,</span>
+      <span class="dl">'</span><span class="s1">esri/request</span><span class="dl">'</span>
+    <span class="p">],</span>
+    <span class="p">{</span> <span class="na">css</span><span class="p">:</span> <span class="kc">true</span> <span class="p">}</span>
+  <span class="p">).</span><span class="nf">then</span><span class="p">(</span>
+    <span class="p">([...,</span>
+      <span class="nx">BaseDynamicLayer</span><span class="p">,</span>
+      <span class="nx">esriRequest</span><span class="p">])</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="kd">const</span> <span class="nx">basemap</span> <span class="o">=</span> <span class="nf">loadMap</span><span class="p">(</span><span class="nx">mapName</span><span class="p">,</span> <span class="nx">Basemap</span><span class="p">,</span> <span class="nx">WebTileLayer</span><span class="p">,</span> <span class="nx">TileInfo</span><span class="p">,</span> <span class="nx">SpatialReference</span><span class="p">)</span>
+      <span class="kd">const</span> <span class="nx">map</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Map</span><span class="p">({</span> <span class="nx">basemap</span> <span class="p">})</span>
+      <span class="kd">const</span> <span class="nx">view</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">MapView</span><span class="p">({</span>
+        <span class="nx">map</span><span class="p">,</span> <span class="na">container</span><span class="p">:</span> <span class="dl">'</span><span class="s1">map-container</span><span class="dl">'</span><span class="p">,</span> <span class="na">center</span><span class="p">:</span> <span class="p">[</span><span class="mi">113</span><span class="p">,</span> <span class="mi">36</span><span class="p">],</span> <span class="na">zoom</span><span class="p">:</span> <span class="mi">3</span>
+      <span class="p">})</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">mapView</span> <span class="o">=</span> <span class="nx">view</span>
+      
+      <span class="k">this</span><span class="p">.</span><span class="nx">MyCustomDynamicLayer</span> <span class="o">=</span> <span class="nx">BaseDynamicLayer</span><span class="p">.</span><span class="nf">createSubclass</span><span class="p">({</span>
+        <span class="c1">// properties of the custom dynamic layer</span>
+        <span class="na">properties</span><span class="p">:</span> <span class="p">{</span>
+          <span class="na">pictureUrl</span><span class="p">:</span> <span class="kc">null</span><span class="p">,</span>
+          <span class="na">mapData</span><span class="p">:</span> <span class="kc">null</span>
+        <span class="p">},</span>
+        <span class="c1">// override getImageUrl() to generate URL to the image</span>
+        <span class="na">getImageUrl</span><span class="p">:</span> <span class="nf">function </span><span class="p">(</span><span class="nx">extent</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">pictureUrl</span>
+        <span class="p">},</span>
+        <span class="c1">// Fetches images for given extent and size</span>
+        <span class="na">fetchImage</span><span class="p">:</span> <span class="nf">function </span><span class="p">(</span><span class="nx">extent</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">){</span>
+          <span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nf">getImageUrl</span><span class="p">(</span><span class="nx">extent</span><span class="p">,</span> <span class="nx">width</span><span class="p">,</span> <span class="nx">height</span><span class="p">);</span>
+          <span class="c1">// request for the image based on the generated url</span>
+          <span class="k">return</span> <span class="nf">esriRequest</span><span class="p">(</span><span class="nx">url</span><span class="p">,</span> <span class="p">{</span>
+            <span class="na">responseType</span><span class="p">:</span> <span class="dl">"</span><span class="s2">image</span><span class="dl">"</span>
+          <span class="p">})</span>
+          <span class="p">.</span><span class="nf">then</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">let</span> <span class="nx">image</span> <span class="o">=</span> <span class="nx">response</span><span class="p">.</span><span class="nx">data</span><span class="p">;</span>
+            <span class="c1">// create a canvas with teal fill</span>
+            <span class="kd">let</span> <span class="nx">canvas</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">createElement</span><span class="p">(</span><span class="dl">"</span><span class="s2">canvas</span><span class="dl">"</span><span class="p">);</span>
+            <span class="kd">let</span> <span class="nx">context</span> <span class="o">=</span> <span class="nx">canvas</span><span class="p">.</span><span class="nf">getContext</span><span class="p">(</span><span class="dl">"</span><span class="s2">2d</span><span class="dl">"</span><span class="p">);</span>
+            <span class="nx">canvas</span><span class="p">.</span><span class="nx">width</span> <span class="o">=</span> <span class="nx">width</span><span class="p">;</span>
+            <span class="nx">canvas</span><span class="p">.</span><span class="nx">height</span> <span class="o">=</span> <span class="nx">height</span><span class="p">;</span>
+            <span class="k">if </span><span class="p">(</span><span class="nx">extent</span><span class="p">.</span><span class="nx">xmin</span> <span class="o">===</span> <span class="o">-</span><span class="mi">180</span><span class="p">)</span> <span class="p">{</span>
+              <span class="c1">// 地图移动到了左边界，直接隐藏</span>
+              <span class="k">return</span> <span class="nx">canvas</span>
+            <span class="p">}</span>
+            <span class="kd">const</span> <span class="nx">tempMapData</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">mapData</span>
+            <span class="kd">const</span> <span class="nx">leftTop</span> <span class="o">=</span> <span class="nx">view</span><span class="p">.</span><span class="nf">toScreen</span><span class="p">({</span> <span class="na">x</span><span class="p">:</span> <span class="nx">tempMapData</span><span class="p">.</span><span class="nx">left</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="nx">tempMapData</span><span class="p">.</span><span class="nx">top</span> <span class="p">})</span>
+            <span class="kd">const</span> <span class="nx">rightBottom</span> <span class="o">=</span> <span class="nx">view</span><span class="p">.</span><span class="nf">toScreen</span><span class="p">({</span> <span class="na">x</span><span class="p">:</span> <span class="nx">tempMapData</span><span class="p">.</span><span class="nx">right</span><span class="p">,</span> <span class="na">y</span><span class="p">:</span> <span class="nx">tempMapData</span><span class="p">.</span><span class="nx">bottom</span> <span class="p">})</span>
+            <span class="c1">// Apply destination-atop operation to the image returned from the server</span>
+            <span class="nx">context</span><span class="p">.</span><span class="nx">fillStyle</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">rgb(0,200,200)</span><span class="dl">"</span><span class="p">;</span>
+            <span class="nx">context</span><span class="p">.</span><span class="nx">globalCompositeOperation</span> <span class="o">=</span> <span class="dl">"</span><span class="s2">destination-atop</span><span class="dl">"</span><span class="p">;</span>
+            <span class="nx">context</span><span class="p">.</span><span class="nf">drawImage</span><span class="p">(</span><span class="nx">image</span><span class="p">,</span> <span class="nx">leftTop</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">leftTop</span><span class="p">.</span><span class="nx">y</span><span class="p">,</span> <span class="nx">rightBottom</span><span class="p">.</span><span class="nx">x</span> <span class="o">-</span> <span class="nx">leftTop</span><span class="p">.</span><span class="nx">x</span><span class="p">,</span> <span class="nx">rightBottom</span><span class="p">.</span><span class="nx">y</span> <span class="o">-</span> <span class="nx">leftTop</span><span class="p">.</span><span class="nx">y</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nx">canvas</span><span class="p">;</span>
+          <span class="p">}.</span><span class="nf">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+        <span class="p">}</span>
+      <span class="p">})</span>
+      <span class="nx">view</span><span class="p">.</span><span class="nf">when</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nf">handleDynastyChange</span><span class="p">()</span>
+      <span class="p">})</span>
+      <span class="kd">const</span> <span class="nx">resetButton</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">getElementById</span><span class="p">(</span><span class="dl">'</span><span class="s1">reset-button</span><span class="dl">'</span><span class="p">)</span>
+      <span class="c1">// 添加按钮点击事件</span>
+      <span class="nx">resetButton</span><span class="p">.</span><span class="nf">addEventListener</span><span class="p">(</span><span class="dl">'</span><span class="s1">click</span><span class="dl">'</span><span class="p">,</span> <span class="nf">function </span><span class="p">()</span> <span class="p">{</span>
+      <span class="c1">// 重新设置地图中心位置</span>
+        <span class="nx">view</span><span class="p">.</span><span class="nx">center</span> <span class="o">=</span> <span class="p">[</span><span class="mi">112</span><span class="p">,</span> <span class="mi">29</span><span class="p">]</span>
+        <span class="nx">view</span><span class="p">.</span><span class="nx">zoom</span> <span class="o">=</span> <span class="mi">3</span>
+      <span class="p">})</span>
+    <span class="p">}</span>
+  <span class="p">)</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>使用<code class="language-plaintext highlighter-rouge">BaseDynamicLayer.createSubclass</code>方法，添加了<code class="language-plaintext highlighter-rouge">pictureUrl</code>和<code class="language-plaintext highlighter-rouge">mapData</code>两个属性，然后重写了<code class="language-plaintext highlighter-rouge">getImageUrl</code>和<code class="language-plaintext highlighter-rouge">fetchImage</code>方法。<code class="language-plaintext highlighter-rouge">getImageUrl</code>方法返回图片的 url，<code class="language-plaintext highlighter-rouge">fetchImage</code>方法用来获取图片，然后将图片绘制到<code class="language-plaintext highlighter-rouge">canvas</code>上。在绘制图片时，需要将图片的经纬度转换为屏幕坐标，然后绘制图片。</p>
+
+<p>每次切换朝代地图时，需要先移除之前的图片，然后添加新的图片: <code class="language-plaintext highlighter-rouge">this.mapView.map.add(...)</code>和<code class="language-plaintext highlighter-rouge">this.mapView.map.remove(...)</code>。</p>
+
+<p>效果如下：
+<img src="/post_assets/images/2023/11/25-base-dynamic-layer.gif" alt="map" /></p>
+
+<p>这种方式图片的分辨率没有问题，但有两个明显的缺陷：</p>
+<ol>
+  <li>移动和缩放地图时，会有明显的延迟。因为<code class="language-plaintext highlighter-rouge">fetchImage</code>仅会在移动和缩放的动画结束后才会调用，而且该方法中的<code class="language-plaintext highlighter-rouge">esriRequest</code>方法也会有一定的延迟。</li>
+  <li>一旦地图移动到了右侧的边界，<code class="language-plaintext highlighter-rouge">fetchImage</code>所生成的<code class="language-plaintext highlighter-rouge">canvas</code>的横坐标就会变到地图右侧的边界，但是通过<code class="language-plaintext highlighter-rouge">view.toScreen</code>方法转换的坐标还是在地图内部，这样的话图片的位置就会出现严重偏差。而且没法通过<code class="language-plaintext highlighter-rouge">canvas</code>的<code class="language-plaintext highlighter-rouge">css</code>样式将<code class="language-plaintext highlighter-rouge">canvas</code>的坐标移回去。所以不得不在到达边界时(<code class="language-plaintext highlighter-rouge">extent.xmin === -180</code>)直接隐藏图片。</li>
+</ol>
+
+<p><img src="/post_assets/images/2023/11/25-base-dynamic-layer-bug.gif" alt="map" /></p>
+
+<h2 id="4-总结">4. 总结</h2>
+<p>本次添加地图图片的工作最主要的问题在于将图片正确的显示在地图上。上面的三种方法各有优缺点。分辨率除了第一种方法，其他两种方法都没有问题。操作的流畅度上，第三种方法最差，第一种方法次之，第二种方法最好。只有第二种方法会影响后续的标记位置等操作。所以整体上来说，根据实际需求选择第二种或者第三种方法比较好，某些极端情况对分辨率无要求的话，第一种方法也可以。</p>
+
+<h2 id="5-源代码">5. 源代码</h2>
+<p>代码地址：<a href="https://github.com/lxmghct/my-vue-components">https://github.com/lxmghct/my-vue-components</a></p>
+
+<p>在<code class="language-plaintext highlighter-rouge">src/views/map-test</code>目录下。其中<code class="language-plaintext highlighter-rouge">Test1.vue</code>, <code class="language-plaintext highlighter-rouge">Test2.vue</code>, <code class="language-plaintext highlighter-rouge">Test3.vue</code>分别对应上述的三种方法。</p>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/11/29/elasticsearch%E8%AE%BE%E7%BD%AE%E5%AF%86%E7%A0%81.html" title="elasticsearch设置密码">elasticsearch设置密码</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2023/11/24/python%E5%86%99%E5%85%A5neo4j%E6%97%B6%E9%97%B4%E6%A0%BC%E5%BC%8F%E9%97%AE%E9%A2%98.html"
+      title="python写入neo4j时间格式问题">python写入neo4j时间格式问题</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2023-11-25】 vue使用esri-loader切换底图并添加自定义图片"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

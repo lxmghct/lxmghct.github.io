@@ -1,0 +1,150 @@
+/**
+ * _includes/header.html
+ */
+.navbar {
+    border-radius: 0;
+    position: relative;
+    margin-bottom: 0;
+    /* 取消bootstrap默认的min-height: 50px; */
+    min-height: 0;
+}
+
+.navbar-header {
+    padding-top: 0.26em;
+}
+
+.header-title i,
+.header-hidden-buttons i {
+    font-size: 2em;
+    color: #eeeeee;
+    vertical-align: middle;
+    margin: 0 0.3em 0 0;
+    cursor: pointer;
+}
+
+.header-title i:hover,
+.header-hidden-buttons i:hover {
+    color: #fff;
+}
+
+.site-title {
+    font-size: 1.4em;
+    line-height: 2.2em;
+    vertical-align: middle;
+    letter-spacing: 1px;
+    margin: 0 auto;
+}
+
+.site-title {
+    text-decoration: none;
+}
+
+.site-title,
+.site-title:visited {
+    color: #eeeeee;
+}
+
+.site-title:hover {
+    text-decoration: none;
+    color: #fff;
+}
+
+
+.site-nav {
+    font-size: 1.2em;
+    padding-bottom: 0;
+    line-height: 2.9em;
+    letter-spacing: 1px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.site-nav .nav {
+    list-style-type: none;
+    float: left;
+    position: relative;
+    margin-left: 0;
+    width: 100%;
+}
+
+.site-nav .nav li {
+    float: left;
+    position: relative;
+}
+
+.site-nav .page-link {
+    padding: 0;
+    color: #fff;
+    min-width: 80px;
+}
+
+.site-nav .page-link:hover,
+.site-nav .page-link:focus {
+    background-color: #506274;
+    color: #fff;
+}
+
+.site-nav .page-link:not(:first-child) {
+    margin-left: 1.3em;
+}
+
+/* navibar on phone */
+.header-hidden-buttons {
+    margin-top: 0.8em;
+    text-align: right;
+}
+
+#nav-trigger {
+    position: absolute;
+    right: 0;
+    opacity: 0; /* 隐藏，但是要能够触发失焦和聚焦事件 */
+}
+.phone-nav {
+    position: absolute;
+    right: 5px;
+    top: 100%;
+    font-size: 1.2em;
+    text-align: center;
+    width: 33%;
+    z-index: 3;
+    border-radius: 0 0 5px 5px;
+    padding: 0.4em;
+    background-color: transparent;
+    overflow: hidden;
+    background-color: #4a4a4a;
+    display: none;
+}
+.phone-nav-show {
+    display: block;
+}
+.phone-nav ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.phone-nav li {
+    cursor: pointer;
+    border-bottom: 1px solid #999999;
+}
+.phone-nav a {
+    color: #fff;
+    display: block;
+}
+.phone-nav a:visited {
+    color: #fff;
+}
+.phone-nav a:hover {
+    background-color: #506274;
+    color: #fff;
+}
+
+
+.navbar-default {
+    /* background: linear-gradient(to left, #54c656, #2f479d); */
+	background-image: url(/assets/images/header_bg.png);
+    background-size: auto 100%;
+    border-width: 0;
+}
+
+
+/* end _includes/header.html */

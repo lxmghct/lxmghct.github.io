@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>redis存储ip段问题 | lxmghct's blog</title>
+  <meta name="description"
+    content="问题描述有个需求是根据 ip 来获取对应的用户，从而让 ip 地址匹配的用户进行自动登录等操作。想到的解决方式是将 ip -&gt; userId 的映射关系存储到 redis 中，然后根据 ip 获取对应的 userId。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2024/05/24/redis%E5%AD%98%E5%82%A8ip%E6%AE%B5%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">redis存储ip段问题</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2024-05-24 01:45
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="编程随笔">编程随笔</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="redis">redis</a>
+          
+          <a data-tag="spring">spring</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h2 id="问题描述">问题描述</h2>
+<p>有个需求是根据 ip 来获取对应的用户，从而让 ip 地址匹配的用户进行自动登录等操作。想到的解决方式是将 ip -&gt; userId 的映射关系存储到 redis 中，然后根据 ip 获取对应的 userId。</p>
+
+<p>ip 工具类如下：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kn">import</span> <span class="nn">java.util.ArrayList</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Arrays</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IpUtils</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">parseIpRange</span><span class="o">(</span><span class="nc">String</span> <span class="n">ipRange</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">ips</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">parts</span> <span class="o">=</span> <span class="n">ipRange</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">";"</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">part</span> <span class="o">:</span> <span class="n">parts</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">part</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="s">"-"</span><span class="o">))</span> <span class="o">{</span>
+                <span class="nc">String</span><span class="o">[]</span> <span class="n">range</span> <span class="o">=</span> <span class="n">part</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"-"</span><span class="o">);</span>
+                <span class="nc">String</span> <span class="n">startIp</span> <span class="o">=</span> <span class="n">range</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="na">trim</span><span class="o">();</span>
+                <span class="nc">String</span> <span class="n">endIp</span> <span class="o">=</span> <span class="n">range</span><span class="o">[</span><span class="mi">1</span><span class="o">].</span><span class="na">trim</span><span class="o">();</span>
+                <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">rangeIps</span> <span class="o">=</span> <span class="n">generateRangeIps</span><span class="o">(</span><span class="n">startIp</span><span class="o">,</span> <span class="n">endIp</span><span class="o">);</span>
+                <span class="n">ips</span><span class="o">.</span><span class="na">addAll</span><span class="o">(</span><span class="n">rangeIps</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                <span class="n">ips</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">part</span><span class="o">.</span><span class="na">trim</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">ips</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="nf">generateRangeIps</span><span class="o">(</span><span class="nc">String</span> <span class="n">startIp</span><span class="o">,</span> <span class="nc">String</span> <span class="n">endIp</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">ips</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">startParts</span> <span class="o">=</span> <span class="n">startIp</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\\."</span><span class="o">);</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">endParts</span> <span class="o">=</span> <span class="n">endIp</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\\."</span><span class="o">);</span>
+        <span class="nc">Integer</span><span class="o">[]</span> <span class="n">intStartParts</span> <span class="o">=</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">startParts</span><span class="o">).</span><span class="na">map</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">parseInt</span><span class="o">).</span><span class="na">toArray</span><span class="o">(</span><span class="nc">Integer</span><span class="o">[]::</span><span class="k">new</span><span class="o">);</span>
+        <span class="nc">Integer</span><span class="o">[]</span> <span class="n">intEndParts</span> <span class="o">=</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">endParts</span><span class="o">).</span><span class="na">map</span><span class="o">(</span><span class="nl">Integer:</span><span class="o">:</span><span class="n">parseInt</span><span class="o">).</span><span class="na">toArray</span><span class="o">(</span><span class="nc">Integer</span><span class="o">[]::</span><span class="k">new</span><span class="o">);</span>
+
+        <span class="k">do</span> <span class="o">{</span>
+            <span class="n">ips</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="nc">String</span><span class="o">.</span><span class="na">join</span><span class="o">(</span><span class="s">"."</span><span class="o">,</span> <span class="nc">Arrays</span><span class="o">.</span><span class="na">stream</span><span class="o">(</span><span class="n">intStartParts</span><span class="o">).</span><span class="na">map</span><span class="o">(</span><span class="nl">String:</span><span class="o">:</span><span class="n">valueOf</span><span class="o">).</span><span class="na">toArray</span><span class="o">(</span><span class="nc">String</span><span class="o">[]::</span><span class="k">new</span><span class="o">)));</span>
+            <span class="n">plusIp</span><span class="o">(</span><span class="n">intStartParts</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">while</span> <span class="o">(</span><span class="n">compareIp</span><span class="o">(</span><span class="n">intStartParts</span><span class="o">,</span> <span class="n">intEndParts</span><span class="o">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="o">);</span>
+
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">intStartParts</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="n">intEndParts</span><span class="o">[</span><span class="n">i</span><span class="o">]))</span> <span class="o">{</span>
+                <span class="k">break</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="n">ips</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">int</span> <span class="nf">compareIp</span><span class="o">(</span><span class="nc">Integer</span><span class="o">[]</span> <span class="n">ip1</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">[]</span> <span class="n">ip2</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="o">;</span> <span class="n">i</span><span class="o">++)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(!</span><span class="n">ip1</span><span class="o">[</span><span class="n">i</span><span class="o">].</span><span class="na">equals</span><span class="o">(</span><span class="n">ip2</span><span class="o">[</span><span class="n">i</span><span class="o">]))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">ip1</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">-</span> <span class="n">ip2</span><span class="o">[</span><span class="n">i</span><span class="o">];</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">plusIp</span><span class="o">(</span><span class="nc">Integer</span><span class="o">[]</span> <span class="n">ip</span><span class="o">)</span> <span class="o">{</span>
+        <span class="n">ip</span><span class="o">[</span><span class="mi">3</span><span class="o">]++;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">3</span><span class="o">;</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="o">;</span> <span class="n">i</span><span class="o">--)</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">ip</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">&gt;</span> <span class="mi">255</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">ip</span><span class="o">[</span><span class="n">i</span><span class="o">]</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+                <span class="n">ip</span><span class="o">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="o">]++;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>jedis 工具类如下：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">redis.clients.jedis.JedisPool</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">redis.clients.jedis.Pipeline</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.annotation.PostConstruct</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">JedisUtils</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">JedisPool</span> <span class="n">jedisPool</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">JedisUtils</span> <span class="n">self</span><span class="o">;</span>
+
+    <span class="c1">// 过期时间为2小时</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">EXPIRE_SECONDS</span> <span class="o">=</span> <span class="mi">7200</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="nf">JedisUtils</span><span class="o">(</span><span class="nc">JedisPool</span> <span class="n">jedisPool</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">jedisPool</span> <span class="o">=</span> <span class="n">jedisPool</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@PostConstruct</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">self</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 批量删除redis中的key
+     *
+     * @param keys key列表
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">batchDeleteKey</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">keys</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="n">self</span><span class="o">.</span><span class="na">jedisPool</span><span class="o">.</span><span class="na">getResource</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Pipeline</span> <span class="n">pipeline</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">key</span> <span class="o">:</span> <span class="n">keys</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">pipeline</span><span class="o">.</span><span class="na">del</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 批量插入redis中的key-value
+     *
+     * @param keyValues key-value列表
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">batchInsertKeyValues</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">keyValues</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="n">self</span><span class="o">.</span><span class="na">jedisPool</span><span class="o">.</span><span class="na">getResource</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Pipeline</span> <span class="n">pipeline</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">keyValues</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">pipeline</span><span class="o">.</span><span class="na">setex</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">(),</span> <span class="no">EXPIRE_SECONDS</span><span class="o">,</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+            <span class="o">}</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 使用lua脚本清空所有数据并批量插入新数据，确保原子性
+     *
+     * @param keyValues key-value列表
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">flushAllAndBatchInsertKeyValues</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">keyValues</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="n">self</span><span class="o">.</span><span class="na">jedisPool</span><span class="o">.</span><span class="na">getResource</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">StringBuilder</span> <span class="n">scriptBuilder</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">StringBuilder</span><span class="o">();</span>
+            <span class="n">scriptBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"redis.call('FLUSHDB');"</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">keyValues</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">scriptBuilder</span><span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="s">"redis.call('SETEX', '"</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">"', "</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="no">EXPIRE_SECONDS</span><span class="o">).</span><span class="na">append</span><span class="o">(</span><span class="s">", '"</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">append</span><span class="o">(</span><span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">()).</span><span class="na">append</span><span class="o">(</span><span class="s">"');"</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">jedis</span><span class="o">.</span><span class="na">eval</span><span class="o">(</span><span class="n">scriptBuilder</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+
+</code></pre></div></div>
+
+<p>使用示例：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">Main</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">main</span><span class="o">(</span><span class="nc">String</span><span class="o">[]</span> <span class="n">args</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">ipRange</span> <span class="o">=</span> <span class="s">"192.168.2.2-192.168.3.4;192.168.3.3"</span><span class="o">;</span>
+        <span class="nc">String</span> <span class="n">userId</span> <span class="o">=</span> <span class="s">"123"</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">ips</span> <span class="o">=</span> <span class="nc">IpUtils</span><span class="o">.</span><span class="na">parseIpRange</span><span class="o">(</span><span class="n">ipRange</span><span class="o">);</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">keyValues</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">ip</span> <span class="o">:</span> <span class="n">ips</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">keyValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">ip</span><span class="o">,</span> <span class="n">userId</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">JedisUtils</span><span class="o">.</span><span class="na">flushAllAndBatchInsertKeyValues</span><span class="o">(</span><span class="n">keyValues</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>但上述代码存在一个问题，如果 ip 段很大，比如 10.0.0.1-192.168.0.1，那么生成的 ip 列表会非常大，约(192-10) * 256^3 数量级达到了上亿，这样的数据量无论是生成还是存储都是非常大的开销。因此需要优化存储方式。</p>
+
+<h2 id="优化方案">优化方案</h2>
+<p>由原来的存储每个 ip 改为存储 ip 段，startIp -&gt; endIp:userId，这样可以减少存储的数据量。为了提高性能，使用有序集合 zset 来存储 startIp，同时 ip 采用整数形式存储，通过或运算将 ip 转换为整数，这样可以方便比较大小。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">org.springframework.beans.factory.annotation.Autowired</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.springframework.stereotype.Component</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">redis.clients.jedis.Jedis</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">redis.clients.jedis.JedisPool</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">redis.clients.jedis.Pipeline</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">javax.annotation.PostConstruct</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.List</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Map</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">java.util.Set</span><span class="o">;</span>
+
+<span class="nd">@Component</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">IpRangeStore</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">JedisPool</span> <span class="n">jedisPool</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">IpRangeStore</span> <span class="n">self</span><span class="o">;</span>
+
+    <span class="c1">// 过期时间为2小时</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="kt">int</span> <span class="no">EXPIRE_SECONDS</span> <span class="o">=</span> <span class="mi">7200</span><span class="o">;</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">public</span> <span class="nf">IpRangeStore</span><span class="o">(</span><span class="nc">JedisPool</span> <span class="n">jedisPool</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">jedisPool</span> <span class="o">=</span> <span class="n">jedisPool</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@PostConstruct</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">init</span><span class="o">()</span> <span class="o">{</span>
+        <span class="n">self</span> <span class="o">=</span> <span class="k">this</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 批量添加ip段
+     *
+     * @param ipUserIdMap  ip段-用户id映射
+     * @param deleteOrigin 是否删除原数据
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">batchAddIpRanges</span><span class="o">(</span><span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">ipUserIdMap</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">deleteOrigin</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="n">self</span><span class="o">.</span><span class="na">jedisPool</span><span class="o">.</span><span class="na">getResource</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Pipeline</span> <span class="n">pipeline</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">deleteOrigin</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">pipeline</span><span class="o">.</span><span class="na">del</span><span class="o">(</span><span class="s">"ip_ranges"</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">entry</span> <span class="o">:</span> <span class="n">ipUserIdMap</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+                <span class="nc">String</span> <span class="n">ipString</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="na">getKey</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">ipString</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="s">"-"</span><span class="o">))</span> <span class="o">{</span>
+                    <span class="nc">String</span><span class="o">[]</span> <span class="n">ipRange</span> <span class="o">=</span> <span class="n">ipString</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"-"</span><span class="o">);</span>
+                    <span class="kt">long</span> <span class="n">start</span> <span class="o">=</span> <span class="n">ipToLong</span><span class="o">(</span><span class="n">ipRange</span><span class="o">[</span><span class="mi">0</span><span class="o">]);</span>
+                    <span class="kt">long</span> <span class="n">end</span> <span class="o">=</span> <span class="n">ipToLong</span><span class="o">(</span><span class="n">ipRange</span><span class="o">[</span><span class="mi">1</span><span class="o">]);</span>
+                    <span class="n">pipeline</span><span class="o">.</span><span class="na">zadd</span><span class="o">(</span><span class="s">"ip_ranges"</span><span class="o">,</span> <span class="n">start</span><span class="o">,</span> <span class="n">end</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="kt">long</span> <span class="n">ip</span> <span class="o">=</span> <span class="n">ipToLong</span><span class="o">(</span><span class="n">ipString</span><span class="o">);</span>
+                    <span class="n">pipeline</span><span class="o">.</span><span class="na">zadd</span><span class="o">(</span><span class="s">"ip_ranges"</span><span class="o">,</span> <span class="n">ip</span><span class="o">,</span> <span class="n">ip</span> <span class="o">+</span> <span class="s">":"</span> <span class="o">+</span> <span class="n">entry</span><span class="o">.</span><span class="na">getValue</span><span class="o">());</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="na">expire</span><span class="o">(</span><span class="s">"ip_ranges"</span><span class="o">,</span> <span class="no">EXPIRE_SECONDS</span><span class="o">);</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="cm">/**
+     * 批量删除指定IP
+     *
+     * @param ips 要删除的IP列表
+     */</span>
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">batchDeleteIpRanges</span><span class="o">(</span><span class="nc">List</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">ips</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="n">self</span><span class="o">.</span><span class="na">jedisPool</span><span class="o">.</span><span class="na">getResource</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">Pipeline</span> <span class="n">pipeline</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">pipelined</span><span class="o">();</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">ip</span> <span class="o">:</span> <span class="n">ips</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">pipeline</span><span class="o">.</span><span class="na">zrem</span><span class="o">(</span><span class="s">"ip_ranges"</span><span class="o">,</span> <span class="n">ip</span><span class="o">);</span>
+            <span class="o">}</span>
+            <span class="n">pipeline</span><span class="o">.</span><span class="na">sync</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">Integer</span> <span class="nf">findUserIdByIp</span><span class="o">(</span><span class="nc">String</span> <span class="n">ipAddress</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">(</span><span class="nc">Jedis</span> <span class="n">jedis</span> <span class="o">=</span> <span class="n">self</span><span class="o">.</span><span class="na">jedisPool</span><span class="o">.</span><span class="na">getResource</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">String</span> <span class="n">userId</span> <span class="o">=</span> <span class="n">findUserIdByIp</span><span class="o">(</span><span class="n">ipAddress</span><span class="o">,</span> <span class="n">jedis</span><span class="o">);</span>
+            <span class="k">return</span> <span class="n">userId</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="kc">null</span> <span class="o">:</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">userId</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">long</span> <span class="nf">ipToLong</span><span class="o">(</span><span class="nc">String</span> <span class="n">ipAddress</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">String</span><span class="o">[]</span> <span class="n">ipParts</span> <span class="o">=</span> <span class="n">ipAddress</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">"\\."</span><span class="o">);</span>
+        <span class="kt">long</span> <span class="n">ip</span> <span class="o">=</span> <span class="mi">0</span><span class="o">;</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">String</span> <span class="n">ipPart</span> <span class="o">:</span> <span class="n">ipParts</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">ip</span> <span class="o">&lt;&lt;=</span> <span class="mi">8</span><span class="o">;</span>
+            <span class="n">ip</span> <span class="o">|=</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">parseInt</span><span class="o">(</span><span class="n">ipPart</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">ip</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">findUserIdByIp</span><span class="o">(</span><span class="nc">String</span> <span class="n">ipAddress</span><span class="o">,</span> <span class="nc">Jedis</span> <span class="n">jedis</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kt">long</span> <span class="n">ip</span> <span class="o">=</span> <span class="n">ipToLong</span><span class="o">(</span><span class="n">ipAddress</span><span class="o">);</span>
+        <span class="c1">// 查询ip_ranges中离ip最近且小于等于ip的ip段</span>
+        <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">&gt;</span> <span class="n">results</span> <span class="o">=</span> <span class="n">jedis</span><span class="o">.</span><span class="na">zrevrangeByScore</span><span class="o">(</span><span class="s">"ip_ranges"</span><span class="o">,</span> <span class="n">ip</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">0</span><span class="o">,</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">results</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">String</span> <span class="n">result</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="na">iterator</span><span class="o">().</span><span class="na">next</span><span class="o">();</span>
+            <span class="nc">String</span><span class="o">[]</span> <span class="n">parts</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="na">split</span><span class="o">(</span><span class="s">":"</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="nc">Long</span><span class="o">.</span><span class="na">parseLong</span><span class="o">(</span><span class="n">parts</span><span class="o">[</span><span class="mi">0</span><span class="o">])</span> <span class="o">&gt;=</span> <span class="n">ip</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">parts</span><span class="o">[</span><span class="mi">1</span><span class="o">];</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2024/05/25/neo4j%E6%95%B0%E6%8D%AE%E5%A4%87%E4%BB%BD%E6%8A%A5%E9%94%99.html" title="neo4j数据备份报错">neo4j数据备份报错</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E6%8A%80%E6%9C%AF%E6%8E%A2%E7%B4%A2/2024/04/22/%E6%8F%90%E5%8F%96rtf%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E9%AB%98%E4%BA%AE%E6%96%87%E6%9C%AC.html"
+      title="提取rtf文件中的高亮文本">提取rtf文件中的高亮文本</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2024-05-24】 redis存储ip段问题"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>
