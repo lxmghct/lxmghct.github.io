@@ -92,6 +92,10 @@ function getSearchResult() {
 }
 
 const endCharSet = new Set(['。', '！', '？', '\n', '\r']);
+
+function convertHtml(str) {
+  return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
 /**
  * 查找匹配位置，并取出每处匹配的前后若干字符
  * @param {*} keyword 
@@ -124,7 +128,7 @@ function getMatchedPositions(keyword, content) {
         break;
       }
     }
-    let preview = preStr + "<span class='highlight'>" + matchStr + "</span>" + suffixStr;
+    let preview = convertHtml(preStr) + "<span class='highlight'>" + convertHtml(matchStr) + "</span>" + convertHtml(suffixStr);
     previewList.push(preview);
   }
   return previewList;
