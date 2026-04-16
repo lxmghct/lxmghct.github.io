@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>美团无法在第三方ROM上使用 | lxmghct's blog</title>
+  <meta name="description"
+    content="问题描述我给手机刷过两次第三方ROM  第一次使用了 Xiaomi Mi 11 Lite 5G，刷入的是 LineageOS 21  第二次使用了 OnePlus Ace 3 Pro，刷入的是 Crdroid 11.7两次刷机后均无法使用美团公司下的两个App，分别是美团和大众点评，无论设备是否已经Root。咨询...">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/%E5%AE%89%E5%8D%93/2025/09/22/%E7%BE%8E%E5%9B%A2%E6%97%A0%E6%B3%95%E5%9C%A8%E7%AC%AC%E4%B8%89%E6%96%B9ROM%E4%B8%8A%E4%BD%BF%E7%94%A8%E9%97%AE%E9%A2%98.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">美团无法在第三方ROM上使用</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2025-09-22 12:00
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="安卓">安卓</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="android">android</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h1 id="问题描述">问题描述</h1>
+<p>我给手机刷过两次第三方ROM</p>
+<ul>
+  <li>第一次使用了 Xiaomi Mi 11 Lite 5G，刷入的是 LineageOS 21</li>
+  <li>第二次使用了 OnePlus Ace 3 Pro，刷入的是 Crdroid 11.7
+两次刷机后均无法使用美团公司下的两个App，分别是美团和大众点评，无论设备是否已经Root。咨询客服也并未告知设备风险原因。</li>
+</ul>
+
+<h1 id="手机环境">手机环境</h1>
+<ul>
+  <li>Magisk Alpha v28102</li>
+  <li>Magisk模块：
+    <ul>
+      <li>Shamiko v1.2.5</li>
+      <li>Zygisk Next v1.2.9</li>
+      <li>Zygisk Lsposed v1.10.1</li>
+      <li>Tricky Store v1.3.0</li>
+      <li>TrickyAddonModule v4.0</li>
+      <li>Play Integrity Fork v13</li>
+    </ul>
+  </li>
+  <li>Lsposed模块：
+    <ul>
+      <li>HideMyApplist v3.5</li>
+    </ul>
+  </li>
+</ul>
+
+<p>上述模块安装并配置好后，在两个设备上均通过了一些检测APP的检测，具体如下：</p>
+<ul>
+  <li>小米手机通过了 Momo、ApplistDetector、NativeDetector</li>
+  <li>一加手机通过了 ApplistDetector、NativeDetector（安卓15上Momo暂时无法使用）</li>
+</ul>
+
+<p>其中，NativeDetector在两台设备上均检测出来了自定义 ROM LineageOS，而且检测出的 lineageOS 条目很多。而一加手机上还检测出来了 Play Integrity Fix。</p>
+
+<p>而在实际使用中，除了美团和大众点评，其他App包括支付宝、微信、淘宝、银行等均能正常使用，而且敏感操作如人脸识别、指纹识别等也均能正常使用。</p>
+
+<h1 id="解决方案总结">解决方案总结</h1>
+<p>修改一些带有 lineage 字样的系统属性，美团和大众点评均能正常使用。
+针对我的手机环境，修改以下系统属性即可：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ro.build.display.id=ColorOS15.A.01
+ro.build.flavor=oneplus_ace3pro-user
+</code></pre></div></div>
+
+<p>用 MagiskHidePropsConf 模块或者自己写 Magisk 模块，修改这两个属性。</p>
+
+<p>重启手机，发现大众点评和美团都可以正常搜索以及查看自己的订单了，没有像之前那样提示网络异常。</p>
+
+<p>该方法截至目前2025.09是有效的，后续如果加了其他检测手段，可能还需要用其他方式进行针对性修改。</p>
+
+<h1 id="解决方案探索过程">解决方案探索过程</h1>
+<p>鉴于在没有 Root 时美团和大众点评均也不能正常使用，因此怀疑是检测了第三方 ROM。虽然也有可能是检测出了 Bootloader 解锁，因为没 Root 时 BootLoader 解锁没法隐藏，但是考虑到当前在网上几乎没有人反馈在使用了较完善的隐藏方案后还无法使用美团和大众点评，且刷第三方 ROM 的用户群体在整个刷机用户中占比并不高，因此怀疑是检测了第三方 ROM。
+NativeDetector 从很多方面都检测出来了非原厂 ROM，全部防住不太现实，所以最好是针对美团和大众点评单独做一些针对性的隐藏。</p>
+
+<h2 id="方案一网络抓包">方案一：网络抓包</h2>
+<p>按照一般思路来说，检测环境这种操作一般不会明文传输，因此抓包成功的概率不大。不过还是尝试了一下用 Reqable 抓包，不过确实没有抓到任何有用的信息。</p>
+
+<h2 id="方案二hook一些关键api">方案二：Hook一些关键API</h2>
+<p>检测环境一般会去检查某些文件是否存在、某些系统属性是否被修改等，因此可以尝试 Hook 一些关键 API 来隐藏这些信息。</p>
+
+<p>一开始想用 Frida 来做，但是在我的手机上 Frida-Server 一运行就直接软重启卡 Logo 了，可能根我的手机不兼容，Github Issue 里的方式尝试过也没有用。所以只能用 Lsposed 来做了。</p>
+
+<p>使用的是这篇文章里的工具：<a href="/%E5%AE%89%E5%8D%93/2025/09/21/%E5%AE%89%E5%8D%93%E7%8E%AF%E5%A2%83%E6%A3%80%E6%9F%A5%E8%B0%83%E8%AF%95.html">安卓环境检查调试</a>。</p>
+
+<p>作用域勾选大众点评后，运行大众点评，执行下面操作：</p>
+<ol>
+  <li>点击查看账单，发现什么也没有</li>
+  <li>搜索任意食物，也是什么都没有，提示网络异常
+说明目前已被检测出异常环境。</li>
+</ol>
+
+<p>打开 Lsposed 日志，导出日志，使用 Python 筛掉无用信息和去重，主要需要筛掉的有：</p>
+<ul>
+  <li>根据”【EnvLogger】”筛掉无关日志</li>
+  <li>去掉所有含有”com.dianping.v1”的日志，因为这是 app 在操作自己的文件，不需要关注</li>
+  <li>去掉 “http.agent”，因为在我的日志中，这个属性是被频繁调用的，只是一些基本设备信息，并不重要：
+    <blockquote>
+      <p>【EnvLogger】 [System.getProperty] http.agent = Dalvik/2.1.0 (Linux; U; Android 15; PJX110 Build/BP1A.250505.005)</p>
+    </blockquote>
+  </li>
+</ul>
+
+<p>提取日志的 Python 脚本如下（chatGPT生成）：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># 1. 筛选当前模块的日志
+</span><span class="k">def</span> <span class="nf">extract_lines_with_keyword</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="p">.</span><span class="nf">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="p">.</span><span class="nf">lower</span><span class="p">().</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">.txt</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="p">.</span><span class="nf">lower</span><span class="p">().</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">.log</span><span class="sh">"</span><span class="p">):</span>
+                <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">正在处理文件: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                <span class="n">input_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+                <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">relpath</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">)</span>
+                <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
+
+                <span class="n">os</span><span class="p">.</span><span class="nf">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+                <span class="n">matched_lines</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="sh">"</span><span class="s">r</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="sh">"</span><span class="s">ignore</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                                <span class="n">matched_lines</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="nf">rstrip</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">))</span>
+                <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">读取文件失败 </span><span class="si">{</span><span class="n">input_path</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># 如果有匹配的行才写文件
+</span>                <span class="k">if</span> <span class="n">matched_lines</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="sh">"</span><span class="s">w</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                        <span class="n">outfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">matched_lines</span><span class="p">))</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">已写入 </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="c1"># 2. 去掉不重要的日志
+</span><span class="k">def</span> <span class="nf">filter_unimportant_lines</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">keywords</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+    <span class="c1"># 遍历目录
+</span>    <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="p">.</span><span class="nf">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="p">.</span><span class="nf">lower</span><span class="p">().</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">.txt</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="p">.</span><span class="nf">lower</span><span class="p">().</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">.log</span><span class="sh">"</span><span class="p">):</span>
+                <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">正在处理文件: </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                <span class="n">input_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+
+                <span class="c1"># 计算相对路径，保证目录结构一致
+</span>                <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">relpath</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">)</span>
+                <span class="n">output_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">rel_path</span><span class="p">)</span>
+
+                <span class="c1"># 确保输出目录存在
+</span>                <span class="n">os</span><span class="p">.</span><span class="nf">makedirs</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">dirname</span><span class="p">(</span><span class="n">output_path</span><span class="p">),</span> <span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+                <span class="n">matched_lines</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="sh">"</span><span class="s">r</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="sh">"</span><span class="s">ignore</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">infile</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">infile</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="ow">not</span> <span class="nf">any</span><span class="p">(</span><span class="n">kw</span> <span class="ow">in</span> <span class="n">line</span> <span class="k">for</span> <span class="n">kw</span> <span class="ow">in</span> <span class="n">keywords</span><span class="p">):</span>
+                                <span class="n">matched_lines</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">line</span><span class="p">.</span><span class="nf">rstrip</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">))</span>
+                <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">读取文件失败 </span><span class="si">{</span><span class="n">input_path</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># 如果有匹配的行才写文件
+</span>                <span class="k">if</span> <span class="n">matched_lines</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">output_path</span><span class="p">,</span> <span class="sh">"</span><span class="s">w</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">outfile</span><span class="p">:</span>
+                        <span class="n">outfile</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">matched_lines</span><span class="p">))</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">已写入 </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="c1"># 3. 去掉时间等无关信息，提取关键内容并去重
+</span><span class="k">def</span> <span class="nf">merge_logs</span><span class="p">(</span><span class="n">root_dir</span><span class="p">,</span> <span class="n">keyword</span><span class="p">,</span> <span class="n">output_file</span><span class="p">):</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="nf">set</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="p">.</span><span class="nf">walk</span><span class="p">(</span><span class="n">root_dir</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">filename</span><span class="p">.</span><span class="nf">lower</span><span class="p">().</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">.txt</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="p">.</span><span class="nf">lower</span><span class="p">().</span><span class="nf">endswith</span><span class="p">(</span><span class="sh">"</span><span class="s">.log</span><span class="sh">"</span><span class="p">):</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="sh">"</span><span class="s">r</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="sh">"</span><span class="s">ignore</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                            <span class="k">if</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                                <span class="n">idx</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="n">keyword</span><span class="p">)</span>
+                                <span class="n">suffix</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="n">idx</span> <span class="o">+</span> <span class="nf">len</span><span class="p">(</span><span class="n">keyword</span><span class="p">):].</span><span class="nf">strip</span><span class="p">()</span>
+                                <span class="k">if</span> <span class="n">suffix</span><span class="p">:</span>
+                                    <span class="n">results</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="n">suffix</span><span class="p">)</span>
+                <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">读取文件失败 </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="sh">"</span><span class="s">w</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">out</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nf">sorted</span><span class="p">(</span><span class="n">results</span><span class="p">):</span>
+            <span class="n">out</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">item</span> <span class="o">+</span> <span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">提取完成，共 </span><span class="si">{</span><span class="nf">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span><span class="si">}</span><span class="s"> 条唯一结果，已写入 </span><span class="si">{</span><span class="n">output_file</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>最终得到300多行日志，主要内容如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[File.exists] /./META-INF/services/java.nio.channels.spi.SelectorProvider = false
+[File.exists] /apex/com.android.conscrypt/cacerts = true
+[File.exists] /apex/com.android.conscrypt/cacerts/04843e0f.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/1e8e7201.0 = true
+[File.exists] /apex/com.android.conscrypt/cacerts/1e8e7201.1 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/35105088.0 = true
+[File.exists] /apex/com.android.conscrypt/cacerts/35105088.1 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/4704f486.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/55ddc00d.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/577e0331.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/585a188e.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/5bef71b4.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/69ae572f.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/6ad09055.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/c90bc37d.0 = true
+[File.exists] /apex/com.android.conscrypt/cacerts/c90bc37d.1 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/d52df039.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/d8659553.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/d9a76989.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/d9b4b8d7.0 = false
+[File.exists] /apex/com.android.conscrypt/cacerts/e27f8a17.0 = false
+[File.exists] /cache/busybox = false
+[File.exists] /cache/magisk = false
+[File.exists] /cache/su = false
+[File.exists] /data/busybox = false
+[File.exists] /data/local/bin/busybox = false
+[File.exists] /data/local/bin/magisk = false
+[File.exists] /data/local/bin/su = false
+[File.exists] /data/local/busybox = false
+[File.exists] /data/local/magisk = false
+[File.exists] /data/local/su = false
+[File.exists] /data/local/xbin/busybox = false
+[File.exists] /data/local/xbin/magisk = false
+[File.exists] /data/local/xbin/su = false
+[File.exists] /data/magisk = false
+[File.exists] /data/misc/user/0/cacerts-removed/1e8e7201.0 = false
+[File.exists] /data/misc/user/0/cacerts-removed/35105088.0 = false
+[File.exists] /data/misc/user/0/cacerts-removed/c90bc37d.0 = false
+[File.exists] /data/su = false
+[File.exists] /dev/busybox = false
+[File.exists] /dev/magisk = false
+[File.exists] /dev/su = false
+[File.exists] /proc/5225/statm = true
+[File.exists] /sbin/busybox = false
+[File.exists] /sbin/magisk = false
+[File.exists] /sbin/su = false
+[File.exists] /su/bin/busybox = false
+[File.exists] /su/bin/magisk = false
+[File.exists] /su/bin/su = false
+[File.exists] /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq = true
+[File.exists] /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_min_freq = true
+[File.exists] /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_min_freq = true
+[File.exists] /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_min_freq = true
+[File.exists] /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_min_freq = true
+[File.exists] /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_min_freq = true
+[File.exists] /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_min_freq = true
+[File.exists] /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_max_freq = true
+[File.exists] /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_min_freq = true
+[File.exists] /system/app/Superuser.apk = false
+[File.exists] /system/bin/.ext/busybox = false
+[File.exists] /system/bin/.ext/magisk = false
+[File.exists] /system/bin/.ext/su = false
+[File.exists] /system/bin/busybox = false
+[File.exists] /system/bin/failsafe/busybox = false
+[File.exists] /system/bin/failsafe/magisk = false
+[File.exists] /system/bin/failsafe/su = false
+[File.exists] /system/bin/magisk = false
+[File.exists] /system/bin/su = false
+[File.exists] /system/build.prop = true
+[File.exists] /system/etc/security/cacerts/1e8e7201.0 = true
+[File.exists] /system/etc/security/cacerts/35105088.0 = true
+[File.exists] /system/sbin/busybox = false
+[File.exists] /system/sbin/magisk = false
+[File.exists] /system/sbin/su = false
+[File.exists] /system/sd/xbin/busybox = false
+[File.exists] /system/sd/xbin/magisk = false
+[File.exists] /system/sd/xbin/su = false
+[File.exists] /system/usr/we-need-root/busybox = false
+[File.exists] /system/usr/we-need-root/magisk = false
+[File.exists] /system/usr/we-need-root/su = false
+[File.exists] /system/xbin/busybox = false
+[File.exists] /system/xbin/magisk = false
+[File.exists] /system/xbin/su = false
+[File.exists] /vendor/bin/busybox = false
+[File.exists] /vendor/bin/magisk = false
+[File.exists] /vendor/bin/su = false
+[FileInputStream] /apex/com.android.conscrypt/cacerts/1e8e7201.0
+[FileInputStream] /apex/com.android.conscrypt/cacerts/35105088.0
+[FileInputStream] /apex/com.android.conscrypt/cacerts/c90bc37d.0
+[FileInputStream] /proc/31156/statm
+[FileInputStream] /proc/5225/statm
+[FileInputStream] /proc/cpuinfo
+[FileInputStream] /proc/sys/kernel/random/boot_id
+[FileInputStream] /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_max_freq
+[FileInputStream] /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_min_freq
+[FileInputStream] /sys/devices/system/cpu/possible
+[FileReader] /proc/cpuinfo
+[FileReader] /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+[FileReader] /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_min_freq
+[FileReader] /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_min_freq
+[FileReader] /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_min_freq
+[FileReader] /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_min_freq
+[FileReader] /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_min_freq
+[FileReader] /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_min_freq
+[FileReader] /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_max_freq
+[FileReader] /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_min_freq
+[File] new File: /
+[File] new File: /apex/com.android.conscrypt/cacerts
+[File] new File: /data/anr/traces.txt
+[File] new File: /data/local/bin/su
+[File] new File: /data/local/su
+[File] new File: /data/local/xbin/su
+[File] new File: /data/misc/keychain/pubkey_blacklist.txt
+[File] new File: /data/misc/keychain/pubkey_sha256_blocklist.txt
+[File] new File: /data/misc/keychain/serial_blacklist.txt
+[File] new File: /proc/31156/statm
+[File] new File: /proc/5225/statm
+[File] new File: /proc/cpuinfo
+[File] new File: /proc/self/task
+[File] new File: /proc/sys/kernel/random/boot_id
+[File] new File: /sbin/su
+[File] new File: /storage/emulated/0
+[File] new File: /sys/devices/system/cpu/
+[File] new File: /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu1/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu2/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu3/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu4/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu5/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu6/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_max_freq
+[File] new File: /sys/devices/system/cpu/cpu7/cpufreq/cpuinfo_min_freq
+[File] new File: /sys/devices/system/cpu/possible
+[File] new File: /system/app/Superuser.apk
+[File] new File: /system/bin/failsafe/su
+[File] new File: /system/bin/su
+[File] new File: /system/build.prop
+[File] new File: /system/etc/security/cacerts
+[File] new File: /system/framework/org.apache.http.legacy.jar
+[File] new File: /system/lib64
+[File] new File: /system/sd/xbin/su
+[File] new File: /system/xbin/su
+[File] new File: /system_ext/lib64
+[File] new File: /vendor/lib64
+[File] new File: parent=/. child=META-INF/services/java.nio.channels.spi.SelectorProvider
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=04843e0f.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=1e8e7201.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=1e8e7201.1
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=35105088.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=35105088.1
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=4704f486.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=55ddc00d.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=577e0331.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=585a188e.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=5bef71b4.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=69ae572f.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=6ad09055.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=c90bc37d.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=c90bc37d.1
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=d52df039.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=d8659553.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=d9a76989.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=d9b4b8d7.0
+[File] new File: parent=/apex/com.android.conscrypt/cacerts child=e27f8a17.0
+[File] new File: parent=/cache child=busybox
+[File] new File: parent=/cache child=magisk
+[File] new File: parent=/cache child=su
+[File] new File: parent=/data child=busybox
+[File] new File: parent=/data child=magisk
+[File] new File: parent=/data child=misc
+[File] new File: parent=/data child=su
+[File] new File: parent=/data/local/ child=busybox
+[File] new File: parent=/data/local/ child=magisk
+[File] new File: parent=/data/local/ child=su
+[File] new File: parent=/data/local/bin/ child=busybox
+[File] new File: parent=/data/local/bin/ child=magisk
+[File] new File: parent=/data/local/bin/ child=su
+[File] new File: parent=/data/local/xbin/ child=busybox
+[File] new File: parent=/data/local/xbin/ child=magisk
+[File] new File: parent=/data/local/xbin/ child=su
+[File] new File: parent=/data/misc child=user
+[File] new File: parent=/data/misc/user child=0
+[File] new File: parent=/data/misc/user/0 child=cacerts-removed
+[File] new File: parent=/data/misc/user/0/cacerts-removed child=1e8e7201.0
+[File] new File: parent=/data/misc/user/0/cacerts-removed child=35105088.0
+[File] new File: parent=/data/misc/user/0/cacerts-removed child=c90bc37d.0
+[File] new File: parent=/dev child=busybox
+[File] new File: parent=/dev child=magisk
+[File] new File: parent=/dev child=su
+[File] new File: parent=/sbin/ child=busybox
+[File] new File: parent=/sbin/ child=magisk
+[File] new File: parent=/sbin/ child=su
+[File] new File: parent=/storage/emulated/0 child=Android
+[File] new File: parent=/storage/emulated/0/Android child=data
+[File] new File: parent=/su/bin/ child=busybox
+[File] new File: parent=/su/bin/ child=magisk
+[File] new File: parent=/su/bin/ child=su
+[File] new File: parent=/system/bin/ child=busybox
+[File] new File: parent=/system/bin/ child=magisk
+[File] new File: parent=/system/bin/ child=su
+[File] new File: parent=/system/bin/.ext/ child=busybox
+[File] new File: parent=/system/bin/.ext/ child=magisk
+[File] new File: parent=/system/bin/.ext/ child=su
+[File] new File: parent=/system/bin/failsafe/ child=busybox
+[File] new File: parent=/system/bin/failsafe/ child=magisk
+[File] new File: parent=/system/bin/failsafe/ child=su
+[File] new File: parent=/system/etc/security/cacerts child=1e8e7201.0
+[File] new File: parent=/system/etc/security/cacerts child=35105088.0
+[File] new File: parent=/system/sbin/ child=busybox
+[File] new File: parent=/system/sbin/ child=magisk
+[File] new File: parent=/system/sbin/ child=su
+[File] new File: parent=/system/sd/xbin/ child=busybox
+[File] new File: parent=/system/sd/xbin/ child=magisk
+[File] new File: parent=/system/sd/xbin/ child=su
+[File] new File: parent=/system/usr/we-need-root/ child=busybox
+[File] new File: parent=/system/usr/we-need-root/ child=magisk
+[File] new File: parent=/system/usr/we-need-root/ child=su
+[File] new File: parent=/system/xbin/ child=busybox
+[File] new File: parent=/system/xbin/ child=magisk
+[File] new File: parent=/system/xbin/ child=su
+[File] new File: parent=/vendor/bin/ child=busybox
+[File] new File: parent=/vendor/bin/ child=magisk
+[File] new File: parent=/vendor/bin/ child=su
+[File] new File: parent=system/bin/failsafe/ child=busybox
+[File] new File: parent=system/bin/failsafe/ child=magisk
+[File] new File: parent=system/bin/failsafe/ child=su
+[System.getProperty] IS_TESTING = null
+[System.getProperty] ZstdNativePath = null
+[System.getProperty] ftp.nonProxyHosts = null
+[System.getProperty] ftp.proxyHost = null
+[System.getProperty] http.keepAlive = null
+[System.getProperty] http.keepAliveDuration = null
+[System.getProperty] http.maxConnections = null
+[System.getProperty] http.nonProxyHosts = null
+[System.getProperty] http.proxyHost = null
+[System.getProperty] http.proxyPort = null
+[System.getProperty] https.nonProxyHosts = null
+[System.getProperty] https.proxyHost = null
+[System.getProperty] https.proxyPort = null
+[System.getProperty] java.library.path = /system/lib64:/system_ext/lib64
+[System.getProperty] java.specification.version = 0.9
+[System.getProperty] java.time.zone.DefaultZoneRulesProvider = null
+[System.getProperty] java.version = 0
+[System.getProperty] java.vm.name = Dalvik
+[System.getProperty] java.vm.version = 2.1.0
+[System.getProperty] javax.net.ssl.keyStore = null
+[System.getProperty] javax.net.ssl.trustStore = null
+[System.getProperty] kotlinx.coroutines.debug = null
+[System.getProperty] kotlinx.coroutines.io.parallelism = null
+[System.getProperty] kotlinx.coroutines.scheduler = null
+[System.getProperty] kotlinx.coroutines.scheduler.blocking.parallelism = null
+[System.getProperty] kotlinx.coroutines.scheduler.core.pool.size = null
+[System.getProperty] kotlinx.coroutines.scheduler.keep.alive.sec = null
+[System.getProperty] kotlinx.coroutines.scheduler.max.pool.size = null
+[System.getProperty] kotlinx.coroutines.scheduler.offload.threshold = null
+[System.getProperty] kotlinx.coroutines.scheduler.resolution.ns = null
+[System.getProperty] kotlinx.coroutines.scheduler.spins = null
+[System.getProperty] kotlinx.coroutines.scheduler.yields = null
+[System.getProperty] kotlinx.coroutines.stacktrace.recovery = null
+[System.getProperty] line.separator =
+[System.getProperty] os.arch = aarch64
+[System.getProperty] os.name = Linux
+[System.getProperty] os.version = 6.1.130-gcc2f4221a3ad
+[System.getProperty] proxyHost = null
+[System.getProperty] rx.ring-buffer.size = null
+[System.getProperty] rx.unsafe-disable = null
+[System.getProperty] socksProxyHost = null
+[System.getProperty] system.certs.enabled = null
+[SystemProperties.get] com.samsung.speg.disable =
+[SystemProperties.get] gsm.sim.state = LOADED,ABSENT
+[SystemProperties.get] gsm.version.baseband = Q_V1_P14,Q_V1_P14
+[SystemProperties.get] gsm.version.ril-impl =
+[SystemProperties.get] init.svc.health-hal-2-1-samsung =
+[SystemProperties.get] persist.debug.input.force_enable_stylus_pointer_icon =
+[SystemProperties.get] persist.sys.usb.config = adb
+[SystemProperties.get] persist.sys.use.flyme.icon =
+[SystemProperties.get] ro.baseband = msm
+[SystemProperties.get] ro.boot.vbmeta.digest = 58e2aebd970b17c36f4034c0015453de148be99c146c0d7aae617204b3131999
+[SystemProperties.get] ro.bootimage.build.fingerprint =
+[SystemProperties.get] ro.bootloader = unknown
+[SystemProperties.get] ro.build.date.utc = 1753669492
+[SystemProperties.get] ro.build.display.id = lineage_corvette-userdebug 15 BP1A.250505.005 eng.androi.20250728.102454 release-keys
+[SystemProperties.get] ro.build.fingerprint = OnePlus/PJX110/OP5D06L1:15/AP3A.240617.008/U.1c92a95_9c8a_52f3:user/release-keys
+[SystemProperties.get] ro.build.flavor = lineage_corvette-userdebug
+[SystemProperties.get] ro.build.hw_emui_api_level =
+[SystemProperties.get] ro.build.id = BP1A.250505.005
+[SystemProperties.get] ro.build.nubia.rom.code =
+[SystemProperties.get] ro.build.product = OP5D06L1
+[SystemProperties.get] ro.build.rom.id =
+[SystemProperties.get] ro.build.sense.version =
+[SystemProperties.get] ro.build.uiversion =
+[SystemProperties.get] ro.build.version.emui =
+[SystemProperties.get] ro.build.version.opporom =
+[SystemProperties.get] ro.com.google.clientidbase = android-oneplus
+[SystemProperties.get] ro.confg.hw_systemversion =
+[SystemProperties.get] ro.config.ringtone = Orion.ogg
+[SystemProperties.get] ro.cta.yunos.version =
+[SystemProperties.get] ro.debuggable =
+[SystemProperties.get] ro.flyme.published =
+[SystemProperties.get] ro.hardware = qcom
+[SystemProperties.get] ro.letv.release.version =
+[SystemProperties.get] ro.meizu.setupwizard.flyme =
+[SystemProperties.get] ro.miui.internal.storage =
+[SystemProperties.get] ro.miui.ui.version.code =
+[SystemProperties.get] ro.miui.ui.version.name =
+[SystemProperties.get] ro.odm.build.date.utc = 1753669492
+[SystemProperties.get] ro.odm.build.fingerprint = OnePlus/PJX110/OP5D06L1:15/AP3A.240617.008/U.1c92a95_9c8a_52f3:user/release-keys
+[SystemProperties.get] ro.product.brand = OnePlus
+[SystemProperties.get] ro.product.build.date.utc = 1753669492
+[SystemProperties.get] ro.product.build.fingerprint = OnePlus/PJX110/OP5D06L1:15/AP3A.240617.008/U.1c92a95_9c8a_52f3:user/release-keys
+[SystemProperties.get] ro.product.cpu.abi = arm64-v8a
+[SystemProperties.get] ro.product.device = OP5D06L1
+[SystemProperties.get] ro.product.manufacturer = OnePlus
+[SystemProperties.get] ro.product.model = PJX110
+[SystemProperties.get] ro.product.odm.device = OP5D06L1
+[SystemProperties.get] ro.product.product.device = OP5D06L1
+[SystemProperties.get] ro.product.system_ext.device = OP5D06L1
+[SystemProperties.get] ro.product.vendor.device = OP5D06L1
+[SystemProperties.get] ro.rom.version =
+[SystemProperties.get] ro.secure =
+[SystemProperties.get] ro.serialno =
+[SystemProperties.get] ro.smartisan.version =
+[SystemProperties.get] ro.system.build.date.utc = 1753669492
+[SystemProperties.get] ro.system.build.fingerprint = OnePlus/PJX110/OP5D06L1:15/AP3A.240617.008/U.1c92a95_9c8a_52f3:user/release-keys
+[SystemProperties.get] ro.system_ext.build.date.utc = 1753669492
+[SystemProperties.get] ro.system_ext.build.fingerprint = OnePlus/PJX110/OP5D06L1:15/AP3A.240617.008/U.1c92a95_9c8a_52f3:user/release-keys
+[SystemProperties.get] ro.vendor.build.date.utc = 1753669492
+[SystemProperties.get] ro.vendor.build.fingerprint = OnePlus/PJX110/OP5D06L1:15/AP3A.240617.008/U.1c92a95_9c8a_52f3:user/release-keys
+[SystemProperties.get] ro.vivo.os.build.display.id =
+[SystemProperties.get] ro.vivo.os.version =
+[SystemProperties.get] sys.lge.lgmdm_version =
+[SystemProperties.get] sys.oem_unlock_allowed =
+[SystemProperties.get] sys.usb.config = adb
+[SystemProperties.get] sys.usb.state =
+[SystemProperties.get] wifi.interface =
+</code></pre></div></div>
+
+<p>如果该 App 没有使用其他更复杂的检测手段（比如 native 层检测），那么基本可以确定问题在于<code class="language-plaintext highlighter-rouge">ro.build.display.id</code>和<code class="language-plaintext highlighter-rouge">ro.build.flavor</code>这两个属性，因为出现了”lineage”字样。后续只需要修改这两个属性即可。</p>
+
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/%E5%AE%89%E5%8D%93/2025/09/23/K-9-Mail%E9%85%8D%E7%BD%AE.html" title="K-9 Mail配置">K-9 Mail配置</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/%E5%AE%89%E5%8D%93/2025/09/21/%E5%AE%89%E5%8D%93%E7%8E%AF%E5%A2%83%E6%A3%80%E6%9F%A5%E8%B0%83%E8%AF%95.html"
+      title="安卓环境检查调试">安卓环境检查调试</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2025-09-22】 美团无法在第三方ROM上使用"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

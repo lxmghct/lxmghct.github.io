@@ -327,12 +327,345 @@
 
 <p>存档路径: C:\Users\xxx\Documents\Klei\DoNotStarveTogether\xxxxxxx\</p>
 
+<h2 id="1-修改配置文件">1. 修改配置文件</h2>
+
 <ul>
   <li>进入需要修改的存档文件夹，比如Cluster_1。</li>
   <li>打开Master/save/shardindex，修改server选项中的<code class="language-plaintext highlighter-rouge">online_mode</code>为<code class="language-plaintext highlighter-rouge">true</code>(在线模式)或<code class="language-plaintext highlighter-rouge">false</code>(离线模式)。</li>
   <li>打开Caves/save/shardindex，同上修改server选项中的<code class="language-plaintext highlighter-rouge">online_mode</code>。</li>
   <li>注意根目录下的cluster.ini文件中的<code class="language-plaintext highlighter-rouge">offline_cluster</code>的值对最终的结果没有影响，改不改都可以。</li>
 </ul>
+
+<h2 id="2-同步角色数据">2. 同步角色数据</h2>
+
+<p>当启动游戏后，由于在线模式和离线模式使用的是不同的账号数据，所以直接进入游戏会失去之前的角色数据。所以第一次切换后会提示创建新的角色。但是我们可以手动把之前的角色数据复制过来。</p>
+
+<p>进入到 C:\Users\xxx\Documents\Klei\DoNotStarveTogether\xxxxxxx\Cluster_xx\Master\save\session\xxxxxxx\ 目录下，可以找到一个英文+数字的文件夹（只有进入过游戏才会有，比如你进了地表世界，但没去过洞穴，那么 Caves\save\session\xxxxxxx\ 目录下就没有这个文件夹），该文件夹名称和你的账号是相关的，你可以看到所有的世界里这个文件夹的名称都是一样的。这里假设这个叫 ABC123。此时你通过离线模式启动服务器，会提示你创建角色，这时你会发现 Master\save\session\xxxxxxx\ 目录下多了一个文件夹，这个就是你离线模式的账号数据，假设叫 DEF456。此时你只需要把 ABC123 目录下的所有文件复制到 DEF456 目录下，覆盖掉里面的文件，就可以在离线模式下继续使用之前在线模式的角色数据了。对于 Cave 洞穴世界也是同样的操作。</p>
+
+<p>同理，如果你想从离线模式切换回在线模式，也是一样的操作。只需要把之前离线模式的账号数据复制到在线模式的账号数据目录下覆盖掉就可以了。</p>
+
+<h2 id="3-脚本实现">3. 脚本实现</h2>
+<p>我把上述操作写成了一个 python 脚本，方便以后使用：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+</span><span class="sh">"""</span><span class="s">
+饥荒存档在线/离线模式切换工具
+用于切换饥荒联机版存档的在线模式
+</span><span class="sh">"""</span>
+
+<span class="kn">import</span> <span class="n">sys</span>
+<span class="kn">import</span> <span class="n">configparser</span>
+<span class="kn">from</span> <span class="n">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="n">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="n">re</span>
+<span class="kn">import</span> <span class="n">shutil</span>
+<span class="kn">import</span> <span class="n">os</span>
+
+
+<span class="c1"># 解决Windows命令行颜色问题
+</span><span class="k">if</span> <span class="n">sys</span><span class="p">.</span><span class="n">platform</span> <span class="o">==</span> <span class="sh">"</span><span class="s">win32</span><span class="sh">"</span><span class="p">:</span>
+    <span class="n">os</span><span class="p">.</span><span class="nf">system</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
+
+
+<span class="c1"># 存档位置: C:\Users\xxx\Documents\Klei\DoNotStarveTogether\{user_id}\
+</span><span class="n">user_id</span> <span class="o">=</span> <span class="sh">'</span><span class="s">1234567890</span><span class="sh">'</span> <span class="c1"># 替换成你的用户id
+</span>
+<span class="c1"># 在线模式和离线模式的session_id
+# C:\Users\xxx\Documents\Klei\DoNotStarveTogether\{user_id}\Cluster_xx\Master\save\session\xxxxxxx\{session_id}\
+# 要获取这两个id，可以分别创建一个在线模式存档和一个离线模式存档，并进入一次游戏，然后进入到上述路径下查看对应的session_id文件夹名称，复制过来即可。所有存档的这两个session_id都是一样的。
+</span><span class="n">online_session_id</span> <span class="o">=</span> <span class="sh">'</span><span class="s">ABCD123456</span><span class="sh">'</span> <span class="c1"># 替换成你的在线模式session_id
+</span><span class="n">offline_session_id</span> <span class="o">=</span> <span class="sh">'</span><span class="s">CDEFG123456789</span><span class="sh">'</span> <span class="c1"># 替换成你的离线模式session_id
+</span>
+
+<span class="k">class</span> <span class="nc">Color</span><span class="p">:</span>
+    <span class="n">RED</span> <span class="o">=</span> <span class="sh">'</span><span class="se">\033</span><span class="s">[91m</span><span class="sh">'</span>
+    <span class="n">GREEN</span> <span class="o">=</span> <span class="sh">'</span><span class="se">\033</span><span class="s">[92m</span><span class="sh">'</span>
+    <span class="n">YELLOW</span> <span class="o">=</span> <span class="sh">'</span><span class="se">\033</span><span class="s">[93m</span><span class="sh">'</span>
+    <span class="n">CYAN</span> <span class="o">=</span> <span class="sh">'</span><span class="se">\033</span><span class="s">[96m</span><span class="sh">'</span>
+    <span class="n">RESET</span> <span class="o">=</span> <span class="sh">'</span><span class="se">\033</span><span class="s">[0m</span><span class="sh">'</span>
+
+
+<span class="k">class</span> <span class="nc">ColorStr</span><span class="p">:</span>
+    <span class="n">ONLINE</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">Color</span><span class="p">.</span><span class="n">GREEN</span><span class="si">}</span><span class="s">在线</span><span class="si">{</span><span class="n">Color</span><span class="p">.</span><span class="n">RESET</span><span class="si">}</span><span class="sh">"</span>
+    <span class="n">OFFLINE</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">Color</span><span class="p">.</span><span class="n">RED</span><span class="si">}</span><span class="s">离线</span><span class="si">{</span><span class="n">Color</span><span class="p">.</span><span class="n">RESET</span><span class="si">}</span><span class="sh">"</span>
+    <span class="n">UNKNOWN</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">Color</span><span class="p">.</span><span class="n">YELLOW</span><span class="si">}</span><span class="s">未知</span><span class="si">{</span><span class="n">Color</span><span class="p">.</span><span class="n">RESET</span><span class="si">}</span><span class="sh">"</span>
+
+
+<span class="k">def</span> <span class="nf">color_str</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">color</span><span class="si">}{</span><span class="n">text</span><span class="si">}{</span><span class="n">Color</span><span class="p">.</span><span class="n">RESET</span><span class="si">}</span><span class="sh">"</span>
+
+
+<span class="k">def</span> <span class="nf">align</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">fillchar</span><span class="o">=</span><span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">
+    使中英文混合字符串对齐
+    </span><span class="sh">"""</span>
+    <span class="c1"># 移除颜色码对长度的影响
+</span>    <span class="n">temp_text</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="nf">sub</span><span class="p">(</span><span class="sa">r</span><span class="sh">'</span><span class="s">\033\[\d+m</span><span class="sh">'</span><span class="p">,</span> <span class="sh">''</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+    <span class="c1"># 计算实际字符宽度（非ASCII字符即中文按2计算）
+</span>    <span class="n">actual_len</span> <span class="o">=</span> <span class="nf">sum</span><span class="p">(</span><span class="mi">2</span> <span class="k">if</span> <span class="nf">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">temp_text</span><span class="p">)</span>
+    <span class="c1"># 计算需要填充的空格数
+</span>    <span class="k">return</span> <span class="n">text</span> <span class="o">+</span> <span class="n">fillchar</span> <span class="o">*</span> <span class="p">(</span><span class="n">width</span> <span class="o">-</span> <span class="n">actual_len</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">DSTSaveManager</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="p">.</span><span class="n">platform</span> <span class="o">==</span> <span class="sh">'</span><span class="s">win32</span><span class="sh">'</span><span class="p">:</span>
+            <span class="n">base_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">.</span><span class="nf">home</span><span class="p">()</span> <span class="o">/</span> <span class="sh">'</span><span class="s">Documents</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">Klei</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">DoNotStarveTogether</span><span class="sh">'</span> <span class="o">/</span> <span class="n">user_id</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">.</span><span class="nf">home</span><span class="p">()</span> <span class="o">/</span> <span class="sh">'</span><span class="s">.klei</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">DoNotStarveTogether</span><span class="sh">'</span>
+
+        <span class="n">self</span><span class="p">.</span><span class="n">base_path</span> <span class="o">=</span> <span class="n">base_path</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">self</span><span class="p">.</span><span class="n">base_path</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">错误：找不到饥荒存档目录</span><span class="sh">"</span><span class="p">)</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">预期路径：</span><span class="si">{</span><span class="n">self</span><span class="p">.</span><span class="n">base_path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+            <span class="n">sys</span><span class="p">.</span><span class="nf">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_saves</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">saves</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">cluster_dir</span> <span class="ow">in</span> <span class="n">self</span><span class="p">.</span><span class="n">base_path</span><span class="p">.</span><span class="nf">iterdir</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cluster_dir</span><span class="p">.</span><span class="nf">is_dir</span><span class="p">():</span>
+                <span class="k">continue</span>
+
+            <span class="k">if</span> <span class="n">cluster_dir</span><span class="p">.</span><span class="n">name</span><span class="p">.</span><span class="nf">startswith</span><span class="p">(</span><span class="sh">'</span><span class="s">.</span><span class="sh">'</span><span class="p">):</span>
+                <span class="k">continue</span>
+
+            <span class="n">cluster_ini</span> <span class="o">=</span> <span class="n">cluster_dir</span> <span class="o">/</span> <span class="sh">'</span><span class="s">cluster.ini</span><span class="sh">'</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">cluster_ini</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+                <span class="k">continue</span>
+
+            <span class="n">config</span> <span class="o">=</span> <span class="n">configparser</span><span class="p">.</span><span class="nc">ConfigParser</span><span class="p">()</span>
+            <span class="n">config</span><span class="p">.</span><span class="nf">read</span><span class="p">(</span><span class="n">cluster_ini</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">'</span><span class="s">utf-8</span><span class="sh">'</span><span class="p">)</span>
+
+            <span class="n">cluster_name</span> <span class="o">=</span> <span class="n">config</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">'</span><span class="s">NETWORK</span><span class="sh">'</span><span class="p">,</span> <span class="sh">'</span><span class="s">cluster_name</span><span class="sh">'</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">cluster_dir</span><span class="p">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="n">mod_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">.</span><span class="nf">fromtimestamp</span><span class="p">(</span><span class="n">cluster_dir</span><span class="p">.</span><span class="nf">stat</span><span class="p">().</span><span class="n">st_mtime</span><span class="p">)</span>
+            <span class="n">online_mode</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">get_online_mode</span><span class="p">(</span><span class="n">cluster_dir</span><span class="p">)</span>
+
+            <span class="n">saves</span><span class="p">.</span><span class="nf">append</span><span class="p">({</span>
+                <span class="sh">'</span><span class="s">path</span><span class="sh">'</span><span class="p">:</span> <span class="n">cluster_dir</span><span class="p">,</span>
+                <span class="sh">'</span><span class="s">name</span><span class="sh">'</span><span class="p">:</span> <span class="n">cluster_name</span><span class="p">,</span>
+                <span class="sh">'</span><span class="s">folder</span><span class="sh">'</span><span class="p">:</span> <span class="n">cluster_dir</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="sh">'</span><span class="s">mod_time</span><span class="sh">'</span><span class="p">:</span> <span class="n">mod_time</span><span class="p">,</span>
+                <span class="sh">'</span><span class="s">online_mode</span><span class="sh">'</span><span class="p">:</span> <span class="n">online_mode</span>
+            <span class="p">})</span>
+
+        <span class="n">saves</span><span class="p">.</span><span class="nf">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="sh">'</span><span class="s">mod_time</span><span class="sh">'</span><span class="p">],</span> <span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">saves</span>
+
+    <span class="k">def</span> <span class="nf">get_online_mode</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">cluster_dir</span><span class="p">):</span>
+        <span class="n">shardindex_path</span> <span class="o">=</span> <span class="n">cluster_dir</span> <span class="o">/</span> <span class="sh">'</span><span class="s">Master</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">save</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">shardindex</span><span class="sh">'</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">shardindex_path</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">shardindex_path</span><span class="p">,</span> <span class="sh">'</span><span class="s">r</span><span class="sh">'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">'</span><span class="s">utf-8</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
+
+            <span class="n">match</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="nf">search</span><span class="p">(</span><span class="sa">r</span><span class="sh">'</span><span class="s">online_mode\s*=\s*(true|false)</span><span class="sh">'</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">match</span><span class="p">.</span><span class="nf">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="sh">'</span><span class="s">true</span><span class="sh">'</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">set_online_mode</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">cluster_dir</span><span class="p">,</span> <span class="n">online_mode</span><span class="p">):</span>
+        <span class="n">shard_paths</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">cluster_dir</span> <span class="o">/</span> <span class="sh">'</span><span class="s">Master</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">save</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">shardindex</span><span class="sh">'</span><span class="p">,</span>
+            <span class="n">cluster_dir</span> <span class="o">/</span> <span class="sh">'</span><span class="s">Caves</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">save</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">shardindex</span><span class="sh">'</span>
+        <span class="p">]</span>
+
+        <span class="n">success_count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">failed_paths</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">shard_path</span> <span class="ow">in</span> <span class="n">shard_paths</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">shard_path</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">shard_path</span><span class="p">,</span> <span class="sh">'</span><span class="s">r</span><span class="sh">'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">'</span><span class="s">utf-8</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">content</span> <span class="o">=</span> <span class="n">f</span><span class="p">.</span><span class="nf">read</span><span class="p">()</span>
+
+                <span class="n">new_value</span> <span class="o">=</span> <span class="sh">'</span><span class="s">true</span><span class="sh">'</span> <span class="k">if</span> <span class="n">online_mode</span> <span class="k">else</span> <span class="sh">'</span><span class="s">false</span><span class="sh">'</span>
+                <span class="n">new_content</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="nf">sub</span><span class="p">(</span>
+                    <span class="sa">r</span><span class="sh">'</span><span class="s">online_mode\s*=\s*(true|false)</span><span class="sh">'</span><span class="p">,</span>
+                    <span class="sa">f</span><span class="sh">'</span><span class="s">online_mode=</span><span class="si">{</span><span class="n">new_value</span><span class="si">}</span><span class="sh">'</span><span class="p">,</span>
+                    <span class="n">content</span>
+                <span class="p">)</span>
+
+                <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">shard_path</span><span class="p">,</span> <span class="sh">'</span><span class="s">w</span><span class="sh">'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">'</span><span class="s">utf-8</span><span class="sh">'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="n">f</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">new_content</span><span class="p">)</span>
+
+                <span class="n">success_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="n">failed_paths</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">shard_path</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">success_count</span><span class="p">,</span> <span class="n">failed_paths</span>
+
+    <span class="k">def</span> <span class="nf">get_session_root_path</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">cluster_dir</span><span class="p">,</span> <span class="n">shard</span><span class="p">):</span>
+        <span class="n">temp_path</span> <span class="o">=</span> <span class="n">cluster_dir</span> <span class="o">/</span> <span class="n">shard</span> <span class="o">/</span> <span class="sh">'</span><span class="s">save</span><span class="sh">'</span> <span class="o">/</span> <span class="sh">'</span><span class="s">session</span><span class="sh">'</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">temp_path</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="nc">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">找不到路径: </span><span class="si">{</span><span class="n">temp_path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">subdirs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">temp_path</span><span class="p">.</span><span class="nf">iterdir</span><span class="p">()</span> <span class="k">if</span> <span class="n">d</span><span class="p">.</span><span class="nf">is_dir</span><span class="p">()]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">subdirs</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="nc">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">找不到子目录: </span><span class="si">{</span><span class="n">temp_path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">subdirs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">backup_session</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">session_path</span><span class="p">,</span> <span class="n">session_id</span><span class="p">):</span>
+        <span class="n">backups_root</span> <span class="o">=</span> <span class="n">session_path</span><span class="p">.</span><span class="n">parent</span> <span class="o">/</span> <span class="sh">"</span><span class="s">backups</span><span class="sh">"</span>
+        <span class="n">backup_path</span> <span class="o">=</span> <span class="n">backups_root</span> <span class="o">/</span> <span class="n">session_id</span>
+
+        <span class="n">backups_root</span><span class="p">.</span><span class="nf">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">backup_path</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+            <span class="n">shutil</span><span class="p">.</span><span class="nf">rmtree</span><span class="p">(</span><span class="n">backup_path</span><span class="p">)</span>
+
+        <span class="n">shutil</span><span class="p">.</span><span class="nf">copytree</span><span class="p">(</span><span class="n">session_path</span><span class="p">,</span> <span class="n">backup_path</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">backup_path</span>
+
+    <span class="k">def</span> <span class="nf">copy_one_shard</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">cluster_dir</span><span class="p">,</span> <span class="n">shard</span><span class="p">,</span> <span class="n">src_id</span><span class="p">,</span> <span class="n">dst_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">session_root</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">get_session_root_path</span><span class="p">(</span><span class="n">cluster_dir</span><span class="p">,</span> <span class="n">shard</span><span class="p">)</span>
+        <span class="k">except</span> <span class="nb">FileNotFoundError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">错误: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="n">src_path</span> <span class="o">=</span> <span class="n">session_root</span> <span class="o">/</span> <span class="n">src_id</span>
+        <span class="n">dst_path</span> <span class="o">=</span> <span class="n">session_root</span> <span class="o">/</span> <span class="n">dst_id</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="si">{</span><span class="n">session_root</span><span class="si">}</span><span class="s">:</span><span class="sh">"</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\t</span><span class="si">{</span><span class="n">src_path</span><span class="p">.</span><span class="n">name</span><span class="si">}</span><span class="s"> -&gt; </span><span class="si">{</span><span class="n">dst_path</span><span class="p">.</span><span class="n">name</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">src_path</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">跳过（源不存在）:</span><span class="sh">"</span><span class="p">,</span> <span class="n">src_path</span><span class="p">)</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">dst_path</span><span class="p">.</span><span class="nf">exists</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">dst_path</span><span class="p">.</span><span class="nf">stat</span><span class="p">().</span><span class="n">st_mtime</span> <span class="o">&gt;</span> <span class="n">src_path</span><span class="p">.</span><span class="nf">stat</span><span class="p">().</span><span class="n">st_mtime</span><span class="p">:</span>
+                <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">⚠ 目标存档较新</span><span class="sh">"</span><span class="p">)</span>
+                <span class="n">confirm</span> <span class="o">=</span> <span class="nf">input</span><span class="p">(</span><span class="sh">"</span><span class="s">仍然覆盖？(y/n): </span><span class="sh">"</span><span class="p">).</span><span class="nf">strip</span><span class="p">().</span><span class="nf">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">confirm</span> <span class="o">!=</span> <span class="sh">'</span><span class="s">y</span><span class="sh">'</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">已跳过</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="k">return</span>
+
+            <span class="n">backup_path</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">backup_session</span><span class="p">(</span><span class="n">dst_path</span><span class="p">,</span> <span class="n">dst_id</span><span class="p">)</span>
+            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">已备份到: </span><span class="si">{</span><span class="n">backup_path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+            <span class="n">shutil</span><span class="p">.</span><span class="nf">rmtree</span><span class="p">(</span><span class="n">dst_path</span><span class="p">)</span>
+
+        <span class="n">shutil</span><span class="p">.</span><span class="nf">copytree</span><span class="p">(</span><span class="n">src_path</span><span class="p">,</span> <span class="n">dst_path</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">✓ </span><span class="si">{</span><span class="n">shard</span><span class="si">}</span><span class="s"> 人物存档同步成功</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">copy_character_save</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">cluster_dir</span><span class="p">,</span> <span class="n">to_online</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">to_online</span><span class="p">:</span>
+            <span class="n">src_id</span> <span class="o">=</span> <span class="n">offline_session_id</span>
+            <span class="n">dst_id</span> <span class="o">=</span> <span class="n">online_session_id</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="nf">color_str</span><span class="p">(</span><span class="sh">'</span><span class="s">离线</span><span class="sh">'</span><span class="p">,</span> <span class="n">Color</span><span class="p">.</span><span class="n">RED</span><span class="p">)</span><span class="si">}</span><span class="s"> → </span><span class="si">{</span><span class="nf">color_str</span><span class="p">(</span><span class="sh">'</span><span class="s">在线</span><span class="sh">'</span><span class="p">,</span> <span class="n">Color</span><span class="p">.</span><span class="n">GREEN</span><span class="p">)</span><span class="si">}</span><span class="sh">"</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">src_id</span> <span class="o">=</span> <span class="n">online_session_id</span>
+            <span class="n">dst_id</span> <span class="o">=</span> <span class="n">offline_session_id</span>
+            <span class="n">direction</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="nf">color_str</span><span class="p">(</span><span class="sh">'</span><span class="s">在线</span><span class="sh">'</span><span class="p">,</span> <span class="n">Color</span><span class="p">.</span><span class="n">GREEN</span><span class="p">)</span><span class="si">}</span><span class="s"> → </span><span class="si">{</span><span class="nf">color_str</span><span class="p">(</span><span class="sh">'</span><span class="s">离线</span><span class="sh">'</span><span class="p">,</span> <span class="n">Color</span><span class="p">.</span><span class="n">RED</span><span class="p">)</span><span class="si">}</span><span class="sh">"</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="s">人物存档复制</span><span class="sh">"</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">方向: </span><span class="si">{</span><span class="n">direction</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="n">self</span><span class="p">.</span><span class="nf">copy_one_shard</span><span class="p">(</span><span class="n">cluster_dir</span><span class="p">,</span> <span class="sh">"</span><span class="s">Master</span><span class="sh">"</span><span class="p">,</span> <span class="n">src_id</span><span class="p">,</span> <span class="n">dst_id</span><span class="p">)</span>
+        <span class="n">self</span><span class="p">.</span><span class="nf">copy_one_shard</span><span class="p">(</span><span class="n">cluster_dir</span><span class="p">,</span> <span class="sh">"</span><span class="s">Caves</span><span class="sh">"</span><span class="p">,</span> <span class="n">src_id</span><span class="p">,</span> <span class="n">dst_id</span><span class="p">)</span>
+
+
+    <span class="k">def</span> <span class="nf">display_saves</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">saves</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span> <span class="o">+</span> <span class="sh">"</span><span class="s">=</span><span class="sh">"</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="c1"># print(f"{'序号':&lt;6} {'文件夹名':&lt;20} {'世界名':&lt;25} {'在线/离线':&lt;10} {'修改时间'}")
+</span>        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="sh">'</span><span class="s">序号</span><span class="sh">'</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="sh">'</span><span class="s">文件夹名</span><span class="sh">'</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="sh">'</span><span class="s">世界名</span><span class="sh">'</span><span class="p">,</span> <span class="mi">25</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="sh">'</span><span class="s">在线/离线</span><span class="sh">'</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="sh">'</span><span class="s">修改时间</span><span class="sh">'</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">=</span><span class="sh">"</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">save</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">saves</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">save</span><span class="p">[</span><span class="sh">'</span><span class="s">online_mode</span><span class="sh">'</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">True</span><span class="p">:</span>
+                <span class="n">mode_str</span> <span class="o">=</span> <span class="n">ColorStr</span><span class="p">.</span><span class="n">ONLINE</span>
+            <span class="k">elif</span> <span class="n">save</span><span class="p">[</span><span class="sh">'</span><span class="s">online_mode</span><span class="sh">'</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">False</span><span class="p">:</span>
+                <span class="n">mode_str</span> <span class="o">=</span> <span class="n">ColorStr</span><span class="p">.</span><span class="n">OFFLINE</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mode_str</span> <span class="o">=</span> <span class="n">ColorStr</span><span class="p">.</span><span class="n">UNKNOWN</span>
+
+            <span class="n">mod_time_str</span> <span class="o">=</span> <span class="n">save</span><span class="p">[</span><span class="sh">'</span><span class="s">mod_time</span><span class="sh">'</span><span class="p">].</span><span class="nf">strftime</span><span class="p">(</span><span class="sh">'</span><span class="s">%Y-%m-%d %H:%M:%S</span><span class="sh">'</span><span class="p">)</span>
+
+            <span class="c1"># print(f"{idx:&lt;6} {save['folder']:&lt;20} {save['name']:&lt;25} {mode_str:&lt;10} {mod_time_str}")
+</span>            <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="nf">str</span><span class="p">(</span><span class="n">idx</span><span class="p">),</span> <span class="mi">6</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="n">save</span><span class="p">[</span><span class="sh">'</span><span class="s">folder</span><span class="sh">'</span><span class="p">],</span> <span class="mi">20</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="n">save</span><span class="p">[</span><span class="sh">'</span><span class="s">name</span><span class="sh">'</span><span class="p">],</span> <span class="mi">25</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="nf">align</span><span class="p">(</span><span class="n">mode_str</span><span class="p">,</span> <span class="mi">15</span><span class="p">)</span><span class="si">}</span><span class="s"> </span><span class="si">{</span><span class="n">mod_time_str</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">=</span><span class="sh">"</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="s">共找到 </span><span class="si">{</span><span class="nf">len</span><span class="p">(</span><span class="n">saves</span><span class="p">)</span><span class="si">}</span><span class="s"> 个存档</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">饥荒存档在线/离线模式切换工具</span><span class="sh">"</span><span class="p">)</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">存档目录：</span><span class="si">{</span><span class="n">self</span><span class="p">.</span><span class="n">base_path</span><span class="si">}</span><span class="se">\n</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">saves</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">get_saves</span><span class="p">()</span>
+            <span class="n">self</span><span class="p">.</span><span class="nf">display_saves</span><span class="p">(</span><span class="n">saves</span><span class="p">)</span>
+
+            <span class="n">user_input</span> <span class="o">=</span> <span class="nf">input</span><span class="p">(</span><span class="sh">"</span><span class="s">请输入序号(q退出): </span><span class="sh">"</span><span class="p">).</span><span class="nf">strip</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">user_input</span><span class="p">.</span><span class="nf">lower</span><span class="p">()</span> <span class="o">==</span> <span class="sh">'</span><span class="s">q</span><span class="sh">'</span> <span class="ow">or</span> <span class="n">user_input</span> <span class="o">==</span> <span class="sh">'</span><span class="s">quit</span><span class="sh">'</span><span class="p">:</span>
+                <span class="k">break</span>
+            
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">user_input</span><span class="p">.</span><span class="nf">isdigit</span><span class="p">():</span>
+                <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">请输入有效的序号</span><span class="sh">"</span><span class="p">)</span>
+                <span class="k">continue</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">idx</span> <span class="o">=</span> <span class="nf">int</span><span class="p">(</span><span class="n">user_input</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">selected</span> <span class="o">=</span> <span class="n">saves</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span>
+
+                <span class="n">new_mode</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">online_mode</span><span class="sh">'</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">online_mode</span><span class="sh">'</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">无法切换（未知当前模式）</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="k">continue</span>
+                
+                <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="s">将 </span><span class="si">{</span><span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">folder</span><span class="sh">'</span><span class="p">]</span><span class="si">}</span><span class="s">(</span><span class="si">{</span><span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">name</span><span class="sh">'</span><span class="p">]</span><span class="si">}</span><span class="s">) 从 </span><span class="si">{</span><span class="n">ColorStr</span><span class="p">.</span><span class="n">ONLINE</span> <span class="k">if</span> <span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">online_mode</span><span class="sh">'</span><span class="p">]</span> <span class="k">else</span> <span class="n">ColorStr</span><span class="p">.</span><span class="n">OFFLINE</span><span class="si">}</span><span class="s"> 切换到 </span><span class="si">{</span><span class="n">ColorStr</span><span class="p">.</span><span class="n">ONLINE</span> <span class="k">if</span> <span class="n">new_mode</span> <span class="k">else</span> <span class="n">ColorStr</span><span class="p">.</span><span class="n">OFFLINE</span><span class="si">}</span><span class="s"> 模式</span><span class="sh">"</span><span class="p">)</span>
+
+                <span class="n">confirm</span> <span class="o">=</span> <span class="nf">input</span><span class="p">(</span><span class="sh">"</span><span class="s">确认切换？(y/n): </span><span class="sh">"</span><span class="p">).</span><span class="nf">strip</span><span class="p">().</span><span class="nf">lower</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">confirm</span> <span class="o">!=</span> <span class="sh">'</span><span class="s">y</span><span class="sh">'</span><span class="p">:</span>
+                    <span class="k">continue</span>
+
+                <span class="n">success_count</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">set_online_mode</span><span class="p">(</span><span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">path</span><span class="sh">'</span><span class="p">],</span> <span class="n">new_mode</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="n">success_count</span><span class="p">:</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">✓ 模式切换成功</span><span class="sh">"</span><span class="p">)</span>
+
+                    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="s">是否同步人物存档？</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="n">master_session_root</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">get_session_root_path</span><span class="p">(</span><span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">path</span><span class="sh">'</span><span class="p">],</span> <span class="sh">'</span><span class="s">Master</span><span class="sh">'</span><span class="p">)</span>
+                    <span class="n">cave_session_root</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="nf">get_session_root_path</span><span class="p">(</span><span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">path</span><span class="sh">'</span><span class="p">],</span> <span class="sh">'</span><span class="s">Caves</span><span class="sh">'</span><span class="p">)</span> <span class="nf">if </span><span class="p">(</span><span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">path</span><span class="sh">'</span><span class="p">]</span> <span class="o">/</span> <span class="sh">'</span><span class="s">Caves</span><span class="sh">'</span><span class="p">).</span><span class="nf">exists</span><span class="p">()</span> <span class="k">else</span> <span class="bp">None</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">你也可以稍后手动同步存档，进入到下面目录：</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">  </span><span class="si">{</span><span class="n">master_session_root</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">cave_session_root</span><span class="p">:</span>
+                        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">  </span><span class="si">{</span><span class="n">cave_session_root</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">将</span><span class="si">{</span><span class="nf">color_str</span><span class="p">(</span><span class="n">offline_session_id</span> <span class="k">if</span> <span class="n">new_mode</span> <span class="k">else</span> <span class="n">online_session_id</span><span class="p">,</span> <span class="n">Color</span><span class="p">.</span><span class="n">RED</span><span class="p">)</span><span class="si">}</span><span class="s">目录的内容复制到</span><span class="si">{</span><span class="nf">color_str</span><span class="p">(</span><span class="n">online_session_id</span> <span class="k">if</span> <span class="n">new_mode</span> <span class="k">else</span> <span class="n">offline_session_id</span><span class="p">,</span> <span class="n">Color</span><span class="p">.</span><span class="n">GREEN</span><span class="p">)</span><span class="si">}</span><span class="s">目录下</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="n">copy_confirm</span> <span class="o">=</span> <span class="nf">input</span><span class="p">(</span><span class="sh">"</span><span class="s">(y/n): </span><span class="sh">"</span><span class="p">).</span><span class="nf">strip</span><span class="p">().</span><span class="nf">lower</span><span class="p">()</span>
+
+                    <span class="k">if</span> <span class="n">copy_confirm</span> <span class="o">==</span> <span class="sh">'</span><span class="s">y</span><span class="sh">'</span><span class="p">:</span>
+                        <span class="n">self</span><span class="p">.</span><span class="nf">copy_character_save</span><span class="p">(</span>
+                            <span class="n">selected</span><span class="p">[</span><span class="sh">'</span><span class="s">path</span><span class="sh">'</span><span class="p">],</span>
+                            <span class="n">to_online</span><span class="o">=</span><span class="n">new_mode</span>
+                        <span class="p">)</span>
+
+                    <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="s">⚠ 请重启游戏以加载存档状态变更</span><span class="se">\n</span><span class="sh">"</span><span class="p">)</span>
+
+            <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">错误:</span><span class="sh">"</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+    <span class="nc">DSTSaveManager</span><span class="p">().</span><span class="nf">run</span><span class="p">()</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">'</span><span class="s">__main__</span><span class="sh">'</span><span class="p">:</span>
+    <span class="nf">main</span><span class="p">()</span>
+</code></pre></div></div>
 
   </article>
 </div>

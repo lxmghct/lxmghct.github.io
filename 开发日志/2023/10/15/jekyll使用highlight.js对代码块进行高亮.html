@@ -369,8 +369,6 @@ highlight.js中文文档: <a href="http://highlight.cndoc.wiki/doc/">http://high
 <p>检查渲染后的 html 代码，可以看到如下图所示的结构：
 <img src="/post_assets/images/2023/10/16-raw-structrue-2.png" alt="jekyll代码块渲染后的html结构" /></p>
 
-<p><img src="image.png" alt="Alt text" /></p>
-
 <p>可以看到，jekyll 渲染代码块的时候，对于可以识别的代码类型，会将代码块包裹在<code class="language-plaintext highlighter-rouge">&lt;div class="highlighter-rouge"&gt;</code>中，其中包含了<code class="language-plaintext highlighter-rouge">language-python</code>类名，然后在其中依次添加类名为<code class="language-plaintext highlighter-rouge">highlight</code>的<code class="language-plaintext highlighter-rouge">&lt;div&gt;</code>和<code class="language-plaintext highlighter-rouge">&lt;pre&gt;</code>标签，然后添加一个没有任何类的<code class="language-plaintext highlighter-rouge">&lt;code&gt;</code>标签。对于无法识别的代码类型，则直接生成一个<code class="language-plaintext highlighter-rouge">&lt;pre&gt;</code>标签，然后在其中添加一个类名为<code class="language-plaintext highlighter-rouge">language-xxx</code>的<code class="language-plaintext highlighter-rouge">&lt;code&gt;</code>标签。如果未指定语言，则视为第一种情况，语言类型为<code class="language-plaintext highlighter-rouge">plaintext</code>。</p>
 
 <p>为了方便后续统一处理，主要是后续添加行号以及方便后面样式上的统一修改，我采用的方法是把情况二转化成情况一的结构，也就是从<code class="language-plaintext highlighter-rouge">&lt;code&gt;</code>标签中提取语言类别，然后外层添加<code class="language-plaintext highlighter-rouge">&lt;div class="highlighter-rouge"&gt;</code>。</p>
@@ -409,7 +407,7 @@ highlight.js中文文档: <a href="http://highlight.cndoc.wiki/doc/">http://high
     <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">hello world</span><span class="sh">"</span><span class="p">)</span>
 </code></pre></div></div>
 <p>高亮后的 html 结构如下图所示：
-<img src="/post_assets/images/2023/10/16-highlight-structrue.png" alt="highlight.js高亮后的html结构" />
+<img src="/post_assets/images/2023/10/16-highlight-structure.png" alt="highlight.js高亮后的html结构" />
 可以看到，其中的<code class="language-plaintext highlighter-rouge">code</code>标签中添加了类名<code class="language-plaintext highlighter-rouge">hljs</code>和<code class="language-plaintext highlighter-rouge">language-scss</code>，并添加了 <code class="language-plaintext highlighter-rouge">data-highlighted="yes"</code>属性。但是<code class="language-plaintext highlighter-rouge">python</code>被识别成了<code class="language-plaintext highlighter-rouge">scss</code>，这是由于一开始 jekyll 渲染代码块的时候没有将<code class="language-plaintext highlighter-rouge">language-xxx</code>类添加到<code class="language-plaintext highlighter-rouge">&lt;code&gt;</code>标签中，导致 highlight.js 无法识别指定的语言，所以进行了自动识别。因此在做这一步之前，需要先将<code class="language-plaintext highlighter-rouge">&lt;code&gt;</code>标签中的类名改为<code class="language-plaintext highlighter-rouge">language-xxx</code>，而这个语言类型就从<code class="language-plaintext highlighter-rouge">highlighter-rouge</code>元素中的<code class="language-plaintext highlighter-rouge">language-xxx</code>类名中获取。</p>
 <div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">let</span> <span class="nx">preContainers</span> <span class="o">=</span> <span class="nb">document</span><span class="p">.</span><span class="nf">querySelectorAll</span><span class="p">(</span>
   <span class="dl">"</span><span class="s2">.post-content div.highlighter-rouge</span><span class="dl">"</span>
