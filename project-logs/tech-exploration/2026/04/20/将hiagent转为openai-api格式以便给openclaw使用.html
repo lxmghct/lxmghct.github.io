@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>将hiagent转为openai api格式以便给openclaw使用 | lxmghct's blog</title>
+  <meta name="description"
+    content="最近想把南开的 hiagent 放到 openclaw 里用，从而节约一些 token。但这个 hiagent 是一个会话形式的智能体，而 openclaw 目前并不支持会话形式的智能体，只支持几种主流的调用格式比如 openai api 格式，所以需要先把把 hiagent 转换成 openai api 的格式。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/project-logs/tech-exploration/2026/04/20/%E5%B0%86hiagent%E8%BD%AC%E4%B8%BAopenai-api%E6%A0%BC%E5%BC%8F%E4%BB%A5%E4%BE%BF%E7%BB%99openclaw%E4%BD%BF%E7%94%A8.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">将hiagent转为openai api格式以便给openclaw使用</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2026-04-20 02:30
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="project-logs">project-logs</a>
+        
+        <a class="category" data-tag="tech-exploration">tech-exploration</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="openclaw">openclaw</a>
+          
+          <a data-tag="agent">agent</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p>最近想把南开的 hiagent 放到 openclaw 里用，从而节约一些 token。但这个 hiagent 是一个会话形式的智能体，而 openclaw 目前并不支持会话形式的智能体，只支持几种主流的调用格式比如 openai api 格式，所以需要先把把 hiagent 转换成 openai api 的格式。</p>
+
+<p>注意：本文提到的 hiagent 都特指南开提供的这个 hiagent，而并非火山引擎或者其他的 hiagent。</p>
+
+<p>项目地址：<a href="https://github.com/lxmghct/nankai-hiagent-proxy">https://github.com/lxmghct/nankai-hiagent-proxy</a></p>
+
+<h1 id="1-核心问题及解决方案">1. 核心问题及解决方案</h1>
+<h2 id="11-会话形式转为无状态的调用格式">1.1. 会话形式转为无状态的调用格式</h2>
+<p>hiagent 的会话形式意味着它会在内部维护一个状态，包括之前的对话。在对话前需要获取<code class="language-plaintext highlighter-rouge">AppConversationId</code>，并在后续的对话中持续使用这个 ID 来维持会话状态。要想将这种形式转为无状态的调用格式，需要建立一个映射关系，一个比较简单粗暴的做法就是维护一个前几轮历史对话到<code class="language-plaintext highlighter-rouge">AppConversationId</code>的映射表，每次新的对话请求时，先根据当前的历史对话去查这个映射表，如果找到了对应的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，就直接使用它；如果没有找到，就创建一个新的会话并获取新的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，然后把这个新的 ID 和当前的历史对话一起存到映射表里。</p>
+
+<p>不过考虑到映射表性能的问题，所以还是给前几轮对话建立一个哈希值，直接保存这个哈希值到<code class="language-plaintext highlighter-rouge">AppConversationId</code>的映射，这样就可以快速地通过哈希值来查找对应的会话 ID。</p>
+
+<p>还有个问题是前几轮对话到底多少轮比较合适。如果轮数太多，前几轮对话默认没法确定唯一的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，那么前几轮就会反复的去创建会话，虽然可行但没那么优雅。如果只有一轮那么重复概率很高，更何况 openclaw 的首轮对话往往是工具调用，重复概率就更大了。不过好在 openclaw 会把时间信息和用户问题一起发送过来：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[{'type': 'text', 'text': 'Sender (untrusted metadata):\n```json\n{\n  "label": "openclaw-tui (gateway-client)",\n  "id": "gateway-client",\n  "name": "openclaw-tui",\n  "username": "openclaw-tui"\n}\n```\n\n[Wed 2026-04-22 01:54 GMT+8] 你好'}]
+</code></pre></div></div>
+<p>这样基本一轮对话都不需要，只要一个prompt就可以唯一确定一个会话了。不过考虑到并发问题，而且这里的时间戳是到秒的，所以还是拿到该问题的回答后，再把这个问题和回答一起存到映射表里，这样就更保险了。</p>
+
+<h2 id="12-工具调用问题">1.2. 工具调用问题</h2>
+<p>hiagent 并不提供标准的工具调用接口，输入和输出都只有纯文本格式。一般来说这种情况只要在输入输出里约定好一个格式就可以了，比如输入里约定好工具调用的格式，输出里约定好工具调用结果的格式，这样就可以通过解析输入输出的文本来实现工具调用了。但是在实际使用过程中，经常会出现下面的情况，比如我约的了用<code class="language-plaintext highlighter-rouge">[[[HIAGENT_TOOL_CALL]]]</code>和<code class="language-plaintext highlighter-rouge">[[[END_HIAGENT_TOOL_CALL]]]</code>：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;tool_call&gt;[HIAGENT_TOOL_CALL]]]
+{
+"name": "read",
+"arguments": {
+"path": "/home/..."
+}
+}
+[[[END_HIAGENT_TOOL_CALL]]]
+</code></pre></div></div>
+<p>可以看到上面的标签被不知道从哪出来的<code class="language-plaintext highlighter-rouge">&lt;tool_call&gt;</code>标签给打乱了，导致工具调用的格式被破坏了，无法正确解析工具调用的内容了。</p>
+
+<p>此时有两个解决方法:</p>
+
+<ol>
+  <li>继续兼容这种混合标签的解析方式，增加对这种情况的处理逻辑（优先级较低，因为不规范且不稳定）</li>
+  <li>取消新约定的<code class="language-plaintext highlighter-rouge">[[[HIAGENT_XXX]]]</code>标签，统一使用hiagent内部约定的<code class="language-plaintext highlighter-rouge">&lt;tool_call&gt;</code>标签。目前经过测试可能的格式为：</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;tool_call&gt;{"name": "read", "arguments": {"path": "/home/..."}}
+
+&lt;tool_call&gt;read{"path": "/home/..."}
+
+&lt;tool_call&gt;[{"name": "read", "arguments": {"path": "/home/..."}}, {"name": "write", "arguments": {"path": "/home/...", "content": "hello world"}}]
+</code></pre></div></div>
+<p>这里还会有一个潜在问题就是json格式不规范，目前遇到最多的就是arguments字段格式是有异常的，变成了：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"arguments": "{"path": "/home/..."}"
+</code></pre></div></div>
+<p>给一个本来没问题的 json 对象加了一层引号，导致解析失败了。目前仅发现了这个问题，在代码里已做了兼容处理。</p>
+
+<h1 id="2-实现思路与关键代码示例">2. 实现思路与关键代码示例</h1>
+<p>使用 FastAPI 来实现一个适配器服务，用 <code class="language-plaintext highlighter-rouge">@app.post("/v1/chat/completions")</code> 来接收 openclaw 的请求，在这个接口里先把 openclaw 的请求转换成 hiagent 的输入格式，然后调用 hiagent 来获取回答，最后再把 hiagent 的回答转换成 openclaw 需要的输出格式返回给 openclaw 就可以了。</p>
+
+<h2 id="21-工具格式约定">2.1. 工具格式约定</h2>
+<p>在 prompt 里约定工具调用的格式:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TOOL_INSTRUCTION</span> <span class="o">=</span> <span class="sh">"""</span><span class="s">
+## Tool calling rules
+
+When you need to call a tool, you MUST use the following format.
+
+&lt;tool_call&gt;
+{
+  </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">tool_name</span><span class="sh">"</span><span class="s">,
+  </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: { JSON }
+}
+
+Rules:
+- Output ONLY the &lt;tool_call&gt; block
+- Do NOT explain anything
+- Do NOT use markdown
+- Do NOT add extra text
+- Do NOT wrap in code blocks
+- arguments MUST be valid JSON object
+- If multiple tools are needed, output multiple &lt;tool_call&gt; blocks sequentially
+- If no tool is needed, answer normally
+
+Example:
+
+User: read file
+Assistant:
+&lt;tool_call&gt;
+{
+  </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">read</span><span class="sh">"</span><span class="s">,
+  </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: {
+    </span><span class="sh">"</span><span class="s">path</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">/home/test.txt</span><span class="sh">"</span><span class="s">
+  }
+}
+
+For multiple tool calls, you may also output:
+
+&lt;tool_call&gt;
+[
+  {
+    </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">tool1</span><span class="sh">"</span><span class="s">,
+    </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: {...}
+  },
+  {
+    </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">tool2</span><span class="sh">"</span><span class="s">,
+    </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: {...}
+  }
+]
+
+</span><span class="sh">"""</span>
+</code></pre></div></div>
+
+<h2 id="22-构造-hiagent-输入格式">2.2. 构造 hiagent 输入格式</h2>
+<p>将 openclaw 的请求转换成 hiagent 的输入格式:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="k">def</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ---------- messages ----------
+</span>    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">create_new</span> <span class="ow">and</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">system</span><span class="sh">"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">HIAGENT_HAS_OPENCLAW_PROMPT</span> <span class="ow">and</span> <span class="n">content</span><span class="p">:</span>
+            <span class="c1"># if HIAGENT_HAS_OPENCLAW_PROMPT and content.startswith("You are a personal assistant running inside OpenClaw."):
+</span>            <span class="c1">#     continue
+</span>            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[system]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="si">{</span><span class="n">TOOL_INSTRUCTION</span><span class="p">.</span><span class="nf">strip</span><span class="p">()</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+            <span class="c1"># ---------- tools schema ----------
+</span>            <span class="k">if</span> <span class="n">tools</span><span class="p">:</span>
+                <span class="n">tool_desc</span> <span class="o">=</span> <span class="p">[</span><span class="sh">"</span><span class="s">Available tools:</span><span class="se">\n</span><span class="sh">"</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">:</span>
+                    <span class="n">func</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">function</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="n">desc</span> <span class="o">=</span> <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">description</span><span class="sh">"</span><span class="p">,</span> <span class="sh">""</span><span class="p">)</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">parameters</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+
+                    <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Tool: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+                        <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Description: </span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
+                        <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">"</span><span class="s">Parameters JSON schema:</span><span class="sh">"</span><span class="p">)</span>
+                        <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+
+                    <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">""</span><span class="p">)</span>
+
+                <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">tool_desc</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">user</span><span class="sh">"</span> <span class="ow">and</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[user]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">assistant</span><span class="sh">"</span><span class="p">:</span>
+            <span class="n">tool_calls</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tool_calls</span><span class="sh">"</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+                <span class="c1"># {"role": "assistant", "content": null, "tool_calls": [{"id": "call08690af73f584d3386d63b10509f55d9", "type": "function", "function": {"name": "read", "arguments": "{\"path\":\"/home/devuser/.openclaw/workspace/SOUL.md\"}"}}, {"id": "call937287b1a26e4c83aed8a9fdd261ec3c", "type": "function", "function": {"name": "read", "arguments": "{\"path\":\"/home/devuser/.openclaw/workspace/USER.md\"}"}}]}
+</span>                <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">"</span><span class="s">[assistant]</span><span class="se">\n</span><span class="sh">"</span> <span class="o">+</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">content</span><span class="p">:</span>
+                <span class="c1"># {"role": "assistant", "content": [{"type": "text", "text": "Hey. I'm back online. \n\nI see we're still getting to know each other — your profile's pretty blank. What's on your mind? "}]}
+</span>                <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[assistant]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">tool</span><span class="sh">"</span><span class="p">:</span>
+            <span class="c1">#  {"role": "tool", "content": "Successfully wrote 269 bytes to /home/xxx", "tool_call_id": "call76e5d5301407447f833d9b71b973ecc7"}
+</span>            <span class="n">call_id</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tool_call_id</span><span class="sh">"</span><span class="p">,</span> <span class="sh">""</span><span class="p">)</span>
+            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[tool:</span><span class="si">{</span><span class="n">call_id</span><span class="si">}</span><span class="s">]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># parts.append("[assistant]")
+</span>
+    <span class="k">return</span> <span class="sh">"</span><span class="se">\n\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="23-解析-hiagent-输出格式">2.3. 解析 hiagent 输出格式</h2>
+<p>然后是处理 hiagent 的回答并转换成 openclaw 需要的输出格式，先进行工具提取：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_hiagent_tool_calls</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">tool_calls</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ---------- &lt;tool_call&gt; ----------
+</span>    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">text</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="sh">"</span><span class="s">&lt;tool_call&gt;</span><span class="sh">"</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="nf">len</span><span class="p">(</span><span class="sh">"</span><span class="s">&lt;tool_call&gt;</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="c1"># 跳过空白
+</span>        <span class="k">while</span> <span class="n">cursor</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">].</span><span class="nf">isspace</span><span class="p">():</span>
+            <span class="n">cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">cursor</span> <span class="o">&gt;=</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">break</span>
+
+        <span class="c1"># ---------- 情况 A: 直接 JSON 对象 ----------
+</span>        <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">]</span> <span class="ow">in</span> <span class="sh">"</span><span class="s">{[</span><span class="sh">"</span><span class="p">:</span>
+            <span class="n">json_str</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="nf">_extract_balanced_json</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">json_str</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+
+                    <span class="c1"># 如果是数组
+</span>                    <span class="k">if</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                            <span class="n">func</span> <span class="o">=</span> <span class="n">item</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">function</span><span class="sh">"</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                            <span class="n">tool_calls</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span>
+                                <span class="nc">HiAgentToolCall</span><span class="p">(</span>
+                                    <span class="nb">id</span><span class="o">=</span><span class="n">item</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="sh">"</span><span class="s">call_</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">().</span><span class="nb">hex</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">),</span>
+                                    <span class="n">arguments</span><span class="o">=</span><span class="nf">normalize_arguments</span><span class="p">(</span>
+                                        <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+                                    <span class="p">),</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tool_calls</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span>
+                            <span class="nc">HiAgentToolCall</span><span class="p">(</span>
+                                <span class="nb">id</span><span class="o">=</span><span class="n">data</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="sh">"</span><span class="s">call_</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">().</span><span class="nb">hex</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+                                <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">),</span>
+                                <span class="n">arguments</span><span class="o">=</span><span class="nf">normalize_arguments</span><span class="p">(</span>
+                                    <span class="n">data</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+                                <span class="p">),</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">end</span>
+                    <span class="k">continue</span>
+                <span class="k">except</span> <span class="nb">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c1"># ---------- 情况 B: name{...} ----------
+</span>        <span class="n">name_match</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="nf">match</span><span class="p">(</span><span class="sa">r</span><span class="sh">"</span><span class="s">([a-zA-Z_][a-zA-Z0-9_]*)</span><span class="sh">"</span><span class="p">,</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="n">name_match</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name_match</span><span class="p">.</span><span class="nf">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">cursor</span> <span class="o">+=</span> <span class="nf">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="n">cursor</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">].</span><span class="nf">isspace</span><span class="p">():</span>
+                <span class="n">cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">cursor</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">]</span> <span class="o">==</span> <span class="sh">"</span><span class="s">{</span><span class="sh">"</span><span class="p">:</span>
+                <span class="n">json_str</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="nf">_extract_balanced_json</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">json_str</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">args</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+                        <span class="n">tool_calls</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span>
+                            <span class="nc">HiAgentToolCall</span><span class="p">(</span>
+                                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="sh">"</span><span class="s">call_</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">().</span><span class="nb">hex</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+                                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                <span class="n">arguments</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">idx</span> <span class="o">=</span> <span class="n">end</span>
+                        <span class="k">continue</span>
+                    <span class="k">except</span> <span class="nb">Exception</span><span class="p">:</span>
+                        <span class="k">pass</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">cursor</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tool_calls</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="n">text</span>
+</code></pre></div></div>
+
+<p>最后是把提取到的工具调用转换成 openclaw 需要的格式，注意 openclaw 默认是 streaming 的，所以需要把工具调用的结果也以流式的格式返回。虽然 hiagent 的接口也支持 steaming 参数，但是经过实践发现这个流式是假的，虽然是流式的返回格式，但是它并不会在工具调用结果出来后就立刻返回，而是等到整个回答结束才一次性返回，而且流式的格式也是 hiagent 自己定义的，并不完全符合 openclaw 的流式格式，所以不如就调用它的 blocking 接口再自己转成流式的格式了。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">fastapi.responses</span> <span class="kn">import</span> <span class="n">StreamingResponse</span>
+
+
+<span class="k">def</span> <span class="nf">sse_pack</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="s">data: </span><span class="si">{</span><span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="si">}</span><span class="se">\n\n</span><span class="sh">"</span>
+
+
+<span class="k">def</span> <span class="nf">build_stream_text_chunks</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">custom-model</span><span class="sh">"</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">):</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+            <span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">chatcmpl-</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">()</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">object</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">chat.completion.chunk</span><span class="sh">"</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">created</span><span class="sh">"</span><span class="p">:</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span>
+            <span class="sh">"</span><span class="s">model</span><span class="sh">"</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">:</span> <span class="n">chunk</span><span class="p">},</span>
+                <span class="sh">"</span><span class="s">finish_reason</span><span class="sh">"</span><span class="p">:</span> <span class="bp">None</span>
+            <span class="p">}]</span>
+        <span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">build_stream_tool_calls</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">custom-model</span><span class="sh">"</span><span class="p">):</span>
+
+    <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+        <span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">chatcmpl-</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">()</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">object</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">chat.completion.chunk</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">created</span><span class="sh">"</span><span class="p">:</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span>
+        <span class="sh">"</span><span class="s">model</span><span class="sh">"</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="sh">"</span><span class="s">tool_calls</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="n">tc</span><span class="p">.</span><span class="nf">to_openai_tool_call</span><span class="p">()</span> <span class="k">for</span> <span class="n">tc</span> <span class="ow">in</span> <span class="n">tool_calls</span>
+                    <span class="p">]</span>
+                <span class="p">},</span>
+                <span class="sh">"</span><span class="s">finish_reason</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">tool_calls</span><span class="sh">"</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">stream_done</span><span class="p">():</span>
+    <span class="k">return</span> <span class="sh">"</span><span class="s">data: [DONE]</span><span class="se">\n\n</span><span class="sh">"</span>
+
+
+<span class="k">def</span> <span class="nf">build_openai_stream_response</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">generator</span><span class="p">():</span>
+
+        <span class="c1"># role chunk (recommended)
+</span>        <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+            <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">assistant</span><span class="sh">"</span><span class="p">},</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">}]</span>
+        <span class="p">})</span>
+
+        <span class="c1"># 1. content 文本
+</span>        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nf">build_stream_text_chunks</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">chunk</span>
+
+        <span class="c1"># 2. tool calls
+</span>        <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nf">build_stream_tool_calls</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">chunk</span>
+
+        <span class="c1"># finish
+</span>        <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+            <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="sh">"</span><span class="s">finish_reason</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">stop</span><span class="sh">"</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">}]</span>
+        <span class="p">})</span>
+
+        <span class="k">yield</span> <span class="nf">stream_done</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nc">StreamingResponse</span><span class="p">(</span>
+        <span class="nf">generator</span><span class="p">(),</span>
+        <span class="n">media_type</span><span class="o">=</span><span class="sh">"</span><span class="s">text/event-stream</span><span class="sh">"</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="24-关于历史对话到appconversationid的映射关系">2.4. 关于历史对话到<code class="language-plaintext highlighter-rouge">AppConversationId</code>的映射关系</h2>
+<p>目前使用了 sqlite 来维护这个映射关系，主要的两列为：一列是历史对话的哈希值，一列是对应的<code class="language-plaintext highlighter-rouge">AppConversationId</code>。每次新的对话请求过来时，先把当前的历史对话计算出哈希值，然后去这个表里查有没有对应的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，如果有就直接用它，如果没有就创建一个新的会话获取新的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，然后把这个新的 ID 和当前的历史对话的哈希值一起存到表里。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compute_conversation_key</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">max_assistant_turns</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="k">if</span> <span class="nf">count_assistant_turns</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_assistant_turns</span><span class="p">:</span>
+        <span class="c1"># 如果 assistant 轮数还不够，就不计算 key，强制新建会话
+</span>        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">text_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">assistant_turns</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">system</span><span class="sh">"</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="sh">""</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">content</span>
+            <span class="k">elif</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nf">str</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">text_list</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[</span><span class="si">{</span><span class="n">role</span><span class="si">}</span><span class="s">]</span><span class="se">\n</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">assistant</span><span class="sh">"</span><span class="p">:</span>
+            <span class="n">assistant_turns</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">assistant_turns</span> <span class="o">&gt;=</span> <span class="n">max_assistant_turns</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="n">key_material</span> <span class="o">=</span> <span class="sh">"</span><span class="se">\n\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">text_list</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="p">.</span><span class="nf">sha256</span><span class="p">(</span><span class="n">key_material</span><span class="p">.</span><span class="nf">encode</span><span class="p">(</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)).</span><span class="nf">hexdigest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">h</span>
+</code></pre></div></div>
+
+<h2 id="25-完整流程代码">2.5. 完整流程代码</h2>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@app.post</span><span class="p">(</span><span class="sh">"</span><span class="s">/v1/chat/completions</span><span class="sh">"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">stream</span><span class="sh">"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">messages</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tools</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># 计算会话 key（忽略 system）
+</span>    <span class="n">conv_key</span> <span class="o">=</span> <span class="nf">compute_conversation_key</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+    <span class="n">conversation_id</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">conv_key</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nf">get_conversation_by_key</span><span class="p">(</span><span class="n">conv_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">conversation_id</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="sh">"</span><span class="s">app_conversation_id</span><span class="sh">"</span><span class="p">]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="nf">find_last_assistant_index</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">:],</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conversation_id</span><span class="p">:</span>
+        <span class="n">conversation_id</span> <span class="o">=</span> <span class="nf">create_conversation</span><span class="p">()</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">regenerate_conversation</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">tool_calls</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">token_usage</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="p">,</span> <span class="n">token_usage</span> <span class="o">=</span> <span class="nf">chat_query</span><span class="p">(</span><span class="n">conversation_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Error during chat query:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="c1"># 400
+</span>        <span class="k">if</span> <span class="sh">"</span><span class="s">Conversation expired or invalid</span><span class="sh">"</span> <span class="ow">in</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">conv_key</span><span class="p">:</span>
+                <span class="nf">delete_conversation</span><span class="p">(</span><span class="n">conv_key</span><span class="p">)</span>
+            <span class="n">conversation_id</span> <span class="o">=</span> <span class="nf">create_conversation</span><span class="p">()</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">regenerate_conversation</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="c1"># 重新用完整消息构建 prompt，会导致一大段文本塞到同一次会话里，极有可能消耗大量上下文，但目前没有更好的选择了
+</span>            <span class="k">try</span><span class="p">:</span>
+                <span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="p">,</span> <span class="n">token_usage</span> <span class="o">=</span> <span class="nf">chat_query</span><span class="p">(</span><span class="n">conversation_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+            <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Error during chat query for new conversation:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nf">build_openai_response</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nf">build_openai_response</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="n">openclaw_message</span> <span class="o">=</span> <span class="nf">build_openclaw_assistant_format</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="p">)</span>
+    <span class="n">messages</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">openclaw_message</span><span class="p">)</span>
+    <span class="n">assistant_turns</span> <span class="o">=</span> <span class="nf">count_assistant_turns</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conv_key</span><span class="p">:</span>
+        <span class="n">new_conv_key</span> <span class="o">=</span> <span class="nf">compute_conversation_key</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_conv_key</span><span class="p">:</span>
+            <span class="nf">save_conversation</span><span class="p">(</span><span class="n">new_conv_key</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">,</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span> <span class="n">turn_count</span><span class="o">=</span><span class="n">assistant_turns</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">regenerate_conversation</span><span class="p">:</span>
+        <span class="nf">update_turn_count</span><span class="p">(</span><span class="n">conv_key</span><span class="p">,</span> <span class="n">assistant_turns</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nf">save_conversation</span><span class="p">(</span><span class="n">conv_key</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">,</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span> <span class="n">turn_count</span><span class="o">=</span><span class="n">assistant_turns</span><span class="p">)</span>
+
+    <span class="n">resp</span> <span class="o">=</span> <span class="nf">build_openai_response</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="o">=</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">token_usage</span><span class="o">=</span><span class="n">token_usage</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resp</span>
+</code></pre></div></div>
+
+<h1 id="3-实现思路尝试1">3. 实现思路尝试1</h1>
+<p>一开始我并没有尝试将历史对话和<code class="language-plaintext highlighter-rouge">AppConversationId</code>建立映射关系，主要是考虑到两点：</p>
+
+<ol>
+  <li>直接将所有的历史对话都发到一次对话里，直接把 hiagent 当成无状态的模型来用更简单一些</li>
+  <li>OpenClaw 和 hiagent 各自都会有压缩上下文的机制，映射关系可能会随着上下文的变化而失效了，维护映射关系可能会比较麻烦</li>
+</ol>
+
+<p>这样的实现确实更简单一些：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@app.post</span><span class="p">(</span><span class="sh">"</span><span class="s">/v1/chat/completions</span><span class="sh">"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+
+    <span class="n">user_id</span> <span class="o">=</span> <span class="sh">"</span><span class="s">default_user</span><span class="sh">"</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">stream</span><span class="sh">"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">messages</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tools</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># 构造完整历史 prompt
+</span>    <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 每次创建新的 hiagent 会话（不复用）
+</span>        <span class="n">conversation_id</span> <span class="o">=</span> <span class="nf">create_conversation</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="nf">chat_query</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Error during chat query:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nf">build_openai_stream_response</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nf">build_openai_response_text</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    
+    <span class="c1"># 解析 tool call
+</span>    <span class="n">tool_calls</span><span class="p">,</span> <span class="n">prefix_text</span> <span class="o">=</span> <span class="nf">parse_hiagent_tool_calls</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="c1"># ---------- STREAM ----------
+</span>    <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="c1"># return build_openai_stream_response(answer, tool_calls=tool_calls, prefix_text=prefix_text)
+</span>        <span class="k">return</span> <span class="nf">build_openai_stream_response</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">tool_calls</span><span class="o">=</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">prefix_text</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+    <span class="c1"># ---------- NON STREAM ----------
+</span>
+    <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="nf">build_openai_response_tool_calls</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">prefix_text</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="nf">build_openai_response_text</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resp</span>
+</code></pre></div></div>
+
+<p>不过这种方式有个问题，上下文消耗的速度会比预想的要快，可能是因为把所有的历史对话都塞到了一次对话的输入里了，导致 hiagent 的内部的上下文压缩机制并没有发挥作用。不过这只是个推测，从结果来看，实际使用时经常几轮对话就开始超时了。</p>
+
+<p>后面经过验证发现虽然 openclaw 确实会有上下文的优化，但它发送给 api 的内容也确实是完整的历史，所以实际上不会存在上下文因压缩而频繁变换导致无法维护映射关系的问题了。</p>
+
+<h1 id="4-其他问题">4. 其他问题</h1>
+<h2 id="41-超时问题">4.1. 超时问题</h2>
+<p>最初调试的时候发现有时 hiagent 会出现超时的情况，此时会返回 504 gateway timeout 的错误。所以我就给代码加了个超时的判断，只要是 504 错误，就反复再发送几次请求，直到超过最大次数。</p>
+
+<p>不过使用过程中发现超时十分频繁，且基本固定为一分钟左右，且只要第一次超时，后面反复再发送的几次也基本超时了，感觉不像是 hiagent 真正的处理超时了。所以我查看了 api 文档，找到 <code class="language-plaintext highlighter-rouge">get_conversation_messages</code> 这个接口，查看一下频繁超时的对话的消息记录，发现了多次重复的问题和回答，也就是说，虽然我接收到了超时，但大模型内部仍在处理我的请求，并处理完之后保存到了上下文里。所以超时实际上来自于网关而非大模型。</p>
+
+<p>原有思路肯定会影响上下文质量且频繁超时，所以采用拿到 504 错误后不再反复发送请求了，而是接着调用 <code class="language-plaintext highlighter-rouge">get_conversation_messages</code> 这个接口去轮询消息记录，直到拿到新的回答了再继续后续的流程，这样就避免了频繁超时的问题了。</p>
+
+<p><code class="language-plaintext highlighter-rouge">get_conversation_messages</code> 示例返回值：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "Messages": [
+		{
+			"ConversationID": "01KPNYPAS92ZZC51J3309FR47S",
+			"QueryID": "d7j624elvnde66pa0a9g",
+			"Query": "[user]\n[{'type': 'text', 'text': 'Sender (untrusted metadata):\\n```json\\n{\\n  \"label\": \"openclaw-tui (gateway-client)\",\\n  \"id\": \"gateway-client\",\\n  \"name\": \"openclaw-tui\",\\n  \"username\": \"openclaw-tui\"\\n}\\n```\\n\\n[Tue 2026-04-21 01:23 GMT+8] 你好'}]\n\n[assistant]",
+			"AnswerInfo": {
+				"Answer": "你好！很高兴见到你。😊\n\n我是你的 OpenClaw 助手。看起来这是一个全新的会话，我刚刚上线。\n\n让我先了解一下你的情况：&lt;tool_call&gt;read\n{\"path\": \"/home/devuser/.openclaw/workspace/IDENTITY.md\"}",
+				"MessageID": "01KPNYPAX7NK5QMKN6MCG56CB0",
+				"CreatedTime": 1776705809,
+				"TaskID": "01KPNYPAX7NK5QMKN6MCG56CB0",
+				"Like": 0,
+				"TotalTokens": 10470,
+				"Latency": 5.459,
+				"TracingJsonStr": "",
+				"RetrieverResource": false
+			},
+			"OtherAnswers": [],
+			"Inputs": {},
+			"SendByTrigger": false,
+			"SendByAsyncWorkflow": false,
+			"UserMessage": {
+				"Messages": [
+					{
+						"type": "text",
+						"text": "[user]\n[{'type': 'text', 'text': 'Sender (untrusted metadata):\\n```json\\n{\\n  \"label\": \"openclaw-tui (gateway-client)\",\\n  \"id\": \"gateway-client\",\\n  \"name\": \"openclaw-tui\",\\n  \"username\": \"openclaw-tui\"\\n}\\n```\\n\\n[Tue 2026-04-21 01:23 GMT+8] 你好'}]\n\n[assistant]"
+					}
+				]
+			}
+		}
+	],
+	"BaseResp": null
+}
+</code></pre></div></div>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/troubleshooting/2026/04/20/OpenClaw-%E6%96%B0%E5%BB%BA%E4%BC%9A%E8%AF%9D%E5%BC%82%E5%B8%B8.html" title="OpenClaw 新建会话异常">OpenClaw 新建会话异常</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/platforms/2026/04/14/%E7%AC%94%E8%AE%B0%E6%9C%AC%E7%94%B5%E8%84%91%E9%94%AE%E7%9B%98%E9%97%B4%E6%AD%87%E5%A4%B1%E7%81%B5%E9%97%AE%E9%A2%98.html"
+      title="笔记本电脑键盘间歇失灵问题">笔记本电脑键盘间歇失灵问题</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2026-04-20】 将hiagent转为openai api格式以便给openclaw使用"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

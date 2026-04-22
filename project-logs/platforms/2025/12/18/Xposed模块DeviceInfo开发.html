@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Xposed模块DeviceInfo开发 | lxmghct's blog</title>
+  <meta name="description"
+    content="1. 需求描述本来是想开发一个用于伪造 wifi 和定位信息的用于打卡的 Xposed 模块。后面想逐步完善成一个伪造设备信息的模块，所以命名为 DeviceInfo。目前已实现功能：Wifi 信息伪造（已完成）、定位信息伪造（进行中）、其他尚未实现。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/project-logs/platforms/2025/12/18/Xposed%E6%A8%A1%E5%9D%97DeviceInfo%E5%BC%80%E5%8F%91.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Xposed模块DeviceInfo开发</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2025-12-18 02:00
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="project-logs">project-logs</a>
+        
+        <a class="category" data-tag="platforms">platforms</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="android">android</a>
+          
+          <a data-tag="xposed">xposed</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <h1 id="1-需求描述">1. 需求描述</h1>
+<p>本来是想开发一个用于伪造 wifi 和定位信息的用于打卡的 Xposed 模块。后面想逐步完善成一个伪造设备信息的模块，所以命名为 DeviceInfo。目前已实现功能：Wifi 信息伪造（已完成）、定位信息伪造（进行中）、其他尚未实现。</p>
+
+<h1 id="2-开发环境">2. 开发环境</h1>
+<p>开发环境：Android Studio + Xposed 模块开发环境</p>
+
+<h1 id="3-项目结构">3. 项目结构</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>src
+  └─main
+    ├─assets
+    ├─java
+    │  └─com
+    │      └─example
+    │          └─deviceinfo
+    │              ├─adapter
+    │              ├─config
+    │              ├─content_provider
+    │              ├─fragment
+    │              │  └─config_editor
+    │              │      ├─model
+    │              │      └─ui
+    │              ├─pojo
+    │              └─util
+    └─res
+        ├─layout
+        ├─values
+        └─xml
+</code></pre></div></div>
+
+<h1 id="4-主要页面框架">4. 主要页面框架</h1>
+<h2 id="41-主要页面设计">4.1 主要页面设计</h2>
+<p>打算设计成这样的页面：</p>
+<ul>
+  <li>顶部：几个功能模块的 Tab（Wifi、定位、设备信息等）</li>
+  <li>其余部分：各个模块的设置页面</li>
+</ul>
+
+<p>每个页面均为三列的表格，左侧是字段名，中间是当前值，右侧是伪造值。</p>
+
+<p>最终完成的界面如图所示：
+<img src="/post_assets/images/2025/12/18-app.jpg" alt="DeviceInfo主界面" /></p>
+
+<h2 id="42-页面实现">4.2. 页面实现</h2>
+<p>考虑到每个页面的布局是类似的，所以我打算使用 Fragment 来封装每个页面的布局。每个 Fragment 都包含一个 RecyclerView 用于显示三列的表格。</p>
+
+<h3 id="421-数据模型">4.2.1. 数据模型</h3>
+<p>先创建一个基本数据模型，后续其他配置类均继承自该模型：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">abstract</span> <span class="kd">class</span> <span class="nc">BaseConfig</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="n">configId</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="n">configName</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kt">long</span> <span class="n">createdAt</span><span class="o">;</span>
+    <span class="kd">public</span> <span class="kt">long</span> <span class="n">updatedAt</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ConfigItem</span><span class="o">&gt;</span> <span class="nf">getConfigItems</span><span class="o">();</span>
+
+    <span class="kd">public</span> <span class="kd">abstract</span> <span class="nc">String</span> <span class="nf">getKeyOfDefaultName</span><span class="o">();</span>
+
+    <span class="kd">public</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">getKeyType</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">ConfigItem</span> <span class="n">item</span> <span class="o">:</span> <span class="n">getConfigItems</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">key</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">key</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="n">item</span><span class="o">.</span><span class="na">type</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getDefaultConfigName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">getKeyOfDefaultName</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">key</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">key</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="s">""</span> <span class="o">:</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">value</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">BaseConfig</span> <span class="nf">copy</span><span class="o">()</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">BaseConfig</span> <span class="nf">newInstance</span><span class="o">(</span><span class="nc">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span><span class="o">&gt;</span> <span class="n">cls</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">cls</span><span class="o">.</span><span class="na">newInstance</span><span class="o">();</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"BaseConfig"</span><span class="o">,</span> <span class="s">"Failed to create new instance"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="nc">JSONObject</span> <span class="nf">toJsonObject</span><span class="o">()</span> <span class="kd">throws</span> <span class="nc">JSONException</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">fromJsonObject</span><span class="o">(</span><span class="nc">JSONObject</span> <span class="n">obj</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">cls</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ConfigItem</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+        <span class="kd">public</span> <span class="nc">String</span> <span class="n">key</span><span class="o">;</span>
+        <span class="kd">public</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">type</span><span class="o">;</span>
+        <span class="kd">public</span> <span class="nc">String</span> <span class="n">description</span><span class="o">;</span>
+
+        <span class="kd">public</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="nc">String</span> <span class="n">key</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">type</span><span class="o">,</span> <span class="nc">String</span> <span class="n">description</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">type</span> <span class="o">=</span> <span class="n">type</span><span class="o">;</span>
+            <span class="k">this</span><span class="o">.</span><span class="na">description</span> <span class="o">=</span> <span class="n">description</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>一开始我采用的方案是反射获取字段，也就是每个配置类定义一堆字段，然后通过反射获取字段名和字段值进行显示和修改。而 BaseConfig 则提供了通用的反射读写方法。后来写其他代码时反复创建示例以及反射操作十分繁琐，所以我改成了使用 Map 来存储字段名和字段值。这样每个配置类只需要定义字段的描述信息即可，读写时直接操作 Map 即可，代码复杂度大大减小。</p>
+
+<p>数据主要存储在 data 字段中，key 为字段名，value 为字段值。每个子类需要实现 getConfigItems 方法返回该配置类的所有字段信息。</p>
+
+<h3 id="422-列表适配器">4.2.2. 列表适配器</h3>
+<p>中间的表格采用 RecyclerView 来实现，先定义每一行的显示布局 item_row.xml：</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">&lt;?xml version="1.0" encoding="utf-8"?&gt;</span>
+<span class="nt">&lt;LinearLayout</span> <span class="na">xmlns:android=</span><span class="s">"http://schemas.android.com/apk/res/android"</span>
+    <span class="na">xmlns:tools=</span><span class="s">"http://schemas.android.com/tools"</span>
+    <span class="na">android:layout_width=</span><span class="s">"match_parent"</span>
+    <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+    <span class="na">android:orientation=</span><span class="s">"horizontal"</span>
+    <span class="na">android:padding=</span><span class="s">"8dp"</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;LinearLayout</span>
+        <span class="na">android:layout_width=</span><span class="s">"0dp"</span>
+        <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+        <span class="na">android:layout_weight=</span><span class="s">"1"</span>
+        <span class="na">android:orientation=</span><span class="s">"vertical"</span><span class="nt">&gt;</span>
+
+        <span class="nt">&lt;TextView</span>
+            <span class="na">android:id=</span><span class="s">"@+id/tvKey"</span>
+            <span class="na">android:layout_width=</span><span class="s">"wrap_content"</span>
+            <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+            <span class="na">android:textStyle=</span><span class="s">"bold"</span>
+            <span class="na">android:textSize=</span><span class="s">"16sp"</span> <span class="nt">/&gt;</span>
+
+        <span class="nt">&lt;TextView</span>
+            <span class="na">android:id=</span><span class="s">"@+id/tvKeyDescription"</span>
+            <span class="na">android:layout_width=</span><span class="s">"wrap_content"</span>
+            <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+            <span class="na">android:textSize=</span><span class="s">"12sp"</span>
+            <span class="na">android:textColor=</span><span class="s">"#888888"</span>
+            <span class="na">android:paddingTop=</span><span class="s">"2dp"</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/LinearLayout&gt;</span>
+
+    <span class="nt">&lt;TextView</span>
+        <span class="na">android:id=</span><span class="s">"@+id/tvOriginalValue"</span>
+        <span class="na">android:layout_width=</span><span class="s">"0dp"</span>
+        <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+        <span class="na">android:layout_weight=</span><span class="s">"1"</span><span class="nt">/&gt;</span>
+
+    <span class="nt">&lt;EditText</span>
+        <span class="na">android:id=</span><span class="s">"@+id/etModifiedValue"</span>
+        <span class="na">android:importantForAutofill=</span><span class="s">"no"</span>
+        <span class="na">android:layout_width=</span><span class="s">"0dp"</span>
+        <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
+        <span class="na">android:layout_weight=</span><span class="s">"1"</span>
+        <span class="na">android:inputType=</span><span class="s">"text"</span>
+        <span class="na">tools:ignore=</span><span class="s">"LabelFor"</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/LinearLayout&gt;</span>
+</code></pre></div></div>
+
+<p>实现 RecyclerView 适配器 ConfigAdapter：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigTableAdapter</span> <span class="kd">extends</span> <span class="nc">RecyclerView</span><span class="o">.</span><span class="na">Adapter</span><span class="o">&lt;</span><span class="nc">ConfigTableAdapter</span><span class="o">.</span><span class="na">ViewHolder</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">BaseConfig</span> <span class="n">originalObject</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">BaseConfig</span> <span class="n">updatedObject</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">BaseConfig</span> <span class="n">tempNewObject</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ConfigItem</span><span class="o">&gt;</span> <span class="n">keyDescriptions</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">String</span><span class="o">&gt;</span> <span class="n">modifiedValues</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="c1">// 保存 ViewHolder，便于批量 UI 更新</span>
+    <span class="kd">private</span> <span class="kd">final</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">ViewHolder</span><span class="o">&gt;</span> <span class="n">holderMap</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashMap</span><span class="o">&lt;&gt;();</span>
+
+    <span class="kd">public</span> <span class="nf">ConfigTableAdapter</span><span class="o">(</span><span class="nc">BaseConfig</span> <span class="n">originalObject</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">originalObject</span> <span class="o">=</span> <span class="n">originalObject</span><span class="o">;</span>
+        <span class="k">this</span><span class="o">.</span><span class="na">keyDescriptions</span> <span class="o">=</span> <span class="n">originalObject</span><span class="o">.</span><span class="na">getConfigItems</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="nd">@NonNull</span>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">ViewHolder</span> <span class="nf">onCreateViewHolder</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">ViewGroup</span> <span class="n">parent</span><span class="o">,</span> <span class="kt">int</span> <span class="n">viewType</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">View</span> <span class="n">view</span> <span class="o">=</span> <span class="nc">LayoutInflater</span><span class="o">.</span><span class="na">from</span><span class="o">(</span><span class="n">parent</span><span class="o">.</span><span class="na">getContext</span><span class="o">())</span>
+                <span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">item_row</span><span class="o">,</span> <span class="n">parent</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="k">return</span> <span class="k">new</span> <span class="nf">ViewHolder</span><span class="o">(</span><span class="n">view</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onBindViewHolder</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">ViewHolder</span> <span class="n">holder</span><span class="o">,</span> <span class="kt">int</span> <span class="n">position</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">ConfigItem</span> <span class="n">item</span> <span class="o">=</span> <span class="n">keyDescriptions</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">position</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="na">key</span><span class="o">;</span>
+
+        <span class="c1">// 第一列：键名和描述</span>
+        <span class="n">holder</span><span class="o">.</span><span class="na">tvKey</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+        <span class="n">holder</span><span class="o">.</span><span class="na">tvKeyDescription</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">description</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">item</span><span class="o">.</span><span class="na">description</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">item</span><span class="o">.</span><span class="na">description</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">holder</span><span class="o">.</span><span class="na">tvKeyDescription</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="nc">View</span><span class="o">.</span><span class="na">VISIBLE</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+            <span class="n">holder</span><span class="o">.</span><span class="na">tvKeyDescription</span><span class="o">.</span><span class="na">setVisibility</span><span class="o">(</span><span class="nc">View</span><span class="o">.</span><span class="na">GONE</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">holderMap</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">holder</span><span class="o">);</span>
+
+        <span class="c1">// 第二列：原始值</span>
+        <span class="nc">Object</span> <span class="n">value</span> <span class="o">=</span> <span class="n">originalObject</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+        <span class="n">holder</span><span class="o">.</span><span class="na">tvOriginalValue</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">value</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="s">""</span> <span class="o">:</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">value</span><span class="o">));</span>
+
+        <span class="c1">// 第三列：修改值</span>
+        <span class="nc">Object</span> <span class="n">modified</span> <span class="o">=</span> <span class="n">modifiedValues</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+        <span class="n">holder</span><span class="o">.</span><span class="na">etModifiedValue</span><span class="o">.</span><span class="na">setText</span><span class="o">(</span><span class="n">modified</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="s">""</span> <span class="o">:</span> <span class="nc">String</span><span class="o">.</span><span class="na">valueOf</span><span class="o">(</span><span class="n">modified</span><span class="o">));</span>
+
+        <span class="n">holder</span><span class="o">.</span><span class="na">etModifiedValue</span><span class="o">.</span><span class="na">addTextChangedListener</span><span class="o">(</span><span class="k">new</span> <span class="n">android</span><span class="o">.</span><span class="na">text</span><span class="o">.</span><span class="na">TextWatcher</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">beforeTextChanged</span><span class="o">(</span><span class="nc">CharSequence</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">,</span> <span class="kt">int</span> <span class="n">after</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span>
+
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onTextChanged</span><span class="o">(</span><span class="nc">CharSequence</span> <span class="n">s</span><span class="o">,</span> <span class="kt">int</span> <span class="n">start</span><span class="o">,</span> <span class="kt">int</span> <span class="n">before</span><span class="o">,</span> <span class="kt">int</span> <span class="n">count</span><span class="o">)</span> <span class="o">{</span>
+            <span class="o">}</span>
+
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">afterTextChanged</span><span class="o">(</span><span class="n">android</span><span class="o">.</span><span class="na">text</span><span class="o">.</span><span class="na">Editable</span> <span class="n">s</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">String</span> <span class="n">newValueStr</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="na">toString</span><span class="o">();</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">newValueStr</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="n">modifiedValues</span><span class="o">.</span><span class="na">remove</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                    <span class="n">modifiedValues</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">newValueStr</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">});</span>
+
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">getItemCount</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">keyDescriptions</span><span class="o">.</span><span class="na">size</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">class</span> <span class="nc">ViewHolder</span> <span class="kd">extends</span> <span class="nc">RecyclerView</span><span class="o">.</span><span class="na">ViewHolder</span> <span class="o">{</span>
+        <span class="nc">TextView</span> <span class="n">tvKey</span><span class="o">;</span>
+        <span class="nc">TextView</span> <span class="n">tvKeyDescription</span><span class="o">;</span>
+        <span class="nc">TextView</span> <span class="n">tvOriginalValue</span><span class="o">;</span>
+        <span class="nc">EditText</span> <span class="n">etModifiedValue</span><span class="o">;</span>
+
+        <span class="nc">ViewHolder</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">View</span> <span class="n">itemView</span><span class="o">)</span> <span class="o">{</span>
+            <span class="kd">super</span><span class="o">(</span><span class="n">itemView</span><span class="o">);</span>
+            <span class="n">tvKey</span> <span class="o">=</span> <span class="n">itemView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">tvKey</span><span class="o">);</span>
+            <span class="n">tvKeyDescription</span> <span class="o">=</span> <span class="n">itemView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">tvKeyDescription</span><span class="o">);</span>
+            <span class="n">tvOriginalValue</span> <span class="o">=</span> <span class="n">itemView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">tvOriginalValue</span><span class="o">);</span>
+            <span class="n">etModifiedValue</span> <span class="o">=</span> <span class="n">itemView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">etModifiedValue</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<h3 id="423-fragment-实现">4.2.3. Fragment 实现</h3>
+<p>先实现一个简单的框架：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigEditorFragment</span> <span class="kd">extends</span> <span class="nc">Fragment</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">ARG_CONFIG</span> <span class="o">=</span> <span class="s">"config"</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nc">ConfigEditorController</span> <span class="n">controller</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">Runnable</span> <span class="n">refreshCallback</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">ConfigEditorFragment</span> <span class="nf">newInstance</span><span class="o">(</span><span class="nc">BaseConfig</span> <span class="n">config</span><span class="o">,</span> <span class="nc">Runnable</span> <span class="n">refreshCallback</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Bundle</span> <span class="n">b</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Bundle</span><span class="o">();</span>
+        <span class="n">b</span><span class="o">.</span><span class="na">putSerializable</span><span class="o">(</span><span class="no">ARG_CONFIG</span><span class="o">,</span> <span class="n">config</span><span class="o">);</span>
+
+        <span class="nc">ConfigEditorFragment</span> <span class="n">f</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConfigEditorFragment</span><span class="o">();</span>
+        <span class="n">f</span><span class="o">.</span><span class="na">setArguments</span><span class="o">(</span><span class="n">b</span><span class="o">);</span>
+
+        <span class="nc">ConfigEditorFragment</span><span class="o">.</span><span class="na">refreshCallback</span> <span class="o">=</span> <span class="n">refreshCallback</span><span class="o">;</span>
+        <span class="k">return</span> <span class="n">f</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">View</span> <span class="nf">onCreateView</span><span class="o">(</span><span class="nc">LayoutInflater</span> <span class="n">i</span><span class="o">,</span> <span class="nc">ViewGroup</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Bundle</span> <span class="n">b</span><span class="o">)</span> <span class="o">{</span>
+
+        <span class="nc">View</span> <span class="n">v</span> <span class="o">=</span> <span class="n">i</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">fragment_config_editor</span><span class="o">,</span> <span class="n">c</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+
+        <span class="c1">// 添加全局点击事件：点击后关闭键盘并移除焦点</span>
+        <span class="n">v</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="n">view</span> <span class="o">-&gt;</span> <span class="o">{</span>
+            <span class="nc">UiUtils</span><span class="o">.</span><span class="na">hideKeyboardAndClearFocus</span><span class="o">(</span><span class="n">requireContext</span><span class="o">(),</span> <span class="n">view</span><span class="o">);</span>
+        <span class="o">});</span>
+
+        <span class="nc">Bundle</span> <span class="n">args</span> <span class="o">=</span> <span class="n">getArguments</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">args</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="s">"Arguments cannot be null"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="nc">BaseConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="o">(</span><span class="nc">BaseConfig</span><span class="o">)</span> <span class="n">args</span><span class="o">.</span><span class="na">getSerializable</span><span class="o">(</span><span class="no">ARG_CONFIG</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">config</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalStateException</span><span class="o">(</span><span class="s">"Config cannot be null"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">controller</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ConfigEditorController</span><span class="o">(</span><span class="n">requireContext</span><span class="o">(),</span> <span class="n">v</span><span class="o">,</span> <span class="n">config</span><span class="o">,</span> <span class="n">refreshCallback</span><span class="o">);</span>
+
+        <span class="k">return</span> <span class="n">v</span><span class="o">;</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>这里使用了一个控制器类 ConfigEditorController 来处理具体的逻辑，以便于将业务逻辑和 UI 逻辑分离。这里需要处理的逻辑较多，主要有：</p>
+<ul>
+  <li>初始化 RecyclerView 列表</li>
+  <li>处理保存按钮点击事件</li>
+  <li>加载和保存配置数据</li>
+  <li>同步 UI 内容和变量</li>
+  <li>刷新等方法接口的实现、上下文在 Fragment 中传递</li>
+  <li>导入时弹出新的配置选择列表</li>
+</ul>
+
+<p>以及其他一些细节的功能，实现过程较为繁琐，这里就不一一展开了。导入时弹出的新的配置选择列表新建了一个继承自<code class="language-plaintext highlighter-rouge">android.app.Dialog</code>的类 <code class="language-plaintext highlighter-rouge">ConfigSelectDialog</code>，用于显示可供选择的配置列表，用户选择后返回所选配置。代码可以参考 GitHub 仓库。下面是该对话框的界面截图：</p>
+
+<p><img src="/post_assets/images/2025/12/18-dialog.jpg" alt="配置选择对话框" /></p>
+
+<h2 id="424-持久化">4.2.4. 持久化</h2>
+<p>配置文件持久化保存在应用的私有存储空间内的 files 目录下。配置文件以 JSON 格式保存，使用 JSONObject 进行读写。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigStorage</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">ROOT_DIR</span> <span class="o">=</span> <span class="s">"configs"</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">CURRENT_CONFIG_FILE</span> <span class="o">=</span> <span class="s">"current_config.json"</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">Character</span><span class="o">&gt;</span> <span class="n">illegalChars</span> <span class="o">=</span> <span class="nc">Set</span><span class="o">.</span><span class="na">of</span><span class="o">(</span><span class="sc">'\\'</span><span class="o">,</span> <span class="sc">'/'</span><span class="o">,</span> <span class="sc">':'</span><span class="o">,</span> <span class="sc">'*'</span><span class="o">,</span> <span class="sc">'?'</span><span class="o">,</span> <span class="sc">'\"'</span><span class="o">,</span> <span class="sc">'&lt;'</span><span class="o">,</span> <span class="sc">'&gt;'</span><span class="o">,</span> <span class="sc">'|'</span><span class="o">,</span> <span class="sc">'\''</span><span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">File</span> <span class="nf">getConfigDir</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cls</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">File</span> <span class="n">dir</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getFilesDir</span><span class="o">(),</span> <span class="no">ROOT_DIR</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="n">cls</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">dir</span><span class="o">.</span><span class="na">exists</span><span class="o">())</span> <span class="n">dir</span><span class="o">.</span><span class="na">mkdirs</span><span class="o">();</span>
+        <span class="k">return</span> <span class="n">dir</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saveConfig</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">BaseConfig</span> <span class="n">obj</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">overwrite</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">configName</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">obj</span><span class="o">.</span><span class="na">configName</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Config name cannot be empty"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">overwrite</span> <span class="o">||</span> <span class="n">obj</span><span class="o">.</span><span class="na">configId</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">obj</span><span class="o">.</span><span class="na">configId</span> <span class="o">=</span> <span class="n">generateId</span><span class="o">();</span>
+            <span class="n">obj</span><span class="o">.</span><span class="na">createdAt</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+        <span class="o">}</span>
+        <span class="n">obj</span><span class="o">.</span><span class="na">updatedAt</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+        <span class="nc">JSONObject</span> <span class="n">root</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="na">toJsonObject</span><span class="o">();</span>
+        <span class="n">createConfigFile</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">obj</span><span class="o">.</span><span class="na">getClass</span><span class="o">(),</span> <span class="n">obj</span><span class="o">.</span><span class="na">configId</span><span class="o">,</span> <span class="n">root</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">saveConfig</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cls</span><span class="o">,</span> <span class="nc">JSONObject</span> <span class="n">obj</span><span class="o">,</span> <span class="kt">boolean</span> <span class="n">overwrite</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">String</span> <span class="n">configId</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"configId"</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">configName</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"configName"</span><span class="o">);</span>
+        <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">();</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="n">configName</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">throw</span> <span class="k">new</span> <span class="nf">IllegalArgumentException</span><span class="o">(</span><span class="s">"Config name cannot be empty"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">overwrite</span> <span class="o">||</span> <span class="n">configId</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">configId</span> <span class="o">=</span> <span class="n">generateId</span><span class="o">();</span>
+            <span class="n">obj</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"configId"</span><span class="o">,</span> <span class="n">configId</span><span class="o">);</span>
+            <span class="n">obj</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"createdAt"</span><span class="o">,</span> <span class="n">now</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">obj</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"updatedAt"</span><span class="o">,</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">());</span>
+        <span class="n">createConfigFile</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">cls</span><span class="o">,</span> <span class="n">configId</span><span class="o">,</span> <span class="n">obj</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">JSONObject</span><span class="o">&gt;</span> <span class="nf">loadConfigList</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cls</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">List</span><span class="o">&lt;</span><span class="nc">JSONObject</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">ArrayList</span><span class="o">&lt;&gt;();</span>
+        <span class="nc">File</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">getConfigDir</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">cls</span><span class="o">);</span>
+        <span class="k">for</span> <span class="o">(</span><span class="nc">File</span> <span class="n">f</span> <span class="o">:</span> <span class="n">dir</span><span class="o">.</span><span class="na">listFiles</span><span class="o">())</span> <span class="o">{</span>
+            <span class="nc">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">readJSONObject</span><span class="o">(</span><span class="n">f</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">obj</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">BaseConfig</span> <span class="nf">loadConfig</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span><span class="o">&gt;</span> <span class="n">cls</span><span class="o">,</span> <span class="nc">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">File</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">getConfigDir</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">cls</span><span class="o">);</span>
+        <span class="nc">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">dir</span><span class="o">,</span> <span class="n">id</span> <span class="o">+</span> <span class="s">".json"</span><span class="o">);</span>
+        <span class="nc">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">readJSONObject</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">try</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="nc">BaseConfig</span><span class="o">.</span><span class="na">fromJsonObject</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="n">cls</span><span class="o">);</span>
+            <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                <span class="nc">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"ConfigStorage"</span><span class="o">,</span> <span class="s">"loadConfig: "</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">boolean</span> <span class="nf">configNameExists</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cls</span><span class="o">,</span> <span class="nc">String</span> <span class="n">configName</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">List</span><span class="o">&lt;</span><span class="nc">JSONObject</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="nc">ConfigStorage</span><span class="o">.</span><span class="na">loadConfigList</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">cls</span><span class="o">);</span>
+            <span class="k">for</span> <span class="o">(</span><span class="nc">JSONObject</span> <span class="n">obj</span> <span class="o">:</span> <span class="n">list</span><span class="o">)</span> <span class="o">{</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">configName</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"configName"</span><span class="o">)))</span> <span class="o">{</span>
+                    <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">ignored</span><span class="o">)</span> <span class="o">{</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">deleteConfig</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cls</span><span class="o">,</span> <span class="nc">String</span> <span class="n">id</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">File</span> <span class="n">dir</span> <span class="o">=</span> <span class="n">getConfigDir</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">cls</span><span class="o">);</span>
+        <span class="nc">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">dir</span><span class="o">,</span> <span class="n">id</span> <span class="o">+</span> <span class="s">".json"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">file</span><span class="o">.</span><span class="na">exists</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">file</span><span class="o">.</span><span class="na">delete</span><span class="o">();</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">checkFileName</span><span class="o">(</span><span class="nc">String</span> <span class="n">name</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">name</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">||</span> <span class="n">name</span><span class="o">.</span><span class="na">isEmpty</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="s">"配置名称不能为空"</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">for</span> <span class="o">(</span><span class="kt">char</span> <span class="n">c</span> <span class="o">:</span> <span class="n">name</span><span class="o">.</span><span class="na">toCharArray</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">illegalChars</span><span class="o">.</span><span class="na">contains</span><span class="o">(</span><span class="n">c</span><span class="o">))</span> <span class="o">{</span>
+                <span class="k">return</span> <span class="s">"配置名称包含非法字符"</span><span class="o">;</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="s">"配置名称过长"</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">applyCurrentConfig</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span><span class="o">&gt;</span> <span class="n">cls</span><span class="o">,</span> <span class="nc">String</span> <span class="n">configId</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">File</span> <span class="n">rootDir</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getFilesDir</span><span class="o">(),</span> <span class="no">ROOT_DIR</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">rootDir</span><span class="o">.</span><span class="na">exists</span><span class="o">())</span> <span class="n">rootDir</span><span class="o">.</span><span class="na">mkdirs</span><span class="o">();</span>
+        <span class="nc">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">rootDir</span><span class="o">,</span> <span class="no">CURRENT_CONFIG_FILE</span><span class="o">);</span>
+        <span class="nc">JSONObject</span> <span class="n">root</span> <span class="o">=</span> <span class="n">readJSONObject</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">root</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">root</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">JSONObject</span><span class="o">();</span>
+        <span class="o">}</span>
+
+        <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">();</span>
+
+        <span class="n">root</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="nc">Objects</span><span class="o">.</span><span class="na">requireNonNullElse</span><span class="o">(</span><span class="n">configId</span><span class="o">,</span> <span class="nc">JSONObject</span><span class="o">.</span><span class="na">NULL</span><span class="o">));</span>
+
+        <span class="nc">FileWriter</span> <span class="n">fw</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileWriter</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+        <span class="n">fw</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">root</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+        <span class="n">fw</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="o">&lt;</span><span class="no">T</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span><span class="o">&gt;</span> <span class="no">T</span> <span class="nf">getCurrentConfig</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="no">T</span><span class="o">&gt;</span> <span class="n">cls</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">c</span><span class="o">.</span><span class="na">getFilesDir</span><span class="o">(),</span> <span class="no">ROOT_DIR</span> <span class="o">+</span> <span class="s">"/"</span> <span class="o">+</span> <span class="no">CURRENT_CONFIG_FILE</span><span class="o">);</span>
+        <span class="nc">JSONObject</span> <span class="n">root</span> <span class="o">=</span> <span class="n">readJSONObject</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">root</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">String</span> <span class="n">key</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">root</span><span class="o">.</span><span class="na">has</span><span class="o">(</span><span class="n">key</span><span class="o">)</span> <span class="o">||</span> <span class="n">root</span><span class="o">.</span><span class="na">isNull</span><span class="o">(</span><span class="n">key</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">String</span> <span class="n">configId</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="n">key</span><span class="o">);</span>
+        <span class="nc">File</span> <span class="n">configFile</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">getConfigDir</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">cls</span><span class="o">),</span> <span class="n">configId</span> <span class="o">+</span> <span class="s">".json"</span><span class="o">);</span>
+        <span class="nc">JSONObject</span> <span class="n">obj</span> <span class="o">=</span> <span class="n">readJSONObject</span><span class="o">(</span><span class="n">configFile</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">obj</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="k">return</span> <span class="nc">BaseConfig</span><span class="o">.</span><span class="na">fromJsonObject</span><span class="o">(</span><span class="n">obj</span><span class="o">,</span> <span class="n">cls</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">createConfigFile</span><span class="o">(</span><span class="nc">Context</span> <span class="n">c</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?&gt;</span> <span class="n">cls</span><span class="o">,</span> <span class="nc">String</span> <span class="n">id</span><span class="o">,</span> <span class="nc">JSONObject</span> <span class="n">obj</span><span class="o">)</span> <span class="kd">throws</span> <span class="nc">Exception</span> <span class="o">{</span>
+        <span class="nc">File</span> <span class="n">file</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">File</span><span class="o">(</span><span class="n">getConfigDir</span><span class="o">(</span><span class="n">c</span><span class="o">,</span> <span class="n">cls</span><span class="o">),</span> <span class="n">id</span> <span class="o">+</span> <span class="s">".json"</span><span class="o">);</span>
+        <span class="nc">FileWriter</span> <span class="n">fw</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">FileWriter</span><span class="o">(</span><span class="n">file</span><span class="o">);</span>
+        <span class="n">fw</span><span class="o">.</span><span class="na">write</span><span class="o">(</span><span class="n">obj</span><span class="o">.</span><span class="na">toString</span><span class="o">(</span><span class="mi">2</span><span class="o">));</span>
+        <span class="n">fw</span><span class="o">.</span><span class="na">close</span><span class="o">();</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">String</span> <span class="nf">generateId</span><span class="o">()</span> <span class="o">{</span>
+        <span class="c1">// 使用时间戳 + 随机数生成唯一ID</span>
+        <span class="kt">int</span> <span class="n">randomPart</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="o">(</span><span class="nc">Math</span><span class="o">.</span><span class="na">random</span><span class="o">()</span> <span class="o">*</span> <span class="mi">100000</span><span class="o">);</span>
+        <span class="k">return</span> <span class="nc">System</span><span class="o">.</span><span class="na">currentTimeMillis</span><span class="o">()</span> <span class="o">+</span> <span class="s">"-"</span> <span class="o">+</span> <span class="n">randomPart</span><span class="o">;</span>
+    <span class="o">}</span>
+
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="nc">JSONObject</span> <span class="nf">readJSONObject</span><span class="o">(</span><span class="nc">File</span> <span class="n">f</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="n">f</span><span class="o">.</span><span class="na">exists</span><span class="o">())</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">String</span> <span class="n">json</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">String</span><span class="o">(</span><span class="nc">Files</span><span class="o">.</span><span class="na">readAllBytes</span><span class="o">(</span><span class="n">f</span><span class="o">.</span><span class="na">toPath</span><span class="o">()));</span>
+            <span class="k">return</span> <span class="k">new</span> <span class="nf">JSONObject</span><span class="o">(</span><span class="n">json</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"ConfigStorage"</span><span class="o">,</span> <span class="s">"readJSONObject: "</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>存储方式比较简单，直接将每个配置对象序列化为 JSON 格式保存为单独的文件，文件名为配置 ID 加 .json 后缀。配置文件保存在应用的私有存储空间内的 files/configs/配置类名/ 目录下。而当前使用的配置 ID 则保存在 files/configs/current_config.json 文件中，以便每次启动时加载和 Xposed 模块注入时使用。</p>
+
+<h1 id="5-各模块设计">5. 各模块设计</h1>
+<h2 id="51-wifi模块设计">5.1. Wifi模块设计</h2>
+<p>首先是继承自 BaseConfig 的 WifiData 类，用于存储 Wifi 相关的信息：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">WifiData</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ConfigItem</span><span class="o">&gt;</span> <span class="n">keyDescriptions</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"networkType"</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"网络类型: 1: WIFI, 0: MOBILE, -1: 无网络"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"ssid"</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"Wi-Fi 名称 (SSID)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"bssid"</span><span class="o">,</span> <span class="nc">String</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"AP 的 MAC 地址 (BSSID)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"securityType"</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"加密类型(安卓12及以上)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"frequency"</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"频率 (MHz)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"wifiStandard"</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"Wi-Fi 标准(安卓11及以上)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"rssi"</span><span class="o">,</span> <span class="nc">Integer</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"信号强度 (RSSI)"</span><span class="o">)</span>
+    <span class="o">);</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">KEY_OF_DEFAULT_NAME</span> <span class="o">=</span> <span class="s">"ssid"</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ConfigItem</span><span class="o">&gt;</span> <span class="nf">getConfigItems</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">keyDescriptions</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getKeyOfDefaultName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="no">KEY_OF_DEFAULT_NAME</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">WifiData</span> <span class="nf">fromWifiInfo</span><span class="o">(</span><span class="nc">WifiInfo</span> <span class="n">wifiInfo</span><span class="o">,</span> <span class="kt">int</span> <span class="n">networkType</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">WifiData</span> <span class="n">wifiData</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">WifiData</span><span class="o">();</span>
+        <span class="n">wifiData</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"networkType"</span><span class="o">,</span> <span class="n">networkType</span><span class="o">);</span>
+        <span class="nc">String</span> <span class="n">ssid</span> <span class="o">=</span> <span class="n">wifiInfo</span><span class="o">.</span><span class="na">getSSID</span><span class="o">();</span>
+        <span class="c1">// wifi info 返回的 ssid 有时会带引号，需要去掉</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">ssid</span> <span class="o">!=</span> <span class="kc">null</span> <span class="o">&amp;&amp;</span> <span class="n">ssid</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="o">&amp;&amp;</span> <span class="n">ssid</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="s">"\""</span><span class="o">)</span> <span class="o">&amp;&amp;</span> <span class="n">ssid</span><span class="o">.</span><span class="na">endsWith</span><span class="o">(</span><span class="s">"\""</span><span class="o">))</span> <span class="o">{</span>
+            <span class="n">ssid</span> <span class="o">=</span> <span class="n">ssid</span><span class="o">.</span><span class="na">substring</span><span class="o">(</span><span class="mi">1</span><span class="o">,</span> <span class="n">ssid</span><span class="o">.</span><span class="na">length</span><span class="o">()</span> <span class="o">-</span> <span class="mi">1</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">wifiData</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"ssid"</span><span class="o">,</span> <span class="n">ssid</span><span class="o">);</span>
+        <span class="n">wifiData</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"bssid"</span><span class="o">,</span> <span class="n">wifiInfo</span><span class="o">.</span><span class="na">getBSSID</span><span class="o">());</span>
+        <span class="n">wifiData</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"frequency"</span><span class="o">,</span> <span class="n">wifiInfo</span><span class="o">.</span><span class="na">getFrequency</span><span class="o">());</span>
+        <span class="n">wifiData</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"rssi"</span><span class="o">,</span> <span class="n">wifiInfo</span><span class="o">.</span><span class="na">getRssi</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="nc">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">S</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 安卓12 及以上</span>
+            <span class="n">wifiData</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"securityType"</span><span class="o">,</span> <span class="n">wifiInfo</span><span class="o">.</span><span class="na">getCurrentSecurityType</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="nc">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">R</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// 安卓11 及以上</span>
+            <span class="n">wifiData</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"wifiStandard"</span><span class="o">,</span> <span class="n">wifiInfo</span><span class="o">.</span><span class="na">getWifiStandard</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">wifiData</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+<p>获取方式目前使用的方法比较简单，网络类型使用 ConnectivityManager.getActiveNetworkInfo() 获取，Wifi 信息使用 WifiManager.getConnectionInfo() 获取。后续可以考虑使用更复杂的方式获取，比如从扫描结果中获取等。而存储的内容则基本是所有 <code class="language-plaintext highlighter-rouge">android.net.wifi.WifiInfo</code> 对象可以直接用<code class="language-plaintext highlighter-rouge">get</code>方法拿到的所有值。加载网络和 Wifi 信息的代码如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">loadNetworkInfo</span><span class="o">()</span> <span class="o">{</span>
+        <span class="nc">NetworkInfo</span> <span class="n">info</span> <span class="o">=</span> <span class="n">connectivityManager</span><span class="o">.</span><span class="na">getActiveNetworkInfo</span><span class="o">();</span>
+        <span class="nc">Integer</span> <span class="n">type</span> <span class="o">=</span> <span class="o">(</span><span class="n">info</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">?</span> <span class="n">info</span><span class="o">.</span><span class="na">getType</span><span class="o">()</span> <span class="o">:</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="c1">// 1: WIFI, 0: MOBILE, null: 无网络</span>
+        <span class="nc">Log</span><span class="o">.</span><span class="na">d</span><span class="o">(</span><span class="s">"WifiFragment"</span><span class="o">,</span> <span class="s">"Active Network Type: "</span> <span class="o">+</span> <span class="n">type</span><span class="o">);</span>
+        <span class="nc">WifiInfo</span> <span class="n">wifiInfo</span> <span class="o">=</span> <span class="n">wifiManager</span><span class="o">.</span><span class="na">getConnectionInfo</span><span class="o">();</span>
+        <span class="nc">WifiData</span> <span class="n">data</span> <span class="o">=</span> <span class="nc">WifiData</span><span class="o">.</span><span class="na">fromWifiInfo</span><span class="o">(</span><span class="n">wifiInfo</span><span class="o">,</span> <span class="n">type</span> <span class="o">==</span> <span class="kc">null</span> <span class="o">?</span> <span class="o">-</span><span class="mi">1</span> <span class="o">:</span> <span class="n">type</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">wifiConfigFragment</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">wifiConfigFragment</span><span class="o">.</span><span class="na">setTargetConfig</span><span class="o">(</span><span class="n">data</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+
+<h2 id="52-定位模块设计">5.2. 定位模块设计</h2>
+<p>定位模块的设计思路和 Wifi 模块类似，先定义一个 LocationData 类继承自 BaseConfig，用于存储定位相关的信息。然后在定位模块的 Fragment 中加载当前的位置信息并显示在界面上。定位信息的获取可以使用 LocationManager 或 FusedLocationProviderClient 等方式获取当前位置信息。存储的内容则是 <code class="language-plaintext highlighter-rouge">android.location.Location</code> 对象可以直接用 <code class="language-plaintext highlighter-rouge">get</code> 方法拿到的所有值。LocationData 类的实现如下：</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LocationData</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span> <span class="kd">implements</span> <span class="nc">Serializable</span> <span class="o">{</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ConfigItem</span><span class="o">&gt;</span> <span class="n">keyDescriptions</span> <span class="o">=</span> <span class="nc">List</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"latitude"</span><span class="o">,</span> <span class="nc">Double</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"纬度"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"longitude"</span><span class="o">,</span> <span class="nc">Double</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"经度"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"horizontalAccuracy"</span><span class="o">,</span> <span class="nc">Float</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"水平精度，误差范围(米)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"altitude"</span><span class="o">,</span> <span class="nc">Double</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"GPS原始高度，WGS84(米)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"verticalAccuracy"</span><span class="o">,</span> <span class="nc">Float</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"垂直方向的误差范围(米)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"mslAltitude"</span><span class="o">,</span> <span class="nc">Double</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"相对于平均海平面的高度(米)(Android 14+)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"mslAltitudeAccuracy"</span><span class="o">,</span> <span class="nc">Float</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"mslAltitude的误差范围(米)(Android 14+)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"speed"</span><span class="o">,</span> <span class="nc">Float</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"速度(米/秒)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"speedAccuracy"</span><span class="o">,</span> <span class="nc">Float</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"speed的误差范围(米/秒)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"bearing"</span><span class="o">,</span> <span class="nc">Float</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"方位角，正北方向顺时针计(度)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"bearingAccuracy"</span><span class="o">,</span> <span class="nc">Float</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"bearing的误差范围(度)"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"isMock"</span><span class="o">,</span> <span class="nc">Boolean</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"是否为模拟位置"</span><span class="o">),</span>
+            <span class="k">new</span> <span class="nf">ConfigItem</span><span class="o">(</span><span class="s">"elapsedRealtimeMillis"</span><span class="o">,</span> <span class="nc">Long</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"位置被测量时的系统运行时间(毫秒)(Android 13+)"</span><span class="o">)</span>
+    <span class="o">);</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">List</span><span class="o">&lt;</span><span class="nc">ConfigItem</span><span class="o">&gt;</span> <span class="nf">getConfigItems</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">keyDescriptions</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getKeyOfDefaultName</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="kd">public</span> <span class="kd">static</span> <span class="nc">LocationData</span> <span class="nf">fromLocation</span><span class="o">(</span><span class="nc">Location</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">LocationData</span> <span class="n">obj</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LocationData</span><span class="o">();</span>
+        <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">map</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="na">data</span><span class="o">;</span>
+        <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"latitude"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getLatitude</span><span class="o">());</span>
+        <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"longitude"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getLongitude</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasAccuracy</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"horizontalAccuracy"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getAccuracy</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasAltitude</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"altitude"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getAltitude</span><span class="o">());</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasVerticalAccuracy</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"verticalAccuracy"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getVerticalAccuracyMeters</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="nc">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">UPSIDE_DOWN_CAKE</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// Android 14+</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasMslAltitude</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">obj</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"mslAltitude"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getMslAltitudeMeters</span><span class="o">());</span>
+                <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasMslAltitudeAccuracy</span><span class="o">())</span> <span class="o">{</span>
+                    <span class="n">obj</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"mslAltitudeAccuracy"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getMslAltitudeAccuracyMeters</span><span class="o">());</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasSpeed</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"speed"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getSpeed</span><span class="o">());</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasSpeedAccuracy</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"speedAccuracy"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getSpeedAccuracyMetersPerSecond</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasBearing</span><span class="o">())</span> <span class="o">{</span>
+            <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"bearing"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getBearing</span><span class="o">());</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">location</span><span class="o">.</span><span class="na">hasBearingAccuracy</span><span class="o">())</span> <span class="o">{</span>
+                <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"bearingAccuracy"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getBearingAccuracyDegrees</span><span class="o">());</span>
+            <span class="o">}</span>
+        <span class="o">}</span>
+        <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"isMock"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">isFromMockProvider</span><span class="o">());</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="nc">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">TIRAMISU</span><span class="o">)</span> <span class="o">{</span>
+            <span class="c1">// Android 13+</span>
+            <span class="n">map</span><span class="o">.</span><span class="na">put</span><span class="o">(</span><span class="s">"elapsedRealtimeMillis"</span><span class="o">,</span> <span class="n">location</span><span class="o">.</span><span class="na">getElapsedRealtimeMillis</span><span class="o">());</span>
+        <span class="o">}</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>获取定位信息参考了：<a href="https://developer.aliyun.com/article/1308376">https://developer.aliyun.com/article/1308376</a></p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">LocationFragment</span> <span class="kd">extends</span> <span class="nc">Fragment</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">LocationManager</span> <span class="n">locationManager</span><span class="o">;</span>
+    <span class="kd">private</span> <span class="nc">Context</span> <span class="n">context</span><span class="o">;</span>
+
+    <span class="kd">public</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">LOCATION_FRAGMENT_TAG</span> <span class="o">=</span> <span class="s">"location_fragment"</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nc">ConfigEditorFragment</span> <span class="n">locationConfigFragment</span> <span class="o">=</span> <span class="kc">null</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="kt">boolean</span> <span class="n">isRequestingLocation</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">View</span> <span class="nf">onCreateView</span><span class="o">(</span><span class="nc">LayoutInflater</span> <span class="n">inflater</span><span class="o">,</span> <span class="nc">ViewGroup</span> <span class="n">container</span><span class="o">,</span> <span class="nc">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">View</span> <span class="n">rootView</span> <span class="o">=</span> <span class="n">inflater</span><span class="o">.</span><span class="na">inflate</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">layout</span><span class="o">.</span><span class="na">fragment_location_page</span><span class="o">,</span> <span class="n">container</span><span class="o">,</span> <span class="kc">false</span><span class="o">);</span>
+        <span class="n">context</span> <span class="o">=</span> <span class="n">requireContext</span><span class="o">();</span>
+
+        <span class="n">locationManager</span> <span class="o">=</span> <span class="o">(</span><span class="nc">LocationManager</span><span class="o">)</span> <span class="n">context</span><span class="o">.</span><span class="na">getSystemService</span><span class="o">(</span><span class="nc">Context</span><span class="o">.</span><span class="na">LOCATION_SERVICE</span><span class="o">);</span>
+
+        <span class="nc">FragmentTransaction</span> <span class="n">ft</span> <span class="o">=</span> <span class="n">getChildFragmentManager</span><span class="o">().</span><span class="na">beginTransaction</span><span class="o">();</span>
+        <span class="n">locationConfigFragment</span> <span class="o">=</span> <span class="nc">ConfigEditorFragment</span><span class="o">.</span><span class="na">newInstance</span><span class="o">(</span><span class="k">new</span> <span class="nc">LocationData</span><span class="o">(),</span> <span class="k">this</span><span class="o">::</span><span class="n">loadLocationInfo</span><span class="o">);</span>
+        <span class="n">ft</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">location_fragment_container</span><span class="o">,</span> <span class="n">locationConfigFragment</span><span class="o">,</span> <span class="no">LOCATION_FRAGMENT_TAG</span><span class="o">);</span>
+        <span class="n">ft</span><span class="o">.</span><span class="na">commit</span><span class="o">();</span>
+
+        <span class="n">rootView</span><span class="o">.</span><span class="na">findViewById</span><span class="o">(</span><span class="no">R</span><span class="o">.</span><span class="na">id</span><span class="o">.</span><span class="na">btnOpenMap</span><span class="o">).</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="n">v</span> <span class="o">-&gt;</span> <span class="nc">UiUtils</span><span class="o">.</span><span class="na">toast</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"功能开发中，敬请期待！"</span><span class="o">));</span>
+
+        <span class="k">return</span> <span class="n">rootView</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onViewCreated</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">View</span> <span class="n">view</span><span class="o">,</span> <span class="nd">@Nullable</span> <span class="nc">Bundle</span> <span class="n">savedInstanceState</span><span class="o">)</span> <span class="o">{</span>
+        <span class="kd">super</span><span class="o">.</span><span class="na">onViewCreated</span><span class="o">(</span><span class="n">view</span><span class="o">,</span> <span class="n">savedInstanceState</span><span class="o">);</span>
+        <span class="n">view</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="k">this</span><span class="o">::</span><span class="n">getLastKnownLocation</span><span class="o">);</span>
+        <span class="n">view</span><span class="o">.</span><span class="na">post</span><span class="o">(</span><span class="nl">locationConfigFragment:</span><span class="o">:</span><span class="n">getCurrentConfig</span><span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">getLastKnownLocation</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">ActivityCompat</span><span class="o">.</span><span class="na">checkSelfPermission</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">Manifest</span><span class="o">.</span><span class="na">permission</span><span class="o">.</span><span class="na">ACCESS_FINE_LOCATION</span><span class="o">)</span>
+                <span class="o">!=</span> <span class="nc">PackageManager</span><span class="o">.</span><span class="na">PERMISSION_GRANTED</span>
+                <span class="o">&amp;&amp;</span> <span class="nc">ActivityCompat</span><span class="o">.</span><span class="na">checkSelfPermission</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="nc">Manifest</span><span class="o">.</span><span class="na">permission</span><span class="o">.</span><span class="na">ACCESS_COARSE_LOCATION</span><span class="o">)</span>
+                <span class="o">!=</span> <span class="nc">PackageManager</span><span class="o">.</span><span class="na">PERMISSION_GRANTED</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">UiUtils</span><span class="o">.</span><span class="na">toast</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"无定位权限，无法获取位置信息"</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">Location</span> <span class="n">last</span> <span class="o">=</span> <span class="n">locationManager</span><span class="o">.</span><span class="na">getLastKnownLocation</span><span class="o">(</span><span class="nc">LocationManager</span><span class="o">.</span><span class="na">GPS_PROVIDER</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">last</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">LocationData</span> <span class="n">locationData</span> <span class="o">=</span> <span class="nc">LocationData</span><span class="o">.</span><span class="na">fromLocation</span><span class="o">(</span><span class="n">last</span><span class="o">);</span>
+            <span class="n">locationConfigFragment</span><span class="o">.</span><span class="na">setTargetConfig</span><span class="o">(</span><span class="n">locationData</span><span class="o">);</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">loadLocationInfo</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">isRequestingLocation</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">ActivityCompat</span><span class="o">.</span><span class="na">checkSelfPermission</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">android</span><span class="o">.</span><span class="na">Manifest</span><span class="o">.</span><span class="na">permission</span><span class="o">.</span><span class="na">ACCESS_FINE_LOCATION</span><span class="o">)</span>
+                <span class="o">!=</span> <span class="nc">PackageManager</span><span class="o">.</span><span class="na">PERMISSION_GRANTED</span>
+                <span class="o">&amp;&amp;</span> <span class="nc">ActivityCompat</span><span class="o">.</span><span class="na">checkSelfPermission</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="nc">Manifest</span><span class="o">.</span><span class="na">permission</span><span class="o">.</span><span class="na">ACCESS_COARSE_LOCATION</span><span class="o">)</span>
+                <span class="o">!=</span> <span class="nc">PackageManager</span><span class="o">.</span><span class="na">PERMISSION_GRANTED</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">UiUtils</span><span class="o">.</span><span class="na">toast</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"无定位权限，无法获取位置信息"</span><span class="o">);</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">LocationListener</span> <span class="n">listener</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">LocationListener</span><span class="o">()</span> <span class="o">{</span>
+            <span class="nd">@Override</span>
+            <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onLocationChanged</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">Location</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span>
+                <span class="c1">// 拿到最新位置</span>
+                <span class="nc">LocationData</span> <span class="n">locationData</span> <span class="o">=</span> <span class="nc">LocationData</span><span class="o">.</span><span class="na">fromLocation</span><span class="o">(</span><span class="n">location</span><span class="o">);</span>
+                <span class="n">locationConfigFragment</span><span class="o">.</span><span class="na">setTargetConfig</span><span class="o">(</span><span class="n">locationData</span><span class="o">);</span>
+                <span class="c1">// 用完立刻停止定位</span>
+                <span class="n">locationManager</span><span class="o">.</span><span class="na">removeUpdates</span><span class="o">(</span><span class="k">this</span><span class="o">);</span>
+                <span class="n">isRequestingLocation</span> <span class="o">=</span> <span class="kc">false</span><span class="o">;</span>
+                <span class="nc">UiUtils</span><span class="o">.</span><span class="na">toast</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"位置信息已更新"</span><span class="o">);</span>
+            <span class="o">}</span>
+        <span class="o">};</span>
+        <span class="n">locationManager</span><span class="o">.</span><span class="na">requestLocationUpdates</span><span class="o">(</span>
+                <span class="nc">LocationManager</span><span class="o">.</span><span class="na">GPS_PROVIDER</span><span class="o">,</span>
+                <span class="mi">0</span><span class="o">,</span>
+                <span class="mi">0</span><span class="o">,</span>
+                <span class="n">listener</span>
+        <span class="o">);</span>
+        <span class="n">isRequestingLocation</span> <span class="o">=</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="nc">UiUtils</span><span class="o">.</span><span class="na">toast</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"正在获取定位"</span><span class="o">);</span>
+    <span class="o">}</span>
+
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>我没有使用上面网站里提到的监听方式：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">locationManager</span><span class="o">.</span><span class="na">requestLocationUpdates</span><span class="o">(</span>
+                <span class="nc">LocationManager</span><span class="o">.</span><span class="na">GPS_PROVIDER</span><span class="o">,</span><span class="c1">//指定GPS定位的提供者</span>
+                <span class="mi">1000</span><span class="o">,</span><span class="c1">//间隔时间</span>
+                <span class="mi">1</span><span class="o">,</span><span class="c1">//位置更新之间的最小距离</span>
+                <span class="k">new</span> <span class="nf">LocationListener</span><span class="o">()</span> <span class="o">{</span> <span class="c1">//监听GPS定位信息是否改变</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">onLocationChanged</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">Location</span> <span class="n">location</span><span class="o">)</span> <span class="o">{</span> <span class="c1">//GPS信息发生改变时回调</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+        <span class="o">);</span>
+</code></pre></div></div>
+<p>因为这种方式一直监听位置变化，比较耗电，而且我只需要获取一次最新位置即可。所以改成了上面的方式，初始化和点击按钮时再获取一次最新位置，拿到后立刻停止监听。</p>
+
+<h1 id="6-添加-xposed-注入代码">6. 添加 Xposed 注入代码</h1>
+<h2 id="61-配置-xposed-环境">6.1. 配置 Xposed 环境</h2>
+<ol>
+  <li>在根目录的 settings.gradle 文件中添加 Xposed 仓库：
+    <div class="language-gradle highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">dependencyResolutionManagement</span> <span class="o">{</span>
+ <span class="n">repositoriesMode</span><span class="o">.</span><span class="na">set</span><span class="o">(</span><span class="n">RepositoriesMode</span><span class="o">.</span><span class="na">FAIL_ON_PROJECT_REPOS</span><span class="o">)</span>
+ <span class="k">repositories</span> <span class="o">{</span>
+     <span class="n">google</span><span class="o">()</span>
+     <span class="n">mavenCentral</span><span class="o">()</span>
+     <span class="n">maven</span> <span class="o">{</span> <span class="n">url</span> <span class="s1">'https://api.xposed.info/'</span> <span class="o">}</span>
+ <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>
+    <p>在 app 模块的 build.gradle 文件中添加 Xposed 依赖：
+```gradle
+dependencies {
+ compileOnly ‘de.robv.android.xposed:api:82’
+}</p>
+  </li>
+  <li>在 AndroidManifest.xml 中添加 Xposed 模块声明：
+    <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+     <span class="nt">&lt;meta-data</span>
+         <span class="na">android:name=</span><span class="s">"xposedmodule"</span>
+         <span class="na">android:value=</span><span class="s">"true"</span><span class="nt">/&gt;</span>
+
+     <span class="nt">&lt;meta-data</span>
+         <span class="na">android:name=</span><span class="s">"xposeddescription"</span>
+         <span class="na">android:value=</span><span class="s">"@string/xposed_description"</span><span class="nt">/&gt;</span>
+
+     <span class="nt">&lt;meta-data</span>
+         <span class="na">android:name=</span><span class="s">"xposedminversion"</span>
+         <span class="na">android:value=</span><span class="s">"54"</span><span class="nt">/&gt;</span>
+
+     <span class="nt">&lt;meta-data</span>
+         <span class="na">android:name=</span><span class="s">"xposedscope"</span>
+         <span class="na">android:resource=</span><span class="s">"@array/xposedscope"</span><span class="nt">/&gt;</span>
+</code></pre></div>    </div>
+    <p>xposedscope 定义了模块可以注入的应用范围。</p>
+  </li>
+  <li>在 assets 目录下创建 xposed_init 文件，内容为模块的入口类全名：
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>com.example.deviceinfo.MainHook
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h2 id="62-编写-xposed-注入代码">6.2. 编写 Xposed 注入代码</h2>
+<p>由于我没有 Xposed 的开发经验，安卓开发经验也不多，基本依靠能找到的有限的资料以及 AI 辅助完成了注入代码的编写。</p>
+
+<h3 id="621-数据共享探索">6.2.1. 数据共享探索</h3>
+<p>对我来说比较困难的地方在于数据共享，由于 Xposed 模块是注入到其他应用进程中的，而配置数据保存在模块应用的私有存储空间内，所以不能直接访问配置文件。</p>
+
+<p>在旧版本安卓有使用 Xposed 提供的 XSharedPreferences 类来实现跨进程数据共享的方式:</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// 在应用进程中</span>
+<span class="n">sharedPreferences</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">getSharedPreferences</span><span class="o">(</span><span class="n">prefName</span><span class="o">,</span> <span class="nc">Context</span><span class="o">.</span><span class="na">MODE_WORLD_READABLE</span><span class="o">)</span>
+
+<span class="c1">// 在 Xposed 模块中</span>
+<span class="nc">XSharedPreferences</span> <span class="n">xSharedPreferences</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">XSharedPreferences</span><span class="o">(</span><span class="s">"com.example.deviceinfo"</span><span class="o">,</span> <span class="s">"config_prefs"</span><span class="o">);</span>
+</code></pre></div></div>
+<p>但在较新版本里，<code class="language-plaintext highlighter-rouge">MODE_WORLD_READABLE</code> 已被废弃无法使用。</p>
+
+<p>我在网上找到了一个新的方式：New XSharedPreference
+<a href="https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences">https://github.com/LSPosed/LSPosed/wiki/New-XSharedPreferences</a></p>
+
+<p>这种方式需要在 AndroidManifest.xml 中将 <code class="language-plaintext highlighter-rouge">xposedminversion</code> 设置为 93 及以上版本，这种情况下，如果模块被激活，<code class="language-plaintext highlighter-rouge">MODE_WORLD_READABLE</code>就不会报错了。</p>
+
+<p>但是在我实际使用过程中，XSharedPreferences 获取到的对象总是 null，无法读取到数据。各个地方的代码都和官方 demo 以及网上其他资料一致，不知道是什么原因导致的。</p>
+
+<p>最终我打算使用 ContentProvider 来实现数据共享。ContentProvider 是安卓提供的跨进程数据共享机制，可以通过 URI 访问其他应用的数据。模块应用中创建一个 ContentProvider 用于提供配置数据的访问接口，Xposed 模块通过 ContentResolver 访问该 ContentProvider 获取配置数据。</p>
+
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="nc">ConfigProvider</span> <span class="kd">extends</span> <span class="nc">ContentProvider</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">Map</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span><span class="o">&gt;&gt;</span> <span class="n">configClassMap</span> <span class="o">=</span> <span class="nc">Map</span><span class="o">.</span><span class="na">of</span><span class="o">(</span>
+            <span class="nc">WifiData</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">(),</span> <span class="nc">WifiData</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+            <span class="nc">LocationData</span><span class="o">.</span><span class="na">class</span><span class="o">.</span><span class="na">getSimpleName</span><span class="o">(),</span> <span class="nc">LocationData</span><span class="o">.</span><span class="na">class</span>
+    <span class="o">);</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">boolean</span> <span class="nf">onCreate</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Bundle</span> <span class="nf">call</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">String</span> <span class="n">method</span><span class="o">,</span> <span class="nc">String</span> <span class="n">arg</span><span class="o">,</span> <span class="nc">Bundle</span> <span class="n">extras</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(!</span><span class="nc">ProviderConstants</span><span class="o">.</span><span class="na">METHOD_GET_CURRENT_CONFIG</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="n">method</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">extras</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="nc">String</span> <span class="n">className</span> <span class="o">=</span> <span class="n">extras</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="nc">ProviderConstants</span><span class="o">.</span><span class="na">EXTRA_CLASS_NAME</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">className</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="nc">Class</span><span class="o">&lt;?</span> <span class="kd">extends</span> <span class="nc">BaseConfig</span><span class="o">&gt;</span> <span class="n">cls</span> <span class="o">=</span> <span class="n">configClassMap</span><span class="o">.</span><span class="na">get</span><span class="o">(</span><span class="n">className</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">cls</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">Context</span> <span class="n">context</span> <span class="o">=</span> <span class="n">getContext</span><span class="o">();</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">context</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="nc">BaseConfig</span> <span class="n">config</span> <span class="o">=</span> <span class="nc">ConfigStorage</span><span class="o">.</span><span class="na">getCurrentConfig</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="n">cls</span><span class="o">);</span>
+            <span class="k">if</span> <span class="o">(</span><span class="n">config</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+
+            <span class="nc">Bundle</span> <span class="n">bundle</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Bundle</span><span class="o">();</span>
+
+            <span class="k">for</span> <span class="o">(</span><span class="nc">Map</span><span class="o">.</span><span class="na">Entry</span><span class="o">&lt;</span><span class="nc">String</span><span class="o">,</span> <span class="nc">Object</span><span class="o">&gt;</span> <span class="n">e</span> <span class="o">:</span> <span class="n">config</span><span class="o">.</span><span class="na">data</span><span class="o">.</span><span class="na">entrySet</span><span class="o">())</span> <span class="o">{</span>
+                <span class="nc">Object</span> <span class="n">v</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">getValue</span><span class="o">();</span>
+                <span class="nc">String</span> <span class="n">k</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="na">getKey</span><span class="o">();</span>
+
+                <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">String</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">bundle</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="o">(</span><span class="nc">String</span><span class="o">)</span> <span class="n">v</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">Integer</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">bundle</span><span class="o">.</span><span class="na">putInt</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="o">(</span><span class="nc">Integer</span><span class="o">)</span> <span class="n">v</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">Boolean</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">bundle</span><span class="o">.</span><span class="na">putBoolean</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="o">(</span><span class="nc">Boolean</span><span class="o">)</span> <span class="n">v</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">Long</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">bundle</span><span class="o">.</span><span class="na">putLong</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="o">(</span><span class="nc">Long</span><span class="o">)</span> <span class="n">v</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">Float</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">bundle</span><span class="o">.</span><span class="na">putFloat</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="o">(</span><span class="nc">Float</span><span class="o">)</span> <span class="n">v</span><span class="o">);</span>
+                <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">v</span> <span class="k">instanceof</span> <span class="nc">Double</span><span class="o">)</span> <span class="o">{</span>
+                    <span class="n">bundle</span><span class="o">.</span><span class="na">putDouble</span><span class="o">(</span><span class="n">k</span><span class="o">,</span> <span class="o">(</span><span class="nc">Double</span><span class="o">)</span> <span class="n">v</span><span class="o">);</span>
+                <span class="o">}</span>
+            <span class="o">}</span>
+            <span class="k">return</span> <span class="n">bundle</span><span class="o">;</span>
+
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">Log</span><span class="o">.</span><span class="na">e</span><span class="o">(</span><span class="s">"ConfigProvider"</span><span class="o">,</span> <span class="s">"getCurrentConfig failed"</span><span class="o">,</span> <span class="n">e</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Cursor</span> <span class="nf">query</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">projection</span><span class="o">,</span> <span class="nc">String</span> <span class="n">selection</span><span class="o">,</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">selectionArgs</span><span class="o">,</span> <span class="nc">String</span> <span class="n">sortOrder</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">String</span> <span class="nf">getType</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">Uri</span> <span class="n">uri</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="nc">Uri</span> <span class="nf">insert</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="nc">ContentValues</span> <span class="n">values</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">delete</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">as</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">int</span> <span class="nf">update</span><span class="o">(</span><span class="nd">@NonNull</span> <span class="nc">Uri</span> <span class="n">uri</span><span class="o">,</span> <span class="nc">ContentValues</span> <span class="n">v</span><span class="o">,</span> <span class="nc">String</span> <span class="n">s</span><span class="o">,</span> <span class="nc">String</span><span class="o">[]</span> <span class="n">as</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="mi">0</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span>
+</code></pre></div></div>
+
+<p>然后在 AndroidManifest.xml 中注册该 ContentProvider：</p>
+<div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="nt">&lt;provider</span>
+        <span class="na">android:name=</span><span class="s">".content_provider.ConfigProvider"</span>
+        <span class="na">android:authorities=</span><span class="s">"com.example.deviceinfo.configprovider"</span>
+        <span class="na">android:exported=</span><span class="s">"true"</span>
+        <span class="na">android:grantUriPermissions=</span><span class="s">"true"</span> <span class="nt">/&gt;</span>
+</code></pre></div></div>
+
+<p>在 MainHook.java 中通过 ContentResolver 访问该 ContentProvider 获取配置数据：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">private</span> <span class="kd">static</span> <span class="kd">final</span> <span class="nc">String</span> <span class="no">PACKAGE_NAME</span> <span class="o">=</span> <span class="s">"com.example.deviceinfo"</span><span class="o">;</span>
+
+    <span class="kd">private</span> <span class="nc">Bundle</span> <span class="nf">getDataFromProvider</span><span class="o">(</span><span class="nc">Context</span> <span class="n">context</span><span class="o">,</span> <span class="nc">String</span> <span class="n">className</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Uri</span> <span class="n">uri</span> <span class="o">=</span> <span class="nc">Uri</span><span class="o">.</span><span class="na">parse</span><span class="o">(</span><span class="s">"content://"</span> <span class="o">+</span> <span class="no">PACKAGE_NAME</span> <span class="o">+</span> <span class="s">".configprovider"</span><span class="o">);</span>
+        <span class="nc">Bundle</span> <span class="n">extras</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">Bundle</span><span class="o">();</span>
+        <span class="n">extras</span><span class="o">.</span><span class="na">putString</span><span class="o">(</span><span class="nc">ProviderConstants</span><span class="o">.</span><span class="na">EXTRA_CLASS_NAME</span><span class="o">,</span> <span class="n">className</span><span class="o">);</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="n">context</span><span class="o">.</span><span class="na">getContentResolver</span><span class="o">()</span>
+                    <span class="o">.</span><span class="na">call</span><span class="o">(</span><span class="n">uri</span><span class="o">,</span> <span class="nc">ProviderConstants</span><span class="o">.</span><span class="na">METHOD_GET_CURRENT_CONFIG</span><span class="o">,</span> <span class="kc">null</span><span class="o">,</span> <span class="n">extras</span><span class="o">);</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Throwable</span> <span class="n">t</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">XposedBridge</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Error calling content provider: "</span> <span class="o">+</span> <span class="n">t</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+            <span class="k">return</span> <span class="kc">null</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+<p>所需的 Context 对象可以通过 hook Application.attach() 方法获取。</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>        <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findAndHookMethod</span><span class="o">(</span>
+                <span class="nc">Application</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+                <span class="s">"attach"</span><span class="o">,</span>
+                <span class="nc">Context</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+                <span class="k">new</span> <span class="nf">XC_MethodHook</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">afterHookedMethod</span><span class="o">(</span><span class="nc">MethodHookParam</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nc">Context</span> <span class="n">context</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Context</span><span class="o">)</span> <span class="n">param</span><span class="o">.</span><span class="na">args</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+                        <span class="nc">Context</span> <span class="n">providerContext</span><span class="o">;</span>
+                        <span class="k">try</span> <span class="o">{</span>
+                            <span class="n">providerContext</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">createPackageContext</span><span class="o">(</span>
+                                    <span class="s">"com.example.deviceinfo"</span><span class="o">,</span>
+                                    <span class="nc">Context</span><span class="o">.</span><span class="na">CONTEXT_IGNORE_SECURITY</span> <span class="o">|</span> <span class="nc">Context</span><span class="o">.</span><span class="na">CONTEXT_INCLUDE_CODE</span>
+                            <span class="o">);</span>
+                        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="nc">XposedBridge</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Failed to create provider context: "</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+                            <span class="k">return</span><span class="o">;</span>
+                        <span class="o">}</span>
+                        <span class="nc">XposedBridge</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Context acquired: "</span> <span class="o">+</span> <span class="n">providerContext</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+        <span class="o">);</span>
+</code></pre></div></div>
+
+<h3 id="622-注入-wifi-和定位信息">6.2.2. 注入 Wifi 和定位信息</h3>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    <span class="nd">@Override</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">handleLoadPackage</span><span class="o">(</span><span class="kd">final</span> <span class="n">XC_LoadPackage</span><span class="o">.</span><span class="na">LoadPackageParam</span> <span class="n">lpparam</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">lpparam</span><span class="o">.</span><span class="na">packageName</span><span class="o">.</span><span class="na">equals</span><span class="o">(</span><span class="no">PACKAGE_NAME</span><span class="o">))</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findAndHookMethod</span><span class="o">(</span>
+                <span class="nc">Application</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+                <span class="s">"attach"</span><span class="o">,</span>
+                <span class="nc">Context</span><span class="o">.</span><span class="na">class</span><span class="o">,</span>
+                <span class="k">new</span> <span class="nf">XC_MethodHook</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">afterHookedMethod</span><span class="o">(</span><span class="nc">MethodHookParam</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nc">Context</span> <span class="n">context</span> <span class="o">=</span> <span class="o">(</span><span class="nc">Context</span><span class="o">)</span> <span class="n">param</span><span class="o">.</span><span class="na">args</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+                        <span class="nc">Context</span> <span class="n">providerContext</span><span class="o">;</span>
+                        <span class="k">try</span> <span class="o">{</span>
+                            <span class="n">providerContext</span> <span class="o">=</span> <span class="n">context</span><span class="o">.</span><span class="na">createPackageContext</span><span class="o">(</span>
+                                    <span class="s">"com.example.deviceinfo"</span><span class="o">,</span>
+                                    <span class="nc">Context</span><span class="o">.</span><span class="na">CONTEXT_IGNORE_SECURITY</span> <span class="o">|</span> <span class="nc">Context</span><span class="o">.</span><span class="na">CONTEXT_INCLUDE_CODE</span>
+                            <span class="o">);</span>
+                        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">Exception</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="nc">XposedBridge</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Failed to create provider context: "</span> <span class="o">+</span> <span class="n">e</span><span class="o">.</span><span class="na">getMessage</span><span class="o">());</span>
+                            <span class="k">return</span><span class="o">;</span>
+                        <span class="o">}</span>
+                        <span class="nc">XposedBridge</span><span class="o">.</span><span class="na">log</span><span class="o">(</span><span class="s">"Context acquired: "</span> <span class="o">+</span> <span class="n">providerContext</span><span class="o">);</span>
+
+                        <span class="n">hookNetwork</span><span class="o">(</span><span class="n">lpparam</span><span class="o">,</span> <span class="n">providerContext</span><span class="o">);</span>
+                        <span class="n">hookLocation</span><span class="o">(</span><span class="n">lpparam</span><span class="o">,</span> <span class="n">providerContext</span><span class="o">);</span>
+                    <span class="o">}</span>
+                <span class="o">}</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">hookNetwork</span><span class="o">(</span><span class="n">XC_LoadPackage</span><span class="o">.</span><span class="na">LoadPackageParam</span> <span class="n">lpparam</span><span class="o">,</span> <span class="nc">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Bundle</span> <span class="n">bundle</span> <span class="o">=</span> <span class="n">getDataFromProvider</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"WifiData"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">bundle</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="c1">// 1. 网络类型</span>
+        <span class="kt">int</span> <span class="n">networkType</span> <span class="o">=</span> <span class="n">bundle</span><span class="o">.</span><span class="na">getInt</span><span class="o">(</span><span class="s">"networkType"</span><span class="o">,</span> <span class="o">-</span><span class="mi">1</span><span class="o">);</span>
+        <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findAndHookMethod</span><span class="o">(</span><span class="s">"android.net.NetworkInfo"</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">.</span><span class="na">classLoader</span><span class="o">,</span>
+                <span class="s">"getType"</span><span class="o">,</span> <span class="k">new</span> <span class="n">XC_MethodHook</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">beforeHookedMethod</span><span class="o">(</span><span class="nc">MethodHookParam</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">networkType</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+                        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">networkType</span> <span class="o">==</span> <span class="nc">ConnectivityManager</span><span class="o">.</span><span class="na">TYPE_MOBILE</span> <span class="o">||</span> <span class="n">networkType</span> <span class="o">==</span> <span class="nc">ConnectivityManager</span><span class="o">.</span><span class="na">TYPE_WIFI</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="n">networkType</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+        <span class="c1">// TODO: NetworkInfo.getTypeName, NetworkInfo.getSubType</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">networkType</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="o">)</span> <span class="o">{</span>
+            <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findAndHookMethod</span><span class="o">(</span><span class="s">"android.net.ConnectivityManager"</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">.</span><span class="na">classLoader</span><span class="o">,</span>
+                    <span class="s">"getNetworkCapabilities"</span><span class="o">,</span> <span class="k">new</span> <span class="n">XC_MethodHook</span><span class="o">()</span> <span class="o">{</span>
+                        <span class="nd">@Override</span>
+                        <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">beforeHookedMethod</span><span class="o">(</span><span class="nc">MethodHookParam</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="kc">null</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">});</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+        <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findAndHookMethod</span><span class="o">(</span>
+                <span class="s">"android.net.NetworkCapabilities"</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">.</span><span class="na">classLoader</span><span class="o">,</span>
+                <span class="s">"hasTransport"</span><span class="o">,</span> <span class="kt">int</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="k">new</span> <span class="n">XC_MethodHook</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">beforeHookedMethod</span><span class="o">(</span><span class="nc">MethodHookParam</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="kt">int</span> <span class="n">transportType</span> <span class="o">=</span> <span class="o">(</span><span class="kt">int</span><span class="o">)</span> <span class="n">param</span><span class="o">.</span><span class="na">args</span><span class="o">[</span><span class="mi">0</span><span class="o">];</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">networkType</span> <span class="o">==</span> <span class="nc">ConnectivityManager</span><span class="o">.</span><span class="na">TYPE_WIFI</span> <span class="o">&amp;&amp;</span> <span class="n">transportType</span> <span class="o">==</span> <span class="nc">NetworkCapabilities</span><span class="o">.</span><span class="na">TRANSPORT_WIFI</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+                        <span class="o">}</span> <span class="k">else</span> <span class="k">if</span> <span class="o">(</span><span class="n">networkType</span> <span class="o">==</span> <span class="nc">ConnectivityManager</span><span class="o">.</span><span class="na">TYPE_MOBILE</span> <span class="o">&amp;&amp;</span> <span class="n">transportType</span> <span class="o">==</span> <span class="nc">NetworkCapabilities</span><span class="o">.</span><span class="na">TRANSPORT_CELLULAR</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="kc">true</span><span class="o">);</span>
+                        <span class="o">}</span> <span class="k">else</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="kc">false</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">networkType</span> <span class="o">!=</span> <span class="nc">ConnectivityManager</span><span class="o">.</span><span class="na">TYPE_WIFI</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findAndHookMethod</span><span class="o">(</span><span class="s">"android.net.wifi.WifiInfo"</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">.</span><span class="na">classLoader</span><span class="o">,</span>
+                <span class="s">"getSSID"</span><span class="o">,</span> <span class="k">new</span> <span class="n">XC_MethodHook</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">afterHookedMethod</span><span class="o">(</span><span class="nc">MethodHookParam</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nc">String</span> <span class="n">ssid</span> <span class="o">=</span> <span class="n">bundle</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="s">"ssid"</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">ssid</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="s">"\""</span> <span class="o">+</span> <span class="n">ssid</span> <span class="o">+</span> <span class="s">"\""</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+
+        <span class="n">hookMethodOfString</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.net.wifi.WifiInfo"</span><span class="o">,</span> <span class="s">"getBSSID"</span><span class="o">,</span> <span class="s">"bssid"</span><span class="o">);</span>
+
+        <span class="n">hookMethodOfInt</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.net.wifi.WifiInfo"</span><span class="o">,</span> <span class="s">"getFrequency"</span><span class="o">,</span> <span class="s">"frequency"</span><span class="o">);</span>
+
+        <span class="n">hookMethodOfInt</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.net.wifi.WifiInfo"</span><span class="o">,</span> <span class="s">"getRssi"</span><span class="o">,</span> <span class="s">"rssi"</span><span class="o">);</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="nc">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">S</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">hookMethodOfInt</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.net.wifi.WifiInfo"</span><span class="o">,</span> <span class="s">"getCurrentSecurityType"</span><span class="o">,</span> <span class="s">"securityType"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="nc">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">R</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">hookMethodOfInt</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.net.wifi.WifiInfo"</span><span class="o">,</span> <span class="s">"getWifiStandard"</span><span class="o">,</span> <span class="s">"wifiStandard"</span><span class="o">);</span>
+        <span class="o">}</span>
+
+        <span class="c1">// TODO: Hook ScanResult</span>
+
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">hookLocation</span><span class="o">(</span><span class="n">XC_LoadPackage</span><span class="o">.</span><span class="na">LoadPackageParam</span> <span class="n">lpparam</span><span class="o">,</span> <span class="nc">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">Bundle</span> <span class="n">bundle</span> <span class="o">=</span> <span class="n">getDataFromProvider</span><span class="o">(</span><span class="n">context</span><span class="o">,</span> <span class="s">"LocationData"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="n">bundle</span> <span class="o">==</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span><span class="o">;</span>
+        <span class="o">}</span>
+
+        <span class="n">hookMethodOfDouble</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getLatitude"</span><span class="o">,</span> <span class="s">"latitude"</span><span class="o">);</span>
+        <span class="n">hookMethodOfDouble</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getLongitude"</span><span class="o">,</span> <span class="s">"longitude"</span><span class="o">);</span>
+        <span class="n">hookMethodOfFloat</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getAccuracy"</span><span class="o">,</span> <span class="s">"horizontalAccuracy"</span><span class="o">);</span>
+        <span class="n">hookMethodOfDouble</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getAltitude"</span><span class="o">,</span> <span class="s">"altitude"</span><span class="o">);</span>
+        <span class="n">hookMethodOfFloat</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getVerticalAccuracyMeters"</span><span class="o">,</span> <span class="s">"verticalAccuracy"</span><span class="o">);</span>
+        <span class="k">if</span> <span class="o">(</span><span class="nc">Build</span><span class="o">.</span><span class="na">VERSION</span><span class="o">.</span><span class="na">SDK_INT</span> <span class="o">&gt;=</span> <span class="nc">Build</span><span class="o">.</span><span class="na">VERSION_CODES</span><span class="o">.</span><span class="na">UPSIDE_DOWN_CAKE</span><span class="o">)</span> <span class="o">{</span>
+            <span class="n">hookMethodOfDouble</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getMslAltitudeMeters"</span><span class="o">,</span> <span class="s">"mslAltitude"</span><span class="o">);</span>
+            <span class="n">hookMethodOfFloat</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getMslAltitudeAccuracyMeters"</span><span class="o">,</span> <span class="s">"mslAltitudeAccuracy"</span><span class="o">);</span>
+        <span class="o">}</span>
+        <span class="n">hookMethodOfFloat</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getSpeed"</span><span class="o">,</span> <span class="s">"speed"</span><span class="o">);</span>
+        <span class="n">hookMethodOfFloat</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getSpeedAccuracyMetersPerSecond"</span><span class="o">,</span> <span class="s">"speedAccuracy"</span><span class="o">);</span>
+        <span class="n">hookMethodOfFloat</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getBearing"</span><span class="o">,</span> <span class="s">"bearing"</span><span class="o">);</span>
+        <span class="n">hookMethodOfFloat</span><span class="o">(</span><span class="n">bundle</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">,</span> <span class="s">"android.location.Location"</span><span class="o">,</span> <span class="s">"getBearingAccuracyDegrees"</span><span class="o">,</span> <span class="s">"bearingAccuracy"</span><span class="o">);</span>
+
+        <span class="c1">// Hook 其他方法...</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">hookMethodOfString</span><span class="o">(</span><span class="nc">Bundle</span> <span class="n">bundle</span><span class="o">,</span> <span class="n">XC_LoadPackage</span><span class="o">.</span><span class="na">LoadPackageParam</span> <span class="n">lpparam</span><span class="o">,</span> <span class="nc">String</span> <span class="n">className</span><span class="o">,</span> <span class="nc">String</span> <span class="n">methodName</span><span class="o">,</span> <span class="nc">String</span> <span class="n">key</span><span class="o">)</span> <span class="o">{</span>
+        <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findAndHookMethod</span><span class="o">(</span><span class="n">className</span><span class="o">,</span> <span class="n">lpparam</span><span class="o">.</span><span class="na">classLoader</span><span class="o">,</span>
+                <span class="n">methodName</span><span class="o">,</span> <span class="k">new</span> <span class="n">XC_MethodHook</span><span class="o">()</span> <span class="o">{</span>
+                    <span class="nd">@Override</span>
+                    <span class="kd">protected</span> <span class="kt">void</span> <span class="nf">afterHookedMethod</span><span class="o">(</span><span class="nc">MethodHookParam</span> <span class="n">param</span><span class="o">)</span> <span class="o">{</span>
+                        <span class="nc">String</span> <span class="n">val</span> <span class="o">=</span> <span class="n">bundle</span><span class="o">.</span><span class="na">getString</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="kc">null</span><span class="o">);</span>
+                        <span class="k">if</span> <span class="o">(</span><span class="n">val</span> <span class="o">!=</span> <span class="kc">null</span><span class="o">)</span> <span class="o">{</span>
+                            <span class="n">param</span><span class="o">.</span><span class="na">setResult</span><span class="o">(</span><span class="n">val</span><span class="o">);</span>
+                        <span class="o">}</span>
+                    <span class="o">}</span>
+                <span class="o">});</span>
+    <span class="o">}</span>
+
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">hookMethodOfInt</span><span class="o">(...)</span> <span class="o">{</span> <span class="cm">/* 类似上面的 hookMethodOfString */</span> <span class="o">}</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">hookMethodOfDouble</span><span class="o">(...)</span> <span class="o">{</span> <span class="cm">/* 类似上面的 hookMethodOfString */</span> <span class="o">}</span>
+    <span class="kd">private</span> <span class="kt">void</span> <span class="nf">hookMethodOfFloat</span><span class="o">(...)</span> <span class="o">{</span> <span class="cm">/* 类似上面的 hookMethodOfString */</span> <span class="o">}</span>
+</code></pre></div></div>
+
+<p>目前 Hook 的内容比较草率，Wifi 方面只是简单地 Hook 了 WifiInfo 的几个方法，不过足够应付某些 app 比如飞书的 wifi 打卡，比如老版本 QQ 8.2.11 无法在移动网络下使用的问题。定位方面我一开始以为只要 Hook Location 的 get 方法就行了，后来发现实际上很多 app 都不会从 Location 对象里获取数据，而是用一些第三方 SDK 来获取位置，这些目前我都没有处理，后续可以继续完善。</p>
+
+<h3 id="623-检测-xposed-模块是否激活">6.2.3. 检测 Xposed 模块是否激活</h3>
+<p>我看到网上有方法以及 AI 也会推荐下面的代码来检测 Xposed 模块是否激活：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">isModuleActive</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">getBooleanField</span><span class="o">(</span>
+                <span class="nc">XposedHelpers</span><span class="o">.</span><span class="na">findClass</span><span class="o">(</span><span class="s">"de.robv.android.xposed.XposedBridge"</span><span class="o">,</span> <span class="kc">null</span><span class="o">),</span>
+                <span class="s">"isXposedModuleActive"</span>
+        <span class="o">);</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+<p>但是我实际测试时发现并没有效果，原理大概是因为 Xposed 进程位于不同的类加载器中，导致无法访问到该字段。</p>
+
+<p>我在上面测试 New XSharedPreference 时发现当模块未激活时，MODE_WORLD_READABLE 会报错，而激活后则不会报错。所以我打算用这种方式来检测模块是否激活：</p>
+<div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">private</span> <span class="kt">boolean</span> <span class="nf">isModuleActive</span><span class="o">(</span><span class="nc">Context</span> <span class="n">context</span><span class="o">)</span> <span class="o">{</span>
+        <span class="k">try</span> <span class="o">{</span>
+            <span class="n">context</span><span class="o">.</span><span class="na">getSharedPreferences</span><span class="o">(</span><span class="s">"test_prefs"</span><span class="o">,</span> <span class="nc">Context</span><span class="o">.</span><span class="na">MODE_WORLD_READABLE</span><span class="o">);</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="o">;</span>
+        <span class="o">}</span> <span class="k">catch</span> <span class="o">(</span><span class="nc">SecurityException</span> <span class="n">e</span><span class="o">)</span> <span class="o">{</span>
+            <span class="k">return</span> <span class="kc">false</span><span class="o">;</span>
+        <span class="o">}</span>
+    <span class="o">}</span>
+</code></pre></div></div>
+<p>这种方式有时会失效，不知道是否和初始化有关，目前没有找到原因。</p>
+
+<p>我还尝试了其他方式，比如通过 ContentProvider + findClass 的方式来检测模块是否激活，但是仍然没有成功。</p>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93LinearLayout%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%8C%89%E9%92%AE%E5%AE%BD%E5%BA%A6%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98.html" title="安卓LinearLayout最后一个按钮宽度异常问题">安卓LinearLayout最后一个按钮宽度异常问题</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/troubleshooting/2025/12/17/wsl2%E9%87%8A%E6%94%BE%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4.html"
+      title="wsl2释放存储空间">wsl2释放存储空间</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2025-12-18】 Xposed模块DeviceInfo开发"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>

@@ -1,8 +1,680 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-04-16T07:16:01+00:00</updated><id>/feed.xml</id><title type="html">lxmghct’s blog</title><subtitle>学习、实践、分享&lt;br&gt; Learning, Practicing, Sharing</subtitle><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><entry><title type="html">Windows 10 Microsoft Compatibility Telemetry 占用 CPU 过高</title><link href="/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2026/04/13/Windows-10-Microsoft-Compatibility-Telemetry-%E5%8D%A0%E7%94%A8-CPU-%E8%BF%87%E9%AB%98.html" rel="alternate" type="text/html" title="Windows 10 Microsoft Compatibility Telemetry 占用 CPU 过高" /><published>2026-04-13T11:30:00+00:00</published><updated>2026-04-13T11:30:00+00:00</updated><id>/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2026/04/13/Windows%2010%20Microsoft%20Compatibility%20Telemetry%20%E5%8D%A0%E7%94%A8%20CPU%20%E8%BF%87%E9%AB%98</id><content type="html" xml:base="/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2026/04/13/Windows-10-Microsoft-Compatibility-Telemetry-%E5%8D%A0%E7%94%A8-CPU-%E8%BF%87%E9%AB%98.html"><![CDATA[<p>Windows 10 使用中，发现有时 Microsoft Compatibility Telemetry 进程占用 CPU 过高，直接占用高达 99%，导致机器卡顿。可以参考以下步骤来禁用 Microsoft Compatibility Telemetry：</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.3.2">Jekyll</generator><link href="/feed.xml" rel="self" type="application/atom+xml" /><link href="/" rel="alternate" type="text/html" /><updated>2026-04-22T14:23:17+00:00</updated><id>/feed.xml</id><title type="html">lxmghct’s blog</title><subtitle>学习、实践、分享&lt;br&gt; Learning, Practicing, Sharing</subtitle><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><entry><title type="html">OpenClaw 新建会话异常</title><link href="/troubleshooting/2026/04/20/OpenClaw-%E6%96%B0%E5%BB%BA%E4%BC%9A%E8%AF%9D%E5%BC%82%E5%B8%B8.html" rel="alternate" type="text/html" title="OpenClaw 新建会话异常" /><published>2026-04-20T16:30:00+00:00</published><updated>2026-04-20T16:30:00+00:00</updated><id>/troubleshooting/2026/04/20/OpenClaw%20%E6%96%B0%E5%BB%BA%E4%BC%9A%E8%AF%9D%E5%BC%82%E5%B8%B8</id><content type="html" xml:base="/troubleshooting/2026/04/20/OpenClaw-%E6%96%B0%E5%BB%BA%E4%BC%9A%E8%AF%9D%E5%BC%82%E5%B8%B8.html"><![CDATA[<h1 id="问题描述">问题描述</h1>
+<p>我在使用 openclaw 时，本来用的好好的，突然发现无论在浏览器还是在 tui 里，输入<code class="language-plaintext highlighter-rouge">/reset</code>或者<code class="language-plaintext highlighter-rouge">/new</code>命令来新建会话时，都会出现异常。以浏览器为例，具体表现为：新建会话时，前面突然加了一堆系统提示：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>System: [2026-04-21 00:12:25 GMT+8] Exec completed (calm-she, code 0) :: exec-1 done-1
+System: [2026-04-21 00:12:27 GMT+8] Exec completed (warm-cru, code 0) :: exec-2 done-2
+System: [2026-04-21 00:12:34 GMT+8] [Post-compaction context refresh]
+System:
+System: Session was just compacted. The conversation summary above is a hint, NOT a substitute for your startup sequence. Execute your Session Startup sequence now — read the required files before responding to the user.
+System:
+System: Critical rules from AGENTS.md:
+System:
+System: ## Session Startup
+System:
+System: Before doing anything else:
+System:
+System: 1. Read SOUL.md — this is who you are
+System: 2. Read USER.md — this is who you're helping
+System: 3. Read memory/2026-04-21.md (today + yesterday) for recent context
+System: 4. If in MAIN SESSION (direct chat with your human): Also read MEMORY.md
+System:
+System: Don't ask permission. Just do it.
+System:
+System: ## Red Lines
+System:
+System: - Don't exfiltrate private data. Ever.
+System: - Don't run destructive commands without asking.
+System: - trash &gt; rm (recoverable beats gone forever)
+System: - When in doubt, ask.
+System:
+System: Current time: Tuesday, April 21st, 2026 — 12:12 AM (Asia/Shanghai) / 2026-04-20 16:12 UTC
+
+A new session was started via /new or /reset. Execute your Session Startup sequence now - read the required files before responding to the user. Then greet the user in your configured persona, if one is provided. Be yourself - use your defined voice, mannerisms, and mood. Keep it to 1-3 sentences and ask what they want to do. If the runtime model differs from default_model in the system prompt, mention the default model. Do not mention internal steps, files, tools, or reasoning.
+Current time: Tuesday, April 21st, 2026 — 12:16 AM (Asia/Shanghai) / 2026-04-20 16:16 UTC
+</code></pre></div></div>
+
+<p>此时继续对话，比如我发一个 hello，发送出去的消息会被自动加上系统提示的内容，变成：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+System: [2026-04-21 00:11:31 GMT+8] [Post-compaction context refresh]
+System:
+System: Session was just compacted. The conversation summary above is a hint, NOT a substitute for your startup sequence. Execute your Session Startup sequence now — read the required files before responding to the user.
+System:
+System: Critical rules from AGENTS.md:
+System:
+System: ## Session Startup
+System:
+System: Before doing anything else:
+System:
+System: 1. Read SOUL.md — this is who you are
+System: 2. Read USER.md — this is who you're helping
+System: 3. Read memory/2026-04-21.md (today + yesterday) for recent context
+System: 4. If in MAIN SESSION (direct chat with your human): Also read MEMORY.md
+System:
+System: Don't ask permission. Just do it.
+System:
+System: ## Red Lines
+System:
+System: - Don't exfiltrate private data. Ever.
+System: - Don't run destructive commands without asking.
+System: - trash &gt; rm (recoverable beats gone forever)
+System: - When in doubt, ask.
+System:
+System: Current time: Tuesday, April 21st, 2026 — 12:11 AM (Asia/Shanghai) / 2026-04-20 16:11 UTC
+
+[Tue 2026-04-21 00:11 GMT+8] hello
+</code></pre></div></div>
+<p>这些提示导致每次都会调用工具去读取文件，有时甚至会直接忽略我发的内容。</p>
+
+<p>而正常的对话虽然也会加一点前缀，但并不是上面这样的：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{"type":"message","id":"b2f4300d","parentId":"d45d8da2","timestamp":"2026-03-16T11:23:53.797Z","message":{"role":"user","content":[{"type":"text","text":"Sender (untrusted metadata):\n```json\n{\n  \"label\": \"openclaw-tui (gateway-client)\",\n  \"id\": \"gateway-client\",\n  \"name\": \"openclaw-tui\",\n  \"username\": \"openclaw-tui\"\n}\n```\n\n[Mon 2026-03-16 19:23 GMT+8] 你好"}],"timestamp":1773660233795}}
+</code></pre></div></div>
+<p>格式整理一下就是：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Sender (untrusted metadata):
+```json
+{
+  "label": "openclaw-tui (gateway-client)",
+  "id": "gateway-client",
+  "name": "openclaw-tui",
+   "username": "openclaw-tui"
+}
+```
+[Mon 2026-03-16 19:23 GMT+8] 你好
+</code></pre></div></div>
+
+<h1 id="解决方案">解决方案</h1>
+<p>目前没有找到问题所在，即使删除工作空间的所有内容，或者重启 openclaw 之后，问题依然存在。</p>
+
+<p>但是在某些情况下会短暂的恢复正常。比如新建的 session 里开头不会有这个问题：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openclaw tui --session agent:gpt:test
+</code></pre></div></div>
+<p>但继续对话之后又会出现这个问题。</p>
+
+<p>以及明确告知它”你叫XXX”时，它会恢复正常一下，但继续对话之后又会出现这个问题。</p>
+
+<p><code class="language-plaintext highlighter-rouge">openclaw gateway restart</code>无法解决问题。</p>
+
+<p>最后尝试了一种方式：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>openclaw gateway stop
+openclaw gateway uninstall
+openclaw gateway install
+openclaw gateway start
+</code></pre></div></div>
+<p>执行完之后问题就解决了。不过目前无法确定是等了一段时间自行恢复了，还是卸载重装之后就解决了。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="openclaw" /><summary type="html"><![CDATA[问题描述 我在使用 openclaw 时，本来用的好好的，突然发现无论在浏览器还是在 tui 里，输入/reset或者/new命令来新建会话时，都会出现异常。以浏览器为例，具体表现为：新建会话时，前面突然加了一堆系统提示： ``` System: [2026-04-21 00:12:25 GMT+8] Exec completed (calm-she, code 0) :: exec-1 done-1 System: [2026-04-21 00:12:27 GMT+8] Exec completed (warm-cru, code 0) :: exec-2 done-2 System: [2026-04-21 00:12:34 GMT+8] [Post-compaction context refresh] System: System: Session was just compacted. The conversation summary above is a hint, NOT a substitute for your startup sequence. Execute your Session Startup sequence now — read the required files before responding to the user. System: System: Critical rules from AGENTS.md: System: System: ## Session Startup System: System: Before doing anything else: System: System: 1. Read SOUL.md — this is who you are System: 2. Read USER.md — this is who you’re helping System: 3. Read memory/2026-04-21.md (today + yesterday) for recent context System: 4. If in MAIN SESSION (direct chat with your human): Also read MEMORY.md System: System: Don’t ask permission. Just do it. System: System: ## Red Lines System: System: - Don’t exfiltrate private data. Ever. System: - Don’t run destructive commands without asking. System: - trash &gt; rm (recoverable beats gone forever) System: - When in doubt, ask. System: System: Current time: Tuesday, April 21st, 2026 — 12:12 AM (Asia/Shanghai) / 2026-04-20 16:12 UTC]]></summary></entry><entry><title type="html">将hiagent转为openai api格式以便给openclaw使用</title><link href="/project-logs/tech-exploration/2026/04/20/%E5%B0%86hiagent%E8%BD%AC%E4%B8%BAopenai-api%E6%A0%BC%E5%BC%8F%E4%BB%A5%E4%BE%BF%E7%BB%99openclaw%E4%BD%BF%E7%94%A8.html" rel="alternate" type="text/html" title="将hiagent转为openai api格式以便给openclaw使用" /><published>2026-04-20T02:30:00+00:00</published><updated>2026-04-20T02:30:00+00:00</updated><id>/project-logs/tech-exploration/2026/04/20/%E5%B0%86hiagent%E8%BD%AC%E4%B8%BAopenai%20api%E6%A0%BC%E5%BC%8F%E4%BB%A5%E4%BE%BF%E7%BB%99openclaw%E4%BD%BF%E7%94%A8</id><content type="html" xml:base="/project-logs/tech-exploration/2026/04/20/%E5%B0%86hiagent%E8%BD%AC%E4%B8%BAopenai-api%E6%A0%BC%E5%BC%8F%E4%BB%A5%E4%BE%BF%E7%BB%99openclaw%E4%BD%BF%E7%94%A8.html"><![CDATA[<p>最近想把南开的 hiagent 放到 openclaw 里用，从而节约一些 token。但这个 hiagent 是一个会话形式的智能体，而 openclaw 目前并不支持会话形式的智能体，只支持几种主流的调用格式比如 openai api 格式，所以需要先把把 hiagent 转换成 openai api 的格式。</p>
+
+<p>注意：本文提到的 hiagent 都特指南开提供的这个 hiagent，而并非火山引擎或者其他的 hiagent。</p>
+
+<p>项目地址：<a href="https://github.com/lxmghct/nankai-hiagent-proxy">https://github.com/lxmghct/nankai-hiagent-proxy</a></p>
+
+<h1 id="1-核心问题及解决方案">1. 核心问题及解决方案</h1>
+<h2 id="11-会话形式转为无状态的调用格式">1.1. 会话形式转为无状态的调用格式</h2>
+<p>hiagent 的会话形式意味着它会在内部维护一个状态，包括之前的对话。在对话前需要获取<code class="language-plaintext highlighter-rouge">AppConversationId</code>，并在后续的对话中持续使用这个 ID 来维持会话状态。要想将这种形式转为无状态的调用格式，需要建立一个映射关系，一个比较简单粗暴的做法就是维护一个前几轮历史对话到<code class="language-plaintext highlighter-rouge">AppConversationId</code>的映射表，每次新的对话请求时，先根据当前的历史对话去查这个映射表，如果找到了对应的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，就直接使用它；如果没有找到，就创建一个新的会话并获取新的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，然后把这个新的 ID 和当前的历史对话一起存到映射表里。</p>
+
+<p>不过考虑到映射表性能的问题，所以还是给前几轮对话建立一个哈希值，直接保存这个哈希值到<code class="language-plaintext highlighter-rouge">AppConversationId</code>的映射，这样就可以快速地通过哈希值来查找对应的会话 ID。</p>
+
+<p>还有个问题是前几轮对话到底多少轮比较合适。如果轮数太多，前几轮对话默认没法确定唯一的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，那么前几轮就会反复的去创建会话，虽然可行但没那么优雅。如果只有一轮那么重复概率很高，更何况 openclaw 的首轮对话往往是工具调用，重复概率就更大了。不过好在 openclaw 会把时间信息和用户问题一起发送过来：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[{'type': 'text', 'text': 'Sender (untrusted metadata):\n```json\n{\n  "label": "openclaw-tui (gateway-client)",\n  "id": "gateway-client",\n  "name": "openclaw-tui",\n  "username": "openclaw-tui"\n}\n```\n\n[Wed 2026-04-22 01:54 GMT+8] 你好'}]
+</code></pre></div></div>
+<p>这样基本一轮对话都不需要，只要一个prompt就可以唯一确定一个会话了。不过考虑到并发问题，而且这里的时间戳是到秒的，所以还是拿到该问题的回答后，再把这个问题和回答一起存到映射表里，这样就更保险了。</p>
+
+<h2 id="12-工具调用问题">1.2. 工具调用问题</h2>
+<p>hiagent 并不提供标准的工具调用接口，输入和输出都只有纯文本格式。一般来说这种情况只要在输入输出里约定好一个格式就可以了，比如输入里约定好工具调用的格式，输出里约定好工具调用结果的格式，这样就可以通过解析输入输出的文本来实现工具调用了。但是在实际使用过程中，经常会出现下面的情况，比如我约的了用<code class="language-plaintext highlighter-rouge">[[[HIAGENT_TOOL_CALL]]]</code>和<code class="language-plaintext highlighter-rouge">[[[END_HIAGENT_TOOL_CALL]]]</code>：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;tool_call&gt;[HIAGENT_TOOL_CALL]]]
+{
+"name": "read",
+"arguments": {
+"path": "/home/..."
+}
+}
+[[[END_HIAGENT_TOOL_CALL]]]
+</code></pre></div></div>
+<p>可以看到上面的标签被不知道从哪出来的<code class="language-plaintext highlighter-rouge">&lt;tool_call&gt;</code>标签给打乱了，导致工具调用的格式被破坏了，无法正确解析工具调用的内容了。</p>
+
+<p>此时有两个解决方法:</p>
+
+<ol>
+  <li>继续兼容这种混合标签的解析方式，增加对这种情况的处理逻辑（优先级较低，因为不规范且不稳定）</li>
+  <li>取消新约定的<code class="language-plaintext highlighter-rouge">[[[HIAGENT_XXX]]]</code>标签，统一使用hiagent内部约定的<code class="language-plaintext highlighter-rouge">&lt;tool_call&gt;</code>标签。目前经过测试可能的格式为：</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;tool_call&gt;{"name": "read", "arguments": {"path": "/home/..."}}
+
+&lt;tool_call&gt;read{"path": "/home/..."}
+
+&lt;tool_call&gt;[{"name": "read", "arguments": {"path": "/home/..."}}, {"name": "write", "arguments": {"path": "/home/...", "content": "hello world"}}]
+</code></pre></div></div>
+<p>这里还会有一个潜在问题就是json格式不规范，目前遇到最多的就是arguments字段格式是有异常的，变成了：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>"arguments": "{"path": "/home/..."}"
+</code></pre></div></div>
+<p>给一个本来没问题的 json 对象加了一层引号，导致解析失败了。目前仅发现了这个问题，在代码里已做了兼容处理。</p>
+
+<h1 id="2-实现思路与关键代码示例">2. 实现思路与关键代码示例</h1>
+<p>使用 FastAPI 来实现一个适配器服务，用 <code class="language-plaintext highlighter-rouge">@app.post("/v1/chat/completions")</code> 来接收 openclaw 的请求，在这个接口里先把 openclaw 的请求转换成 hiagent 的输入格式，然后调用 hiagent 来获取回答，最后再把 hiagent 的回答转换成 openclaw 需要的输出格式返回给 openclaw 就可以了。</p>
+
+<h2 id="21-工具格式约定">2.1. 工具格式约定</h2>
+<p>在 prompt 里约定工具调用的格式:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">TOOL_INSTRUCTION</span> <span class="o">=</span> <span class="sh">"""</span><span class="s">
+## Tool calling rules
+
+When you need to call a tool, you MUST use the following format.
+
+&lt;tool_call&gt;
+{
+  </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">tool_name</span><span class="sh">"</span><span class="s">,
+  </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: { JSON }
+}
+
+Rules:
+- Output ONLY the &lt;tool_call&gt; block
+- Do NOT explain anything
+- Do NOT use markdown
+- Do NOT add extra text
+- Do NOT wrap in code blocks
+- arguments MUST be valid JSON object
+- If multiple tools are needed, output multiple &lt;tool_call&gt; blocks sequentially
+- If no tool is needed, answer normally
+
+Example:
+
+User: read file
+Assistant:
+&lt;tool_call&gt;
+{
+  </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">read</span><span class="sh">"</span><span class="s">,
+  </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: {
+    </span><span class="sh">"</span><span class="s">path</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">/home/test.txt</span><span class="sh">"</span><span class="s">
+  }
+}
+
+For multiple tool calls, you may also output:
+
+&lt;tool_call&gt;
+[
+  {
+    </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">tool1</span><span class="sh">"</span><span class="s">,
+    </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: {...}
+  },
+  {
+    </span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="s">: </span><span class="sh">"</span><span class="s">tool2</span><span class="sh">"</span><span class="s">,
+    </span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="s">: {...}
+  }
+]
+
+</span><span class="sh">"""</span>
+</code></pre></div></div>
+
+<h2 id="22-构造-hiagent-输入格式">2.2. 构造 hiagent 输入格式</h2>
+<p>将 openclaw 的请求转换成 hiagent 的输入格式:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+
+<span class="k">def</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">parts</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ---------- messages ----------
+</span>    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">create_new</span> <span class="ow">and</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">system</span><span class="sh">"</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">HIAGENT_HAS_OPENCLAW_PROMPT</span> <span class="ow">and</span> <span class="n">content</span><span class="p">:</span>
+            <span class="c1"># if HIAGENT_HAS_OPENCLAW_PROMPT and content.startswith("You are a personal assistant running inside OpenClaw."):
+</span>            <span class="c1">#     continue
+</span>            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[system]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="se">\n</span><span class="si">{</span><span class="n">TOOL_INSTRUCTION</span><span class="p">.</span><span class="nf">strip</span><span class="p">()</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+            <span class="c1"># ---------- tools schema ----------
+</span>            <span class="k">if</span> <span class="n">tools</span><span class="p">:</span>
+                <span class="n">tool_desc</span> <span class="o">=</span> <span class="p">[</span><span class="sh">"</span><span class="s">Available tools:</span><span class="se">\n</span><span class="sh">"</span><span class="p">]</span>
+
+                <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tools</span><span class="p">:</span>
+                    <span class="n">func</span> <span class="o">=</span> <span class="n">t</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">function</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+                    <span class="n">name</span> <span class="o">=</span> <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="n">desc</span> <span class="o">=</span> <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">description</span><span class="sh">"</span><span class="p">,</span> <span class="sh">""</span><span class="p">)</span>
+                    <span class="n">params</span> <span class="o">=</span> <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">parameters</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+
+                    <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Tool: </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">desc</span><span class="p">:</span>
+                        <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Description: </span><span class="si">{</span><span class="n">desc</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">params</span><span class="p">:</span>
+                        <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">"</span><span class="s">Parameters JSON schema:</span><span class="sh">"</span><span class="p">)</span>
+                        <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+
+                    <span class="n">tool_desc</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">""</span><span class="p">)</span>
+
+                <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">tool_desc</span><span class="p">))</span>
+
+        <span class="k">elif</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">user</span><span class="sh">"</span> <span class="ow">and</span> <span class="n">content</span><span class="p">:</span>
+            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[user]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">assistant</span><span class="sh">"</span><span class="p">:</span>
+            <span class="n">tool_calls</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tool_calls</span><span class="sh">"</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+                <span class="c1"># {"role": "assistant", "content": null, "tool_calls": [{"id": "call08690af73f584d3386d63b10509f55d9", "type": "function", "function": {"name": "read", "arguments": "{\"path\":\"/home/devuser/.openclaw/workspace/SOUL.md\"}"}}, {"id": "call937287b1a26e4c83aed8a9fdd261ec3c", "type": "function", "function": {"name": "read", "arguments": "{\"path\":\"/home/devuser/.openclaw/workspace/USER.md\"}"}}]}
+</span>                <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sh">"</span><span class="s">[assistant]</span><span class="se">\n</span><span class="sh">"</span> <span class="o">+</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">content</span><span class="p">:</span>
+                <span class="c1"># {"role": "assistant", "content": [{"type": "text", "text": "Hey. I'm back online. \n\nI see we're still getting to know each other — your profile's pretty blank. What's on your mind? "}]}
+</span>                <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[assistant]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">tool</span><span class="sh">"</span><span class="p">:</span>
+            <span class="c1">#  {"role": "tool", "content": "Successfully wrote 269 bytes to /home/xxx", "tool_call_id": "call76e5d5301407447f833d9b71b973ecc7"}
+</span>            <span class="n">call_id</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tool_call_id</span><span class="sh">"</span><span class="p">,</span> <span class="sh">""</span><span class="p">)</span>
+            <span class="n">parts</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[tool:</span><span class="si">{</span><span class="n">call_id</span><span class="si">}</span><span class="s">]</span><span class="se">\n</span><span class="si">{</span><span class="n">content</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># parts.append("[assistant]")
+</span>
+    <span class="k">return</span> <span class="sh">"</span><span class="se">\n\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="23-解析-hiagent-输出格式">2.3. 解析 hiagent 输出格式</h2>
+<p>然后是处理 hiagent 的回答并转换成 openclaw 需要的输出格式，先进行工具提取：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">parse_hiagent_tool_calls</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">tool_calls</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># ---------- &lt;tool_call&gt; ----------
+</span>    <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">text</span><span class="p">.</span><span class="nf">find</span><span class="p">(</span><span class="sh">"</span><span class="s">&lt;tool_call&gt;</span><span class="sh">"</span><span class="p">,</span> <span class="n">idx</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">break</span>
+
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="nf">len</span><span class="p">(</span><span class="sh">"</span><span class="s">&lt;tool_call&gt;</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="c1"># 跳过空白
+</span>        <span class="k">while</span> <span class="n">cursor</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">].</span><span class="nf">isspace</span><span class="p">():</span>
+            <span class="n">cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">cursor</span> <span class="o">&gt;=</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">break</span>
+
+        <span class="c1"># ---------- 情况 A: 直接 JSON 对象 ----------
+</span>        <span class="k">if</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">]</span> <span class="ow">in</span> <span class="sh">"</span><span class="s">{[</span><span class="sh">"</span><span class="p">:</span>
+            <span class="n">json_str</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="nf">_extract_balanced_json</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">json_str</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+
+                    <span class="c1"># 如果是数组
+</span>                    <span class="k">if</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+                            <span class="n">func</span> <span class="o">=</span> <span class="n">item</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">function</span><span class="sh">"</span><span class="p">,</span> <span class="n">item</span><span class="p">)</span>
+                            <span class="n">tool_calls</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span>
+                                <span class="nc">HiAgentToolCall</span><span class="p">(</span>
+                                    <span class="nb">id</span><span class="o">=</span><span class="n">item</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="sh">"</span><span class="s">call_</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">().</span><span class="nb">hex</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+                                    <span class="n">name</span><span class="o">=</span><span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">),</span>
+                                    <span class="n">arguments</span><span class="o">=</span><span class="nf">normalize_arguments</span><span class="p">(</span>
+                                        <span class="n">func</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+                                    <span class="p">),</span>
+                                <span class="p">)</span>
+                            <span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">tool_calls</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span>
+                            <span class="nc">HiAgentToolCall</span><span class="p">(</span>
+                                <span class="nb">id</span><span class="o">=</span><span class="n">data</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="sh">"</span><span class="s">call_</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">().</span><span class="nb">hex</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+                                <span class="n">name</span><span class="o">=</span><span class="n">data</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">name</span><span class="sh">"</span><span class="p">),</span>
+                                <span class="n">arguments</span><span class="o">=</span><span class="nf">normalize_arguments</span><span class="p">(</span>
+                                    <span class="n">data</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">arguments</span><span class="sh">"</span><span class="p">,</span> <span class="p">{})</span>
+                                <span class="p">),</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+
+                    <span class="n">idx</span> <span class="o">=</span> <span class="n">end</span>
+                    <span class="k">continue</span>
+                <span class="k">except</span> <span class="nb">Exception</span><span class="p">:</span>
+                    <span class="k">pass</span>
+
+        <span class="c1"># ---------- 情况 B: name{...} ----------
+</span>        <span class="n">name_match</span> <span class="o">=</span> <span class="n">re</span><span class="p">.</span><span class="nf">match</span><span class="p">(</span><span class="sa">r</span><span class="sh">"</span><span class="s">([a-zA-Z_][a-zA-Z0-9_]*)</span><span class="sh">"</span><span class="p">,</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="n">name_match</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name_match</span><span class="p">.</span><span class="nf">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">cursor</span> <span class="o">+=</span> <span class="nf">len</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="n">cursor</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">].</span><span class="nf">isspace</span><span class="p">():</span>
+                <span class="n">cursor</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">cursor</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="ow">and</span> <span class="n">text</span><span class="p">[</span><span class="n">cursor</span><span class="p">]</span> <span class="o">==</span> <span class="sh">"</span><span class="s">{</span><span class="sh">"</span><span class="p">:</span>
+                <span class="n">json_str</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="nf">_extract_balanced_json</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cursor</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">json_str</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">args</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">loads</span><span class="p">(</span><span class="n">json_str</span><span class="p">)</span>
+                        <span class="n">tool_calls</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span>
+                            <span class="nc">HiAgentToolCall</span><span class="p">(</span>
+                                <span class="nb">id</span><span class="o">=</span><span class="sa">f</span><span class="sh">"</span><span class="s">call_</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">().</span><span class="nb">hex</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+                                <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+                                <span class="n">arguments</span><span class="o">=</span><span class="n">args</span><span class="p">,</span>
+                            <span class="p">)</span>
+                        <span class="p">)</span>
+                        <span class="n">idx</span> <span class="o">=</span> <span class="n">end</span>
+                        <span class="k">continue</span>
+                    <span class="k">except</span> <span class="nb">Exception</span><span class="p">:</span>
+                        <span class="k">pass</span>
+
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">cursor</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">tool_calls</span><span class="p">,</span> <span class="bp">None</span>
+
+    <span class="k">return</span> <span class="bp">None</span><span class="p">,</span> <span class="n">text</span>
+</code></pre></div></div>
+
+<p>最后是把提取到的工具调用转换成 openclaw 需要的格式，注意 openclaw 默认是 streaming 的，所以需要把工具调用的结果也以流式的格式返回。虽然 hiagent 的接口也支持 steaming 参数，但是经过实践发现这个流式是假的，虽然是流式的返回格式，但是它并不会在工具调用结果出来后就立刻返回，而是等到整个回答结束才一次性返回，而且流式的格式也是 hiagent 自己定义的，并不完全符合 openclaw 的流式格式，所以不如就调用它的 blocking 接口再自己转成流式的格式了。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">fastapi.responses</span> <span class="kn">import</span> <span class="n">StreamingResponse</span>
+
+
+<span class="k">def</span> <span class="nf">sse_pack</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="s">data: </span><span class="si">{</span><span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="si">}</span><span class="se">\n\n</span><span class="sh">"</span>
+
+
+<span class="k">def</span> <span class="nf">build_stream_text_chunks</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">custom-model</span><span class="sh">"</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nf">len</span><span class="p">(</span><span class="n">text</span><span class="p">),</span> <span class="n">chunk_size</span><span class="p">):</span>
+        <span class="n">chunk</span> <span class="o">=</span> <span class="n">text</span><span class="p">[</span><span class="n">i</span><span class="p">:</span><span class="n">i</span><span class="o">+</span><span class="n">chunk_size</span><span class="p">]</span>
+        <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+            <span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">chatcmpl-</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">()</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">object</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">chat.completion.chunk</span><span class="sh">"</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">created</span><span class="sh">"</span><span class="p">:</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span>
+            <span class="sh">"</span><span class="s">model</span><span class="sh">"</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">:</span> <span class="n">chunk</span><span class="p">},</span>
+                <span class="sh">"</span><span class="s">finish_reason</span><span class="sh">"</span><span class="p">:</span> <span class="bp">None</span>
+            <span class="p">}]</span>
+        <span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">build_stream_tool_calls</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">custom-model</span><span class="sh">"</span><span class="p">):</span>
+
+    <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+        <span class="sh">"</span><span class="s">id</span><span class="sh">"</span><span class="p">:</span> <span class="sa">f</span><span class="sh">"</span><span class="s">chatcmpl-</span><span class="si">{</span><span class="n">uuid</span><span class="p">.</span><span class="nf">uuid4</span><span class="p">()</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">object</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">chat.completion.chunk</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">created</span><span class="sh">"</span><span class="p">:</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span>
+        <span class="sh">"</span><span class="s">model</span><span class="sh">"</span><span class="p">:</span> <span class="n">model</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span>
+            <span class="p">{</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span>
+                    <span class="sh">"</span><span class="s">tool_calls</span><span class="sh">"</span><span class="p">:</span> <span class="p">[</span>
+                        <span class="n">tc</span><span class="p">.</span><span class="nf">to_openai_tool_call</span><span class="p">()</span> <span class="k">for</span> <span class="n">tc</span> <span class="ow">in</span> <span class="n">tool_calls</span>
+                    <span class="p">]</span>
+                <span class="p">},</span>
+                <span class="sh">"</span><span class="s">finish_reason</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">tool_calls</span><span class="sh">"</span>
+            <span class="p">}</span>
+        <span class="p">]</span>
+    <span class="p">})</span>
+
+
+<span class="k">def</span> <span class="nf">stream_done</span><span class="p">():</span>
+    <span class="k">return</span> <span class="sh">"</span><span class="s">data: [DONE]</span><span class="se">\n\n</span><span class="sh">"</span>
+
+
+<span class="k">def</span> <span class="nf">build_openai_stream_response</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">generator</span><span class="p">():</span>
+
+        <span class="c1"># role chunk (recommended)
+</span>        <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+            <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">assistant</span><span class="sh">"</span><span class="p">},</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">}]</span>
+        <span class="p">})</span>
+
+        <span class="c1"># 1. content 文本
+</span>        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nf">build_stream_text_chunks</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">chunk</span>
+
+        <span class="c1"># 2. tool calls
+</span>        <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">chunk</span> <span class="ow">in</span> <span class="nf">build_stream_tool_calls</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">):</span>
+                <span class="k">yield</span> <span class="n">chunk</span>
+
+        <span class="c1"># finish
+</span>        <span class="k">yield</span> <span class="nf">sse_pack</span><span class="p">({</span>
+            <span class="sh">"</span><span class="s">choices</span><span class="sh">"</span><span class="p">:</span> <span class="p">[{</span>
+                <span class="sh">"</span><span class="s">delta</span><span class="sh">"</span><span class="p">:</span> <span class="p">{},</span>
+                <span class="sh">"</span><span class="s">finish_reason</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">stop</span><span class="sh">"</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">index</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span>
+            <span class="p">}]</span>
+        <span class="p">})</span>
+
+        <span class="k">yield</span> <span class="nf">stream_done</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="nc">StreamingResponse</span><span class="p">(</span>
+        <span class="nf">generator</span><span class="p">(),</span>
+        <span class="n">media_type</span><span class="o">=</span><span class="sh">"</span><span class="s">text/event-stream</span><span class="sh">"</span>
+    <span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="24-关于历史对话到appconversationid的映射关系">2.4. 关于历史对话到<code class="language-plaintext highlighter-rouge">AppConversationId</code>的映射关系</h2>
+<p>目前使用了 sqlite 来维护这个映射关系，主要的两列为：一列是历史对话的哈希值，一列是对应的<code class="language-plaintext highlighter-rouge">AppConversationId</code>。每次新的对话请求过来时，先把当前的历史对话计算出哈希值，然后去这个表里查有没有对应的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，如果有就直接用它，如果没有就创建一个新的会话获取新的<code class="language-plaintext highlighter-rouge">AppConversationId</code>，然后把这个新的 ID 和当前的历史对话的哈希值一起存到表里。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">compute_conversation_key</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">max_assistant_turns</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">None</span>
+    
+    <span class="k">if</span> <span class="nf">count_assistant_turns</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">max_assistant_turns</span><span class="p">:</span>
+        <span class="c1"># 如果 assistant 轮数还不够，就不计算 key，强制新建会话
+</span>        <span class="k">return</span> <span class="bp">None</span>
+
+    <span class="n">text_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">assistant_turns</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+        <span class="n">role</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">role</span><span class="sh">"</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">system</span><span class="sh">"</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">m</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">content</span><span class="sh">"</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="sh">""</span>
+        <span class="k">if</span> <span class="n">content</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">content</span>
+            <span class="k">elif</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">json</span><span class="p">.</span><span class="nf">dumps</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="nf">str</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+        <span class="n">text_list</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">[</span><span class="si">{</span><span class="n">role</span><span class="si">}</span><span class="s">]</span><span class="se">\n</span><span class="si">{</span><span class="n">text</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">role</span> <span class="o">==</span> <span class="sh">"</span><span class="s">assistant</span><span class="sh">"</span><span class="p">:</span>
+            <span class="n">assistant_turns</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">assistant_turns</span> <span class="o">&gt;=</span> <span class="n">max_assistant_turns</span><span class="p">:</span>
+                <span class="k">break</span>
+
+    <span class="n">key_material</span> <span class="o">=</span> <span class="sh">"</span><span class="se">\n\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">text_list</span><span class="p">)</span>
+    <span class="n">h</span> <span class="o">=</span> <span class="n">hashlib</span><span class="p">.</span><span class="nf">sha256</span><span class="p">(</span><span class="n">key_material</span><span class="p">.</span><span class="nf">encode</span><span class="p">(</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)).</span><span class="nf">hexdigest</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">h</span>
+</code></pre></div></div>
+
+<h2 id="25-完整流程代码">2.5. 完整流程代码</h2>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@app.post</span><span class="p">(</span><span class="sh">"</span><span class="s">/v1/chat/completions</span><span class="sh">"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">stream</span><span class="sh">"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">messages</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tools</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># 计算会话 key（忽略 system）
+</span>    <span class="n">conv_key</span> <span class="o">=</span> <span class="nf">compute_conversation_key</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+    <span class="n">conversation_id</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="k">if</span> <span class="n">conv_key</span><span class="p">:</span>
+        <span class="n">obj</span> <span class="o">=</span> <span class="nf">get_conversation_by_key</span><span class="p">(</span><span class="n">conv_key</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">obj</span><span class="p">:</span>
+            <span class="n">conversation_id</span> <span class="o">=</span> <span class="n">obj</span><span class="p">[</span><span class="sh">"</span><span class="s">app_conversation_id</span><span class="sh">"</span><span class="p">]</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="nf">find_last_assistant_index</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">:],</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conversation_id</span><span class="p">:</span>
+        <span class="n">conversation_id</span> <span class="o">=</span> <span class="nf">create_conversation</span><span class="p">()</span>
+        <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="n">regenerate_conversation</span> <span class="o">=</span> <span class="bp">False</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">tool_calls</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">token_usage</span> <span class="o">=</span> <span class="bp">None</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="p">,</span> <span class="n">token_usage</span> <span class="o">=</span> <span class="nf">chat_query</span><span class="p">(</span><span class="n">conversation_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Error during chat query:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="c1"># 400
+</span>        <span class="k">if</span> <span class="sh">"</span><span class="s">Conversation expired or invalid</span><span class="sh">"</span> <span class="ow">in</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">conv_key</span><span class="p">:</span>
+                <span class="nf">delete_conversation</span><span class="p">(</span><span class="n">conv_key</span><span class="p">)</span>
+            <span class="n">conversation_id</span> <span class="o">=</span> <span class="nf">create_conversation</span><span class="p">()</span>
+            <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">,</span> <span class="n">create_new</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+            <span class="n">regenerate_conversation</span> <span class="o">=</span> <span class="bp">True</span>
+
+            <span class="c1"># 重新用完整消息构建 prompt，会导致一大段文本塞到同一次会话里，极有可能消耗大量上下文，但目前没有更好的选择了
+</span>            <span class="k">try</span><span class="p">:</span>
+                <span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="p">,</span> <span class="n">token_usage</span> <span class="o">=</span> <span class="nf">chat_query</span><span class="p">(</span><span class="n">conversation_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+            <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Error during chat query for new conversation:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+                <span class="k">return</span> <span class="nf">build_openai_response</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nf">build_openai_response</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">)</span>
+
+    <span class="n">openclaw_message</span> <span class="o">=</span> <span class="nf">build_openclaw_assistant_format</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="p">)</span>
+    <span class="n">messages</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">openclaw_message</span><span class="p">)</span>
+    <span class="n">assistant_turns</span> <span class="o">=</span> <span class="nf">count_assistant_turns</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">conv_key</span><span class="p">:</span>
+        <span class="n">new_conv_key</span> <span class="o">=</span> <span class="nf">compute_conversation_key</span><span class="p">(</span><span class="n">messages</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">new_conv_key</span><span class="p">:</span>
+            <span class="nf">save_conversation</span><span class="p">(</span><span class="n">new_conv_key</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">,</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span> <span class="n">turn_count</span><span class="o">=</span><span class="n">assistant_turns</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="ow">not</span> <span class="n">regenerate_conversation</span><span class="p">:</span>
+        <span class="nf">update_turn_count</span><span class="p">(</span><span class="n">conv_key</span><span class="p">,</span> <span class="n">assistant_turns</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nf">save_conversation</span><span class="p">(</span><span class="n">conv_key</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">,</span> <span class="nf">int</span><span class="p">(</span><span class="n">time</span><span class="p">.</span><span class="nf">time</span><span class="p">()),</span> <span class="n">turn_count</span><span class="o">=</span><span class="n">assistant_turns</span><span class="p">)</span>
+
+    <span class="n">resp</span> <span class="o">=</span> <span class="nf">build_openai_response</span><span class="p">(</span><span class="n">content</span><span class="p">,</span> <span class="n">tool_calls</span><span class="o">=</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">stream</span><span class="o">=</span><span class="n">stream</span><span class="p">,</span> <span class="n">token_usage</span><span class="o">=</span><span class="n">token_usage</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resp</span>
+</code></pre></div></div>
+
+<h1 id="3-实现思路尝试1">3. 实现思路尝试1</h1>
+<p>一开始我并没有尝试将历史对话和<code class="language-plaintext highlighter-rouge">AppConversationId</code>建立映射关系，主要是考虑到两点：</p>
+
+<ol>
+  <li>直接将所有的历史对话都发到一次对话里，直接把 hiagent 当成无状态的模型来用更简单一些</li>
+  <li>OpenClaw 和 hiagent 各自都会有压缩上下文的机制，映射关系可能会随着上下文的变化而失效了，维护映射关系可能会比较麻烦</li>
+</ol>
+
+<p>这样的实现确实更简单一些：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nd">@app.post</span><span class="p">(</span><span class="sh">"</span><span class="s">/v1/chat/completions</span><span class="sh">"</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">chat</span><span class="p">(</span><span class="n">body</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+
+    <span class="n">user_id</span> <span class="o">=</span> <span class="sh">"</span><span class="s">default_user</span><span class="sh">"</span>
+    <span class="n">stream</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">stream</span><span class="sh">"</span><span class="p">,</span> <span class="bp">False</span><span class="p">)</span>
+    <span class="n">messages</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">messages</span><span class="sh">"</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+    <span class="n">tools</span> <span class="o">=</span> <span class="n">body</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">tools</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="c1"># 构造完整历史 prompt
+</span>    <span class="n">prompt</span> <span class="o">=</span> <span class="nf">build_prompt_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">tools</span><span class="o">=</span><span class="n">tools</span><span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># 每次创建新的 hiagent 会话（不复用）
+</span>        <span class="n">conversation_id</span> <span class="o">=</span> <span class="nf">create_conversation</span><span class="p">(</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="n">answer</span> <span class="o">=</span> <span class="nf">chat_query</span><span class="p">(</span><span class="n">user_id</span><span class="p">,</span> <span class="n">conversation_id</span><span class="p">,</span> <span class="n">prompt</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">Error during chat query:</span><span class="sh">"</span><span class="p">,</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nf">build_openai_stream_response</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nf">build_openai_response_text</span><span class="p">(</span><span class="sh">"</span><span class="s">hiagent 请求失败: </span><span class="sh">"</span> <span class="o">+</span> <span class="nf">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+    
+    <span class="c1"># 解析 tool call
+</span>    <span class="n">tool_calls</span><span class="p">,</span> <span class="n">prefix_text</span> <span class="o">=</span> <span class="nf">parse_hiagent_tool_calls</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="c1"># ---------- STREAM ----------
+</span>    <span class="k">if</span> <span class="n">stream</span><span class="p">:</span>
+        <span class="c1"># return build_openai_stream_response(answer, tool_calls=tool_calls, prefix_text=prefix_text)
+</span>        <span class="k">return</span> <span class="nf">build_openai_stream_response</span><span class="p">(</span><span class="n">answer</span><span class="p">,</span> <span class="n">tool_calls</span><span class="o">=</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">prefix_text</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+    <span class="c1"># ---------- NON STREAM ----------
+</span>
+    <span class="k">if</span> <span class="n">tool_calls</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="nf">build_openai_response_tool_calls</span><span class="p">(</span><span class="n">tool_calls</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="n">prefix_text</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="nf">build_openai_response_text</span><span class="p">(</span><span class="n">answer</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">resp</span>
+</code></pre></div></div>
+
+<p>不过这种方式有个问题，上下文消耗的速度会比预想的要快，可能是因为把所有的历史对话都塞到了一次对话的输入里了，导致 hiagent 的内部的上下文压缩机制并没有发挥作用。不过这只是个推测，从结果来看，实际使用时经常几轮对话就开始超时了。</p>
+
+<p>后面经过验证发现虽然 openclaw 确实会有上下文的优化，但它发送给 api 的内容也确实是完整的历史，所以实际上不会存在上下文因压缩而频繁变换导致无法维护映射关系的问题了。</p>
+
+<h1 id="4-其他问题">4. 其他问题</h1>
+<h2 id="41-超时问题">4.1. 超时问题</h2>
+<p>最初调试的时候发现有时 hiagent 会出现超时的情况，此时会返回 504 gateway timeout 的错误。所以我就给代码加了个超时的判断，只要是 504 错误，就反复再发送几次请求，直到超过最大次数。</p>
+
+<p>不过使用过程中发现超时十分频繁，且基本固定为一分钟左右，且只要第一次超时，后面反复再发送的几次也基本超时了，感觉不像是 hiagent 真正的处理超时了。所以我查看了 api 文档，找到 <code class="language-plaintext highlighter-rouge">get_conversation_messages</code> 这个接口，查看一下频繁超时的对话的消息记录，发现了多次重复的问题和回答，也就是说，虽然我接收到了超时，但大模型内部仍在处理我的请求，并处理完之后保存到了上下文里。所以超时实际上来自于网关而非大模型。</p>
+
+<p>原有思路肯定会影响上下文质量且频繁超时，所以采用拿到 504 错误后不再反复发送请求了，而是接着调用 <code class="language-plaintext highlighter-rouge">get_conversation_messages</code> 这个接口去轮询消息记录，直到拿到新的回答了再继续后续的流程，这样就避免了频繁超时的问题了。</p>
+
+<p><code class="language-plaintext highlighter-rouge">get_conversation_messages</code> 示例返回值：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{
+  "Messages": [
+		{
+			"ConversationID": "01KPNYPAS92ZZC51J3309FR47S",
+			"QueryID": "d7j624elvnde66pa0a9g",
+			"Query": "[user]\n[{'type': 'text', 'text': 'Sender (untrusted metadata):\\n```json\\n{\\n  \"label\": \"openclaw-tui (gateway-client)\",\\n  \"id\": \"gateway-client\",\\n  \"name\": \"openclaw-tui\",\\n  \"username\": \"openclaw-tui\"\\n}\\n```\\n\\n[Tue 2026-04-21 01:23 GMT+8] 你好'}]\n\n[assistant]",
+			"AnswerInfo": {
+				"Answer": "你好！很高兴见到你。😊\n\n我是你的 OpenClaw 助手。看起来这是一个全新的会话，我刚刚上线。\n\n让我先了解一下你的情况：&lt;tool_call&gt;read\n{\"path\": \"/home/devuser/.openclaw/workspace/IDENTITY.md\"}",
+				"MessageID": "01KPNYPAX7NK5QMKN6MCG56CB0",
+				"CreatedTime": 1776705809,
+				"TaskID": "01KPNYPAX7NK5QMKN6MCG56CB0",
+				"Like": 0,
+				"TotalTokens": 10470,
+				"Latency": 5.459,
+				"TracingJsonStr": "",
+				"RetrieverResource": false
+			},
+			"OtherAnswers": [],
+			"Inputs": {},
+			"SendByTrigger": false,
+			"SendByAsyncWorkflow": false,
+			"UserMessage": {
+				"Messages": [
+					{
+						"type": "text",
+						"text": "[user]\n[{'type': 'text', 'text': 'Sender (untrusted metadata):\\n```json\\n{\\n  \"label\": \"openclaw-tui (gateway-client)\",\\n  \"id\": \"gateway-client\",\\n  \"name\": \"openclaw-tui\",\\n  \"username\": \"openclaw-tui\"\\n}\\n```\\n\\n[Tue 2026-04-21 01:23 GMT+8] 你好'}]\n\n[assistant]"
+					}
+				]
+			}
+		}
+	],
+	"BaseResp": null
+}
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="project-logs" /><category term="tech-exploration" /><category term="openclaw" /><category term="agent" /><summary type="html"><![CDATA[最近想把南开的 hiagent 放到 openclaw 里用，从而节约一些 token。但这个 hiagent 是一个会话形式的智能体，而 openclaw 目前并不支持会话形式的智能体，只支持几种主流的调用格式比如 openai api 格式，所以需要先把把 hiagent 转换成 openai api 的格式。]]></summary></entry><entry><title type="html">笔记本电脑键盘间歇失灵问题</title><link href="/platforms/2026/04/14/%E7%AC%94%E8%AE%B0%E6%9C%AC%E7%94%B5%E8%84%91%E9%94%AE%E7%9B%98%E9%97%B4%E6%AD%87%E5%A4%B1%E7%81%B5%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="笔记本电脑键盘间歇失灵问题" /><published>2026-04-14T13:30:00+00:00</published><updated>2026-04-14T13:30:00+00:00</updated><id>/platforms/2026/04/14/%E7%AC%94%E8%AE%B0%E6%9C%AC%E7%94%B5%E8%84%91%E9%94%AE%E7%9B%98%E9%97%B4%E6%AD%87%E5%A4%B1%E7%81%B5%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/platforms/2026/04/14/%E7%AC%94%E8%AE%B0%E6%9C%AC%E7%94%B5%E8%84%91%E9%94%AE%E7%9B%98%E9%97%B4%E6%AD%87%E5%A4%B1%E7%81%B5%E9%97%AE%E9%A2%98.html"><![CDATA[<h1 id="问题描述">问题描述</h1>
+<p>最近在使用笔记本电脑时，当系统负载较高时，键盘会出现间歇性失灵的情况。表现为大概只要五秒没有按下键盘，键盘就会失灵。此时按下键盘是没有反应的，需要过将近十秒左右键盘才能恢复正常使用。而此后如果超过五秒没有按下键盘，键盘又会再次失灵。这个问题非常影响使用体验。</p>
+
+<p>在失灵期间，打开设备管理器，可以发现键盘展开后，其中的 <code class="language-plaintext highlighter-rouge">HID Keyboard Device</code> 有时会有异常。具体表现为：在设备管理器里右键-&gt;扫描检测硬件改动，此时 <code class="language-plaintext highlighter-rouge">HID Keyboard Device</code> 会消失，然后过一会（和前面描述的十秒左右时间一致）又会重新出现。也就是扫描硬件改动和按下键盘一样会触发键盘的重新连接。</p>
+
+<p>原因初步推测可能和电源管理策略有关。</p>
+
+<h1 id="尝试的解决方案">尝试的解决方案</h1>
+<ol>
+  <li>
+    <p>进入设备管理器，找到 <code class="language-plaintext highlighter-rouge">HID Keyboard Device</code>，右键选择属性，在电源管理选项卡中取消勾选“允许计算机关闭此设备以节约电源”。不过实际操作下来，这里的两个选项：允许计算机关闭此设备以节约电源（默认未勾选）、允许此设备唤醒计算机（默认未勾选）均无法改变勾选状态。前者无法点击，后者点击了重新打开后又变回去了。</p>
+  </li>
+  <li>
+    <p>控制面板-&gt;电源选项-&gt;更改计划设置-&gt;更改高级电源设置-&gt;USB设置-&gt;USB选择性暂停设置，设置为禁用。这个选项是针对 USB 设备的，笔记本键盘一般是通过 USB 接口连接的，所以禁用这个选项可以防止系统在高负载时关闭 USB 设备来节约电源。但更改这个选项之后仍然会出现键盘间歇失灵的问题。</p>
+  </li>
+</ol>
+
+<h1 id="最终解决方案">最终解决方案</h1>
+<p>实际上设备管理器里的”允许计算机关闭此设备以节约电源”选项是有效的，只是找错了设备。不应该去找 键盘-&gt;HID Keyboard Device，而应该去找 通用串行总线控制器-&gt;USB根集线器 (USB 3.0)，在这个设备的属性-&gt;电源管理选项卡中取消勾选“允许计算机关闭此设备以节约电源”。更改这个选项之后，键盘间歇失灵的问题就解决了。一般电脑里会有好几个USB根集线器设备，可以都去修改一下。</p>
+
+<p>如果只想修改键盘的 USB 电源策略，可以点击菜单栏-&gt;查看-&gt;按连接列出设备，以此来寻找<code class="language-plaintext highlighter-rouge">HID Keyboard Device</code>位于哪个USB根集线器下。在我的电脑上是这样的：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> 基于 ACPI x64 的电脑 -&gt; Microsoft ACPI-Compliant System -&gt; PCI Express 根复合体 -&gt; PCI Express 根端口 -&gt; AMD USB 2.0 可扩展主机控制器 -&gt; USB 根集线器 (USB 3.0) -&gt; USB输入设备 -&gt; HID Keyboard Device
+</code></pre></div></div>
+<p>如图：
+<img src="/post_assets/images/2026/04/16-device-manager.png" alt="alt text" /></p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="platforms" /><category term="windows" /><summary type="html"><![CDATA[问题描述 最近在使用笔记本电脑时，当系统负载较高时，键盘会出现间歇性失灵的情况。表现为大概只要五秒没有按下键盘，键盘就会失灵。此时按下键盘是没有反应的，需要过将近十秒左右键盘才能恢复正常使用。而此后如果超过五秒没有按下键盘，键盘又会再次失灵。这个问题非常影响使用体验。]]></summary></entry><entry><title type="html">Windows 10 Microsoft Compatibility Telemetry 占用 CPU 过高</title><link href="/platforms/2026/04/13/Windows-10-Microsoft-Compatibility-Telemetry-%E5%8D%A0%E7%94%A8-CPU-%E8%BF%87%E9%AB%98.html" rel="alternate" type="text/html" title="Windows 10 Microsoft Compatibility Telemetry 占用 CPU 过高" /><published>2026-04-13T11:30:00+00:00</published><updated>2026-04-13T11:30:00+00:00</updated><id>/platforms/2026/04/13/Windows%2010%20Microsoft%20Compatibility%20Telemetry%20%E5%8D%A0%E7%94%A8%20CPU%20%E8%BF%87%E9%AB%98</id><content type="html" xml:base="/platforms/2026/04/13/Windows-10-Microsoft-Compatibility-Telemetry-%E5%8D%A0%E7%94%A8-CPU-%E8%BF%87%E9%AB%98.html"><![CDATA[<p>Windows 10 使用中，发现有时 Microsoft Compatibility Telemetry 进程占用 CPU 过高，直接占用高达 99%，导致机器卡顿。可以参考以下步骤来禁用 Microsoft Compatibility Telemetry：</p>
 
 <p>https://www.cnblogs.com/ls1519/p/12867055.html#:~:text=Win10%E4%BD%BF%E7%94%A8%E4%B8%AD%EF%BC%8C%E5%8F%91%E7%8E%B0Microsoft%20Compatibility%20Telemetry%E8%BF%9B%E7%A8%8B%E5%8D%A0%E7%94%A8CPU%E8%BF%87%E9%AB%98%EF%BC%8C%E5%AF%BC%E8%87%B4%E6%9C%BA%E5%99%A8%E5%8D%A1%E9%A1%BF%E3%80%82%20<em>%20Microsoft%20Compatibility%20Telemetry%E6%98%AF%E5%BE%AE%E8%BD%AF%E4%B8%8B%E7%9A%84%E4%B8%80%E4%B8%AA%E7%9B%91%E6%B5%8B%E6%95%B0%E6%8D%AE%E6%94%B6%E9%9B%86%E6%9C%8D%E5%8A%A1%EF%BC%8C%E5%A6%82%E6%9E%9C%E5%8A%A0%E5%85%A5microsoft,Experience%EF%BC%9B%20</em>%203.%E5%9C%A8%E5%8F%B3%E4%BE%A7%E6%89%93%E5%BC%80%E7%9A%84%E7%AA%97%E5%8F%A3%E4%B8%AD%EF%BC%8C%E6%89%BE%E5%88%B0Microsoft%20Compatibility%20Appraiser%E8%AE%A1%E5%88%92%E4%BB%BB%E5%8A%A1%EF%BC%8C%E7%82%B9%E5%87%BB%E9%BC%A0%E6%A0%87%E5%8F%B3%E9%94%AE%2D%E9%80%89%E6%8B%A9%E2%80%9C%E7%A6%81%E7%94%A8%E2%80%9D%EF%BC%9B%20*%204.%E9%87%8D%E5%90%AF%E7%94%B5%E8%84%91%E5%8D%B3%E5%8F%AF%E3%80%82</p>
 
-<p>右键 <code class="language-plaintext highlighter-rouge">此电脑</code> -&gt; <code class="language-plaintext highlighter-rouge">管理</code> -&gt; <code class="language-plaintext highlighter-rouge">系统工具</code> -&gt; <code class="language-plaintext highlighter-rouge">任务计划程序库</code> -&gt; <code class="language-plaintext highlighter-rouge">Microsoft</code> -&gt; <code class="language-plaintext highlighter-rouge">Windows</code> -&gt; <code class="language-plaintext highlighter-rouge">Application Experience</code>，找到 <code class="language-plaintext highlighter-rouge">Microsoft Compatibility Appraiser</code> 计划任务，右键选择“禁用”，重启电脑即可。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="其他实践" /><category term="windows" /><summary type="html"><![CDATA[Windows 10 使用中，发现有时 Microsoft Compatibility Telemetry 进程占用 CPU 过高，直接占用高达 99%，导致机器卡顿。可以参考以下步骤来禁用 Microsoft Compatibility Telemetry：]]></summary></entry><entry><title type="html">Python fails to output ANSI color codes for the terminal</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/04/13/Python-fails-to-output-ANSI-color-codes-for-the-terminal.html" rel="alternate" type="text/html" title="Python fails to output ANSI color codes for the terminal" /><published>2026-04-13T06:30:00+00:00</published><updated>2026-04-13T06:30:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/04/13/Python%20fails%20to%20output%20ANSI%20color%20codes%20for%20the%20terminal</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/04/13/Python-fails-to-output-ANSI-color-codes-for-the-terminal.html"><![CDATA[<p>在 python 里使用 ANSI 转义序列来输出彩色文本时，可能会遇到在 Windows 终端上无效的问题。
+<p>右键 <code class="language-plaintext highlighter-rouge">此电脑</code> -&gt; <code class="language-plaintext highlighter-rouge">管理</code> -&gt; <code class="language-plaintext highlighter-rouge">系统工具</code> -&gt; <code class="language-plaintext highlighter-rouge">任务计划程序库</code> -&gt; <code class="language-plaintext highlighter-rouge">Microsoft</code> -&gt; <code class="language-plaintext highlighter-rouge">Windows</code> -&gt; <code class="language-plaintext highlighter-rouge">Application Experience</code>，找到 <code class="language-plaintext highlighter-rouge">Microsoft Compatibility Appraiser</code> 计划任务，右键选择“禁用”，重启电脑即可。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="platforms" /><category term="windows" /><summary type="html"><![CDATA[Windows 10 使用中，发现有时 Microsoft Compatibility Telemetry 进程占用 CPU 过高，直接占用高达 99%，导致机器卡顿。可以参考以下步骤来禁用 Microsoft Compatibility Telemetry：]]></summary></entry><entry><title type="html">Python fails to output ANSI color codes for the terminal</title><link href="/troubleshooting/2026/04/13/Python-fails-to-output-ANSI-color-codes-for-the-terminal.html" rel="alternate" type="text/html" title="Python fails to output ANSI color codes for the terminal" /><published>2026-04-13T06:30:00+00:00</published><updated>2026-04-13T06:30:00+00:00</updated><id>/troubleshooting/2026/04/13/Python%20fails%20to%20output%20ANSI%20color%20codes%20for%20the%20terminal</id><content type="html" xml:base="/troubleshooting/2026/04/13/Python-fails-to-output-ANSI-color-codes-for-the-terminal.html"><![CDATA[<p>在 python 里使用 ANSI 转义序列来输出彩色文本时，可能会遇到在 Windows 终端上无效的问题。
 参考：
 https://stackoverflow.com/questions/40754673/python-fails-to-output-ansi-color-codes-for-the-terminal</p>
 
@@ -12,7 +684,7 @@ https://stackoverflow.com/questions/40754673/python-fails-to-output-ansi-color-c
 
 <span class="k">if</span> <span class="n">sys</span><span class="p">.</span><span class="n">platform</span> <span class="o">==</span> <span class="sh">"</span><span class="s">win32</span><span class="sh">"</span><span class="p">:</span>
     <span class="n">os</span><span class="p">.</span><span class="nf">system</span><span class="p">(</span><span class="sh">''</span><span class="p">)</span>
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="python" /><summary type="html"><![CDATA[在 python 里使用 ANSI 转义序列来输出彩色文本时，可能会遇到在 Windows 终端上无效的问题。 参考： https://stackoverflow.com/questions/40754673/python-fails-to-output-ansi-color-codes-for-the-terminal]]></summary></entry><entry><title type="html">联想 R9000P 安装 windows 10 并迁移旧系统数据</title><link href="/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2026/04/09/%E8%81%94%E6%83%B3R9000P%E5%AE%89%E8%A3%85win10%E5%B9%B6%E8%BF%81%E7%A7%BB%E6%97%A7%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE.html" rel="alternate" type="text/html" title="联想 R9000P 安装 windows 10 并迁移旧系统数据" /><published>2026-04-09T11:30:00+00:00</published><updated>2026-04-09T11:30:00+00:00</updated><id>/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2026/04/09/%E8%81%94%E6%83%B3R9000P%E5%AE%89%E8%A3%85win10%E5%B9%B6%E8%BF%81%E7%A7%BB%E6%97%A7%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE</id><content type="html" xml:base="/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2026/04/09/%E8%81%94%E6%83%B3R9000P%E5%AE%89%E8%A3%85win10%E5%B9%B6%E8%BF%81%E7%A7%BB%E6%97%A7%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE.html"><![CDATA[<p>我想给联想 R9000P ARX8 安装 windows 10 专业版系统，不过联想官网只提供了 windows 11 的驱动程序。这里记录一下安装过程和遇到的问题。</p>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="python" /><summary type="html"><![CDATA[在 python 里使用 ANSI 转义序列来输出彩色文本时，可能会遇到在 Windows 终端上无效的问题。 参考： https://stackoverflow.com/questions/40754673/python-fails-to-output-ansi-color-codes-for-the-terminal]]></summary></entry><entry><title type="html">联想 R9000P 安装 windows 10 并迁移旧系统数据</title><link href="/platforms/2026/04/09/%E8%81%94%E6%83%B3R9000P%E5%AE%89%E8%A3%85win10%E5%B9%B6%E8%BF%81%E7%A7%BB%E6%97%A7%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE.html" rel="alternate" type="text/html" title="联想 R9000P 安装 windows 10 并迁移旧系统数据" /><published>2026-04-09T11:30:00+00:00</published><updated>2026-04-09T11:30:00+00:00</updated><id>/platforms/2026/04/09/%E8%81%94%E6%83%B3R9000P%E5%AE%89%E8%A3%85win10%E5%B9%B6%E8%BF%81%E7%A7%BB%E6%97%A7%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE</id><content type="html" xml:base="/platforms/2026/04/09/%E8%81%94%E6%83%B3R9000P%E5%AE%89%E8%A3%85win10%E5%B9%B6%E8%BF%81%E7%A7%BB%E6%97%A7%E7%B3%BB%E7%BB%9F%E6%95%B0%E6%8D%AE.html"><![CDATA[<p>我想给联想 R9000P ARX8 安装 windows 10 专业版系统，不过联想官网只提供了 windows 11 的驱动程序。这里记录一下安装过程和遇到的问题。</p>
 
 <h2 id="1-数据迁移">1. 数据迁移</h2>
 <p>我使用的是 macrium reflect 进行数据迁移，可以免费试用30天，如果只用一次的话完全够了。也可考虑旧版本的免费版：</p>
@@ -79,12 +751,12 @@ list partition
 delete partition override
 </code></pre></div></div>
 
-<p>然后就可以在磁盘管理工具里把系统盘和未分配的空间合并了。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="其他实践" /><category term="windows" /><summary type="html"><![CDATA[我想给联想 R9000P ARX8 安装 windows 10 专业版系统，不过联想官网只提供了 windows 11 的驱动程序。这里记录一下安装过程和遇到的问题。]]></summary></entry><entry><title type="html">Rust extern “C”找不到__stderrp, __stdinp</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/27/Rust-Rust-extern-C%E6%89%BE%E4%B8%8D%E5%88%B0__stderrp-__stdinp.html" rel="alternate" type="text/html" title="Rust extern “C”找不到__stderrp, __stdinp" /><published>2026-03-27T07:30:00+00:00</published><updated>2026-03-27T07:30:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/27/Rust%20Rust%20extern%20C%E6%89%BE%E4%B8%8D%E5%88%B0__stderrp%20__stdinp</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/27/Rust-Rust-extern-C%E6%89%BE%E4%B8%8D%E5%88%B0__stderrp-__stdinp.html"><![CDATA[<p>在运行 Rust 程序时，遇到了以下错误：</p>
+<p>然后就可以在磁盘管理工具里把系统盘和未分配的空间合并了。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="platforms" /><category term="windows" /><summary type="html"><![CDATA[我想给联想 R9000P ARX8 安装 windows 10 专业版系统，不过联想官网只提供了 windows 11 的驱动程序。这里记录一下安装过程和遇到的问题。]]></summary></entry><entry><title type="html">Rust extern “C”找不到__stderrp, __stdinp</title><link href="/troubleshooting/2026/03/27/Rust-Rust-extern-C%E6%89%BE%E4%B8%8D%E5%88%B0__stderrp-__stdinp.html" rel="alternate" type="text/html" title="Rust extern “C”找不到__stderrp, __stdinp" /><published>2026-03-27T07:30:00+00:00</published><updated>2026-03-27T07:30:00+00:00</updated><id>/troubleshooting/2026/03/27/Rust%20Rust%20extern%20C%E6%89%BE%E4%B8%8D%E5%88%B0__stderrp%20__stdinp</id><content type="html" xml:base="/troubleshooting/2026/03/27/Rust-Rust-extern-C%E6%89%BE%E4%B8%8D%E5%88%B0__stderrp-__stdinp.html"><![CDATA[<p>在运行 Rust 程序时，遇到了以下错误：</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>extern "C"找不到__stderrp, __stdinp
 </code></pre></div></div>
 
-<p>这个错误提示是说 Rust 程序在链接时找不到 <code class="language-plaintext highlighter-rouge">__stderrp</code> 和 <code class="language-plaintext highlighter-rouge">__stdinp</code> 这两个符号。这通常是因为 Rust 程序在链接时没有正确链接到 C 标准库。而这些 <code class="language-plaintext highlighter-rouge">_stderrp</code> 和 <code class="language-plaintext highlighter-rouge">__stdinp</code> 是 Darwin 系统内部变量，在 Windows 或 Linux 上是不存在的。所以会出现这个错误。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="rust" /><summary type="html"><![CDATA[在运行 Rust 程序时，遇到了以下错误：]]></summary></entry><entry><title type="html">使用 Clippy 统计 Rust 项目中的 lint</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/27/%E4%BD%BF%E7%94%A8Clippy%E7%BB%9F%E8%AE%A1Rust%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84lint.html" rel="alternate" type="text/html" title="使用 Clippy 统计 Rust 项目中的 lint" /><published>2026-03-27T03:30:00+00:00</published><updated>2026-03-27T03:30:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/27/%E4%BD%BF%E7%94%A8Clippy%E7%BB%9F%E8%AE%A1Rust%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84lint</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/27/%E4%BD%BF%E7%94%A8Clippy%E7%BB%9F%E8%AE%A1Rust%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84lint.html"><![CDATA[<p>使用 Clippy 来检查 Rust 项目中的 lint 是一个很好的实践，可以帮助我们发现代码中的潜在问题和改进点。下面是一个示例脚本，展示了如何使用 Python 来运行 Clippy 并统计 lint 的数量。</p>
+<p>这个错误提示是说 Rust 程序在链接时找不到 <code class="language-plaintext highlighter-rouge">__stderrp</code> 和 <code class="language-plaintext highlighter-rouge">__stdinp</code> 这两个符号。这通常是因为 Rust 程序在链接时没有正确链接到 C 标准库。而这些 <code class="language-plaintext highlighter-rouge">_stderrp</code> 和 <code class="language-plaintext highlighter-rouge">__stdinp</code> 是 Darwin 系统内部变量，在 Windows 或 Linux 上是不存在的。所以会出现这个错误。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="rust" /><summary type="html"><![CDATA[在运行 Rust 程序时，遇到了以下错误：]]></summary></entry><entry><title type="html">使用 Clippy 统计 Rust 项目中的 lint</title><link href="/troubleshooting/2026/03/27/%E4%BD%BF%E7%94%A8Clippy%E7%BB%9F%E8%AE%A1Rust%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84lint.html" rel="alternate" type="text/html" title="使用 Clippy 统计 Rust 项目中的 lint" /><published>2026-03-27T03:30:00+00:00</published><updated>2026-03-27T03:30:00+00:00</updated><id>/troubleshooting/2026/03/27/%E4%BD%BF%E7%94%A8Clippy%E7%BB%9F%E8%AE%A1Rust%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84lint</id><content type="html" xml:base="/troubleshooting/2026/03/27/%E4%BD%BF%E7%94%A8Clippy%E7%BB%9F%E8%AE%A1Rust%E9%A1%B9%E7%9B%AE%E4%B8%AD%E7%9A%84lint.html"><![CDATA[<p>使用 Clippy 来检查 Rust 项目中的 lint 是一个很好的实践，可以帮助我们发现代码中的潜在问题和改进点。下面是一个示例脚本，展示了如何使用 Python 来运行 Clippy 并统计 lint 的数量。</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">subprocess</span>
 <span class="kn">import</span> <span class="n">json</span>
@@ -236,7 +908,7 @@ delete partition override
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
     <span class="nf">main</span><span class="p">()</span>
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="rust" /><summary type="html"><![CDATA[使用 Clippy 来检查 Rust 项目中的 lint 是一个很好的实践，可以帮助我们发现代码中的潜在问题和改进点。下面是一个示例脚本，展示了如何使用 Python 来运行 Clippy 并统计 lint 的数量。]]></summary></entry><entry><title type="html">OpenClaw exec host not allowed</title><link href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2026/03/12/OpenClaw-exec-host-not-allowed.html" rel="alternate" type="text/html" title="OpenClaw exec host not allowed" /><published>2026-03-12T08:30:00+00:00</published><updated>2026-03-12T08:30:00+00:00</updated><id>/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2026/03/12/OpenClaw%20exec%20host%20not%20allowed</id><content type="html" xml:base="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2026/03/12/OpenClaw-exec-host-not-allowed.html"><![CDATA[<p>在使用 OpenClaw 时，遇到了以下错误：</p>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="rust" /><summary type="html"><![CDATA[使用 Clippy 来检查 Rust 项目中的 lint 是一个很好的实践，可以帮助我们发现代码中的潜在问题和改进点。下面是一个示例脚本，展示了如何使用 Python 来运行 Clippy 并统计 lint 的数量。]]></summary></entry><entry><title type="html">OpenClaw exec host not allowed</title><link href="/troubleshooting/2026/03/12/OpenClaw-exec-host-not-allowed.html" rel="alternate" type="text/html" title="OpenClaw exec host not allowed" /><published>2026-03-12T08:30:00+00:00</published><updated>2026-03-12T08:30:00+00:00</updated><id>/troubleshooting/2026/03/12/OpenClaw%20exec%20host%20not%20allowed</id><content type="html" xml:base="/troubleshooting/2026/03/12/OpenClaw-exec-host-not-allowed.html"><![CDATA[<p>在使用 OpenClaw 时，遇到了以下错误：</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>exec host not allowed (requested sandbox; configure tools.exec.host=gateway to allow)
 </code></pre></div></div>
@@ -249,7 +921,7 @@ delete partition override
 <p>然后在 OpenClaw 中执行以下命令：</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/exec host=gateway
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="开发日志" /><category term="openclaw" /><category term="ai" /><summary type="html"><![CDATA[在使用 OpenClaw 时，遇到了以下错误：]]></summary></entry><entry><title type="html">Markdown文件拆分</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/12/Markdown%E6%96%87%E4%BB%B6%E6%8B%86%E5%88%86.html" rel="alternate" type="text/html" title="Markdown文件拆分" /><published>2026-03-12T07:00:00+00:00</published><updated>2026-03-12T07:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/12/Markdown%E6%96%87%E4%BB%B6%E6%8B%86%E5%88%86</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/03/12/Markdown%E6%96%87%E4%BB%B6%E6%8B%86%E5%88%86.html"><![CDATA[<p>将一个 Markdown 文件根据标题结构拆分成多个文件，可以使用以下 Python 脚本来实现。这个脚本支持两种模式：一种是将每个标题对应的内容拆分成单独的文件，另一种是根据标题层级创建目录结构。</p>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="openclaw" /><category term="ai" /><summary type="html"><![CDATA[在使用 OpenClaw 时，遇到了以下错误：]]></summary></entry><entry><title type="html">Markdown文件拆分</title><link href="/troubleshooting/2026/03/12/Markdown%E6%96%87%E4%BB%B6%E6%8B%86%E5%88%86.html" rel="alternate" type="text/html" title="Markdown文件拆分" /><published>2026-03-12T07:00:00+00:00</published><updated>2026-03-12T07:00:00+00:00</updated><id>/troubleshooting/2026/03/12/Markdown%E6%96%87%E4%BB%B6%E6%8B%86%E5%88%86</id><content type="html" xml:base="/troubleshooting/2026/03/12/Markdown%E6%96%87%E4%BB%B6%E6%8B%86%E5%88%86.html"><![CDATA[<p>将一个 Markdown 文件根据标题结构拆分成多个文件，可以使用以下 Python 脚本来实现。这个脚本支持两种模式：一种是将每个标题对应的内容拆分成单独的文件，另一种是根据标题层级创建目录结构。</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">os</span>
 <span class="kn">import</span> <span class="n">re</span>
@@ -430,7 +1102,7 @@ delete partition override
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
     <span class="nf">main</span><span class="p">()</span>
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="python" /><summary type="html"><![CDATA[将一个 Markdown 文件根据标题结构拆分成多个文件，可以使用以下 Python 脚本来实现。这个脚本支持两种模式：一种是将每个标题对应的内容拆分成单独的文件，另一种是根据标题层级创建目录结构。]]></summary></entry><entry><title type="html">vscode ssh权限混乱问题.</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/02/23/vscode-ssh%E6%9D%83%E9%99%90%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="vscode ssh权限混乱问题." /><published>2026-02-23T08:00:00+00:00</published><updated>2026-02-23T08:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/02/23/vscode%20ssh%E6%9D%83%E9%99%90%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/02/23/vscode-ssh%E6%9D%83%E9%99%90%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html"><![CDATA[<p>使用vscode ssh连接服务器时，如果同时以多个用户连接了同一个服务器，有时会出现权限混乱的问题。比如先以user1连接服务器，再打开一个新窗口以root连接服务器，可以发现root这个窗口任何操作都没有权限，也就是似乎以user1的权限去打开了root的目录。</p>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="python" /><summary type="html"><![CDATA[将一个 Markdown 文件根据标题结构拆分成多个文件，可以使用以下 Python 脚本来实现。这个脚本支持两种模式：一种是将每个标题对应的内容拆分成单独的文件，另一种是根据标题层级创建目录结构。]]></summary></entry><entry><title type="html">vscode ssh权限混乱问题.</title><link href="/troubleshooting/2026/02/23/vscode-ssh%E6%9D%83%E9%99%90%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="vscode ssh权限混乱问题." /><published>2026-02-23T08:00:00+00:00</published><updated>2026-02-23T08:00:00+00:00</updated><id>/troubleshooting/2026/02/23/vscode%20ssh%E6%9D%83%E9%99%90%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/troubleshooting/2026/02/23/vscode-ssh%E6%9D%83%E9%99%90%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html"><![CDATA[<p>使用vscode ssh连接服务器时，如果同时以多个用户连接了同一个服务器，有时会出现权限混乱的问题。比如先以user1连接服务器，再打开一个新窗口以root连接服务器，可以发现root这个窗口任何操作都没有权限，也就是似乎以user1的权限去打开了root的目录。</p>
 
 <p>这个原因是因为在vscode ssh的配置文件里使用了相同的 Host，导致vscode ssh无法区分不同用户的连接，从而出现权限混乱的问题。</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host 123.123.xxx.xxx
@@ -450,7 +1122,7 @@ Host 123.123.xxx.xxx
 Host root_123.123.xxx.xxx
   HostName 123.123.xxx.xxx
   User root
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="vscode" /><category term="ssh" /><summary type="html"><![CDATA[使用vscode ssh连接服务器时，如果同时以多个用户连接了同一个服务器，有时会出现权限混乱的问题。比如先以user1连接服务器，再打开一个新窗口以root连接服务器，可以发现root这个窗口任何操作都没有权限，也就是似乎以user1的权限去打开了root的目录。]]></summary></entry><entry><title type="html">搭建简易的unturned游戏服务器管理界面</title><link href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2026/01/07/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84unturned%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2.html" rel="alternate" type="text/html" title="搭建简易的unturned游戏服务器管理界面" /><published>2026-01-07T11:30:00+00:00</published><updated>2026-01-07T11:30:00+00:00</updated><id>/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2026/01/07/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84unturned%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2</id><content type="html" xml:base="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2026/01/07/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84unturned%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2.html"><![CDATA[<h1 id="1-前言">1. 前言</h1>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="vscode" /><category term="ssh" /><summary type="html"><![CDATA[使用vscode ssh连接服务器时，如果同时以多个用户连接了同一个服务器，有时会出现权限混乱的问题。比如先以user1连接服务器，再打开一个新窗口以root连接服务器，可以发现root这个窗口任何操作都没有权限，也就是似乎以user1的权限去打开了root的目录。]]></summary></entry><entry><title type="html">搭建简易的unturned游戏服务器管理界面</title><link href="/project-logs/games/2026/01/07/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84unturned%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2.html" rel="alternate" type="text/html" title="搭建简易的unturned游戏服务器管理界面" /><published>2026-01-07T11:30:00+00:00</published><updated>2026-01-07T11:30:00+00:00</updated><id>/project-logs/games/2026/01/07/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84unturned%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2</id><content type="html" xml:base="/project-logs/games/2026/01/07/%E6%90%AD%E5%BB%BA%E7%AE%80%E6%98%93%E7%9A%84unturned%E6%B8%B8%E6%88%8F%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86%E7%95%8C%E9%9D%A2.html"><![CDATA[<h1 id="1-前言">1. 前言</h1>
 <p>我想做一个简易的unturned游戏服务器管理界面，方便自己和朋友们管理游戏服务器。借助 AI 工具和自己的一些前后端知识，最终实现了这个目标。本文将分享我的开发过程和一些关键代码。</p>
 
 <p>项目地址: <a href="https://github.com/lxmghct/unturned-server">https://github.com/lxmghct/unturned-server</a></p>
@@ -846,7 +1518,7 @@ else:
 <p>删除直接使用 <code class="language-plaintext highlighter-rouge">shutil.rmtree</code> 删除存档目录。</p>
 
 <h2 id="64-备份">6.4. 备份</h2>
-<p>unturned 本身并没有提供存档备份功能，所以需要自己实现。主要思路是将当前存档目录下的内容复制到一个以时间命名的备份目录中。我之前这篇<a href="/%E5%85%B6%E4%BB%96%E5%AE%9E%E8%B7%B5/2024/09/20/Unturned%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD%E8%84%9A%E6%9C%AC.html">Unturned自动备份脚本</a>写过使用纯 Bash 脚本实现的备份功能，这里直接借鉴了其中的思路，并用 Python 重写。</p>
+<p>unturned 本身并没有提供存档备份功能，所以需要自己实现。主要思路是将当前存档目录下的内容复制到一个以时间命名的备份目录中。我之前这篇<a href="/project-logs/games/2024/09/20/Unturned%E8%87%AA%E5%8A%A8%E5%A4%87%E4%BB%BD%E8%84%9A%E6%9C%AC.html">Unturned自动备份脚本</a>写过使用纯 Bash 脚本实现的备份功能，这里直接借鉴了其中的思路，并用 Python 重写。</p>
 
 <p>备份需要排除一些不必要的文件夹，不备份Steam Workshop 内容（体积巨大）以及Backup 目录本身（避免递归）。</p>
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">exclude_dirs</span> <span class="o">=</span> <span class="p">{</span><span class="sh">"</span><span class="s">Workshop</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">Backup</span><span class="sh">"</span><span class="p">}</span>
@@ -894,7 +1566,7 @@ else:
 </ol>
 
 <h1 id="8-界面演示">8. 界面演示</h1>
-<p><img src="/post_assets/images/2026/01/07-page.png" alt="Alt text" /></p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="开发日志" /><category term="游戏" /><category term="web" /><category term="flask" /><summary type="html"><![CDATA[1. 前言 我想做一个简易的unturned游戏服务器管理界面，方便自己和朋友们管理游戏服务器。借助 AI 工具和自己的一些前后端知识，最终实现了这个目标。本文将分享我的开发过程和一些关键代码。]]></summary></entry><entry><title type="html">原生html的table固定表头滚动</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/%E5%8E%9F%E7%94%9Fhtml%E7%9A%84table%E5%9B%BA%E5%AE%9A%E8%A1%A8%E5%A4%B4%E6%BB%9A%E5%8A%A8.html" rel="alternate" type="text/html" title="原生html的table固定表头滚动" /><published>2026-01-06T13:00:00+00:00</published><updated>2026-01-06T13:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/%E5%8E%9F%E7%94%9Fhtml%E7%9A%84table%E5%9B%BA%E5%AE%9A%E8%A1%A8%E5%A4%B4%E6%BB%9A%E5%8A%A8</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/%E5%8E%9F%E7%94%9Fhtml%E7%9A%84table%E5%9B%BA%E5%AE%9A%E8%A1%A8%E5%A4%B4%E6%BB%9A%E5%8A%A8.html"><![CDATA[<p>参考：<a href="https://www.cnblogs.com/itjeff/p/16205938.html">https://www.cnblogs.com/itjeff/p/16205938.html</a></p>
+<p><img src="/post_assets/images/2026/01/07-page.png" alt="Alt text" /></p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="project-logs" /><category term="games" /><category term="游戏" /><category term="web" /><category term="flask" /><summary type="html"><![CDATA[1. 前言 我想做一个简易的unturned游戏服务器管理界面，方便自己和朋友们管理游戏服务器。借助 AI 工具和自己的一些前后端知识，最终实现了这个目标。本文将分享我的开发过程和一些关键代码。]]></summary></entry><entry><title type="html">原生html的table固定表头滚动</title><link href="/learning-notes/2026/01/06/%E5%8E%9F%E7%94%9Fhtml%E7%9A%84table%E5%9B%BA%E5%AE%9A%E8%A1%A8%E5%A4%B4%E6%BB%9A%E5%8A%A8.html" rel="alternate" type="text/html" title="原生html的table固定表头滚动" /><published>2026-01-06T13:00:00+00:00</published><updated>2026-01-06T13:00:00+00:00</updated><id>/learning-notes/2026/01/06/%E5%8E%9F%E7%94%9Fhtml%E7%9A%84table%E5%9B%BA%E5%AE%9A%E8%A1%A8%E5%A4%B4%E6%BB%9A%E5%8A%A8</id><content type="html" xml:base="/learning-notes/2026/01/06/%E5%8E%9F%E7%94%9Fhtml%E7%9A%84table%E5%9B%BA%E5%AE%9A%E8%A1%A8%E5%A4%B4%E6%BB%9A%E5%8A%A8.html"><![CDATA[<p>参考：<a href="https://www.cnblogs.com/itjeff/p/16205938.html">https://www.cnblogs.com/itjeff/p/16205938.html</a></p>
 
 <div class="language-css highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">table</span> <span class="nt">tbody</span> <span class="p">{</span>
     <span class="nl">display</span><span class="p">:</span> <span class="nb">block</span><span class="p">;</span>
@@ -908,7 +1580,7 @@ else:
     <span class="nl">width</span><span class="p">:</span> <span class="m">100%</span><span class="p">;</span>
     <span class="nl">table-layout</span><span class="p">:</span> <span class="nb">fixed</span><span class="p">;</span>
 <span class="p">}</span>
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="html" /><summary type="html"><![CDATA[参考：https://www.cnblogs.com/itjeff/p/16205938.html]]></summary></entry><entry><title type="html">vscode连接wsl2失败</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/vscode%E8%BF%9E%E6%8E%A5wsl2%E5%A4%B1%E8%B4%A5.html" rel="alternate" type="text/html" title="vscode连接wsl2失败" /><published>2026-01-06T12:00:00+00:00</published><updated>2026-01-06T12:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/vscode%E8%BF%9E%E6%8E%A5wsl2%E5%A4%B1%E8%B4%A5</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/vscode%E8%BF%9E%E6%8E%A5wsl2%E5%A4%B1%E8%B4%A5.html"><![CDATA[<h1 id="问题描述">问题描述</h1>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="learning-notes" /><category term="html" /><summary type="html"><![CDATA[参考：https://www.cnblogs.com/itjeff/p/16205938.html]]></summary></entry><entry><title type="html">vscode连接wsl2失败</title><link href="/troubleshooting/2026/01/06/vscode%E8%BF%9E%E6%8E%A5wsl2%E5%A4%B1%E8%B4%A5.html" rel="alternate" type="text/html" title="vscode连接wsl2失败" /><published>2026-01-06T12:00:00+00:00</published><updated>2026-01-06T12:00:00+00:00</updated><id>/troubleshooting/2026/01/06/vscode%E8%BF%9E%E6%8E%A5wsl2%E5%A4%B1%E8%B4%A5</id><content type="html" xml:base="/troubleshooting/2026/01/06/vscode%E8%BF%9E%E6%8E%A5wsl2%E5%A4%B1%E8%B4%A5.html"><![CDATA[<h1 id="问题描述">问题描述</h1>
 <p>在使用 vscode 连接 wsl2/docker 时，出现如下错误：</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>failed: Connection refused.
@@ -919,11 +1591,11 @@ else:
 <h1 id="解决方法">解决方法</h1>
 <p>参考: <a href="https://github.com/microsoft/vscode-remote-release/issues/2388">https://github.com/microsoft/vscode-remote-release/issues/2388</a></p>
 
-<p>在 vscode 中打开命令面板 (Ctrl+Shift+P)，输入 <code class="language-plaintext highlighter-rouge">Remote</code>，选择 <code class="language-plaintext highlighter-rouge">Remote-SSH: 在主机上终止 VS Code 服务器</code>（<code class="language-plaintext highlighter-rouge">Remote-SSH: Kill VS Code Server on Host</code>），然后选择对应的 wsl2 主机，终止掉 vscode-server 进程。重新连接 wsl2 即可.</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="vscode" /><summary type="html"><![CDATA[问题描述 在使用 vscode 连接 wsl2/docker 时，出现如下错误：]]></summary></entry><entry><title type="html">flask-socketio与threading模块冲突问题</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/flask-socketio%E4%B8%8Ethreading%E6%A8%A1%E5%9D%97%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="flask-socketio与threading模块冲突问题" /><published>2026-01-06T11:00:00+00:00</published><updated>2026-01-06T11:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/flask-socketio%E4%B8%8Ethreading%E6%A8%A1%E5%9D%97%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2026/01/06/flask-socketio%E4%B8%8Ethreading%E6%A8%A1%E5%9D%97%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">flask-socketio</code>与<code class="language-plaintext highlighter-rouge">threading</code>模块冲突问题</p>
+<p>在 vscode 中打开命令面板 (Ctrl+Shift+P)，输入 <code class="language-plaintext highlighter-rouge">Remote</code>，选择 <code class="language-plaintext highlighter-rouge">Remote-SSH: 在主机上终止 VS Code 服务器</code>（<code class="language-plaintext highlighter-rouge">Remote-SSH: Kill VS Code Server on Host</code>），然后选择对应的 wsl2 主机，终止掉 vscode-server 进程。重新连接 wsl2 即可.</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="vscode" /><summary type="html"><![CDATA[问题描述 在使用 vscode 连接 wsl2/docker 时，出现如下错误：]]></summary></entry><entry><title type="html">flask-socketio与threading模块冲突问题</title><link href="/troubleshooting/2026/01/06/flask-socketio%E4%B8%8Ethreading%E6%A8%A1%E5%9D%97%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="flask-socketio与threading模块冲突问题" /><published>2026-01-06T11:00:00+00:00</published><updated>2026-01-06T11:00:00+00:00</updated><id>/troubleshooting/2026/01/06/flask-socketio%E4%B8%8Ethreading%E6%A8%A1%E5%9D%97%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/troubleshooting/2026/01/06/flask-socketio%E4%B8%8Ethreading%E6%A8%A1%E5%9D%97%E5%86%B2%E7%AA%81%E9%97%AE%E9%A2%98.html"><![CDATA[<p><code class="language-plaintext highlighter-rouge">flask-socketio</code>与<code class="language-plaintext highlighter-rouge">threading</code>模块冲突问题</p>
 
 <p>如果直接在<code class="language-plaintext highlighter-rouge">threading</code>模块中使用<code class="language-plaintext highlighter-rouge">emit</code>等功能，会导致无法获取当前的<code class="language-plaintext highlighter-rouge">SocketIO</code>上下文，从而无法正确发送消息。</p>
 
-<p>为了解决这个问题，可以使用<code class="language-plaintext highlighter-rouge">SocketIO</code>提供的<code class="language-plaintext highlighter-rouge">start_background_task</code>方法来创建后台任务。而<code class="language-plaintext highlighter-rouge">time.sleep</code>等阻塞操作也应避免使用，可以使用<code class="language-plaintext highlighter-rouge">SocketIO</code>的<code class="language-plaintext highlighter-rouge">sleep</code>方法来替代。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="python" /><summary type="html"><![CDATA[flask-socketio与threading模块冲突问题]]></summary></entry><entry><title type="html">spring boot项目多配置文件无法启动问题</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/25/spring-boot%E9%A1%B9%E7%9B%AE%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="spring boot项目多配置文件无法启动问题" /><published>2025-12-25T10:00:00+00:00</published><updated>2025-12-25T10:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/25/spring%20boot%E9%A1%B9%E7%9B%AE%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/25/spring-boot%E9%A1%B9%E7%9B%AE%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98.html"><![CDATA[<p>我在运行spring boot项目报了下面的错:</p>
+<p>为了解决这个问题，可以使用<code class="language-plaintext highlighter-rouge">SocketIO</code>提供的<code class="language-plaintext highlighter-rouge">start_background_task</code>方法来创建后台任务。而<code class="language-plaintext highlighter-rouge">time.sleep</code>等阻塞操作也应避免使用，可以使用<code class="language-plaintext highlighter-rouge">SocketIO</code>的<code class="language-plaintext highlighter-rouge">sleep</code>方法来替代。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="python" /><summary type="html"><![CDATA[flask-socketio与threading模块冲突问题]]></summary></entry><entry><title type="html">spring boot项目多配置文件无法启动问题</title><link href="/troubleshooting/2025/12/25/spring-boot%E9%A1%B9%E7%9B%AE%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="spring boot项目多配置文件无法启动问题" /><published>2025-12-25T10:00:00+00:00</published><updated>2025-12-25T10:00:00+00:00</updated><id>/troubleshooting/2025/12/25/spring%20boot%E9%A1%B9%E7%9B%AE%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/troubleshooting/2025/12/25/spring-boot%E9%A1%B9%E7%9B%AE%E5%A4%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E9%97%AE%E9%A2%98.html"><![CDATA[<p>我在运行spring boot项目报了下面的错:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>我在运行spring boot项目报了下面的错，该项目曾经是我开发的，不过我已经离开一年，现在回来运行不了了，架构几乎没有变化，数据库密码也是对的。请问可能是什么原因？
 
@@ -1063,7 +1735,7 @@ Caused by: org.springframework.beans.factory.BeanCreationException: Error creati
     <span class="nt">&lt;/profiles&gt;</span>
 </code></pre></div></div>
 
-<p>最终通过两次切换maven配置文件并重新加载项目，问题解决。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="java" /><category term="spring-boot" /><summary type="html"><![CDATA[我在运行spring boot项目报了下面的错:]]></summary></entry><entry><title type="html">安卓EditText焦点问题</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93EditText%E7%84%A6%E7%82%B9%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="安卓EditText焦点问题" /><published>2025-12-23T08:30:00+00:00</published><updated>2025-12-23T08:30:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93EditText%E7%84%A6%E7%82%B9%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93EditText%E7%84%A6%E7%82%B9%E9%97%AE%E9%A2%98.html"><![CDATA[<p>EditText点击输入后，再点击旁边空白处时，该EditText仍然没有失去焦点。</p>
+<p>最终通过两次切换maven配置文件并重新加载项目，问题解决。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="java" /><category term="spring-boot" /><summary type="html"><![CDATA[我在运行spring boot项目报了下面的错:]]></summary></entry><entry><title type="html">安卓EditText焦点问题</title><link href="/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93EditText%E7%84%A6%E7%82%B9%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="安卓EditText焦点问题" /><published>2025-12-23T08:30:00+00:00</published><updated>2025-12-23T08:30:00+00:00</updated><id>/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93EditText%E7%84%A6%E7%82%B9%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93EditText%E7%84%A6%E7%82%B9%E9%97%AE%E9%A2%98.html"><![CDATA[<p>EditText点击输入后，再点击旁边空白处时，该EditText仍然没有失去焦点。</p>
 
 <p>解决方案：</p>
 <div class="language-java highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="kd">public</span> <span class="kd">static</span> <span class="kt">void</span> <span class="nf">hideKeyboardAndClearFocus</span><span class="o">(</span><span class="nc">Context</span> <span class="n">context</span><span class="o">,</span> <span class="nc">View</span> <span class="n">view</span><span class="o">)</span> <span class="o">{</span>
@@ -1081,7 +1753,7 @@ Caused by: org.springframework.beans.factory.BeanCreationException: Error creati
     <span class="n">rootView</span><span class="o">.</span><span class="na">setOnClickListener</span><span class="o">(</span><span class="n">view</span> <span class="o">-&gt;</span> <span class="o">{</span>
         <span class="n">hideKeyboardAndClearFocus</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="n">rootView</span><span class="o">);</span>
     <span class="o">});</span>
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="android" /><summary type="html"><![CDATA[EditText点击输入后，再点击旁边空白处时，该EditText仍然没有失去焦点。]]></summary></entry><entry><title type="html">安卓LinearLayout最后一个按钮宽度异常问题</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93LinearLayout%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%8C%89%E9%92%AE%E5%AE%BD%E5%BA%A6%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="安卓LinearLayout最后一个按钮宽度异常问题" /><published>2025-12-23T08:00:00+00:00</published><updated>2025-12-23T08:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93LinearLayout%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%8C%89%E9%92%AE%E5%AE%BD%E5%BA%A6%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93LinearLayout%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%8C%89%E9%92%AE%E5%AE%BD%E5%BA%A6%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98.html"><![CDATA[<p>有如下安卓代码：</p>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="android" /><summary type="html"><![CDATA[EditText点击输入后，再点击旁边空白处时，该EditText仍然没有失去焦点。]]></summary></entry><entry><title type="html">安卓LinearLayout最后一个按钮宽度异常问题</title><link href="/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93LinearLayout%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%8C%89%E9%92%AE%E5%AE%BD%E5%BA%A6%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="安卓LinearLayout最后一个按钮宽度异常问题" /><published>2025-12-23T08:00:00+00:00</published><updated>2025-12-23T08:00:00+00:00</updated><id>/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93LinearLayout%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%8C%89%E9%92%AE%E5%AE%BD%E5%BA%A6%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93LinearLayout%E6%9C%80%E5%90%8E%E4%B8%80%E4%B8%AA%E6%8C%89%E9%92%AE%E5%AE%BD%E5%BA%A6%E5%BC%82%E5%B8%B8%E9%97%AE%E9%A2%98.html"><![CDATA[<p>有如下安卓代码：</p>
 <div class="language-xml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nt">&lt;LinearLayout</span>
     <span class="na">android:layout_width=</span><span class="s">"match_parent"</span>
     <span class="na">android:layout_height=</span><span class="s">"wrap_content"</span>
@@ -1132,7 +1804,7 @@ Caused by: org.springframework.beans.factory.BeanCreationException: Error creati
     <span class="na">android:layout_width=</span><span class="s">"0dp"</span>
     <span class="na">android:layout_weight=</span><span class="s">"1"</span>
     <span class="err">...</span> <span class="nt">/&gt;</span>
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="android" /><summary type="html"><![CDATA[有如下安卓代码： ```xml]]></summary></entry><entry><title type="html">安卓Fragment按钮绑定事件混乱问题</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93Fragment%E6%8C%89%E9%92%AE%E7%BB%91%E5%AE%9A%E4%BA%8B%E4%BB%B6%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="安卓Fragment按钮绑定事件混乱问题" /><published>2025-12-23T08:00:00+00:00</published><updated>2025-12-23T08:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93Fragment%E6%8C%89%E9%92%AE%E7%BB%91%E5%AE%9A%E4%BA%8B%E4%BB%B6%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/23/%E5%AE%89%E5%8D%93Fragment%E6%8C%89%E9%92%AE%E7%BB%91%E5%AE%9A%E4%BA%8B%E4%BB%B6%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html"><![CDATA[<h1 id="问题描述">问题描述</h1>
+</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="android" /><summary type="html"><![CDATA[有如下安卓代码： ```xml]]></summary></entry><entry><title type="html">安卓Fragment按钮绑定事件混乱问题</title><link href="/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93Fragment%E6%8C%89%E9%92%AE%E7%BB%91%E5%AE%9A%E4%BA%8B%E4%BB%B6%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html" rel="alternate" type="text/html" title="安卓Fragment按钮绑定事件混乱问题" /><published>2025-12-23T08:00:00+00:00</published><updated>2025-12-23T08:00:00+00:00</updated><id>/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93Fragment%E6%8C%89%E9%92%AE%E7%BB%91%E5%AE%9A%E4%BA%8B%E4%BB%B6%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98</id><content type="html" xml:base="/troubleshooting/2025/12/23/%E5%AE%89%E5%8D%93Fragment%E6%8C%89%E9%92%AE%E7%BB%91%E5%AE%9A%E4%BA%8B%E4%BB%B6%E6%B7%B7%E4%B9%B1%E9%97%AE%E9%A2%98.html"><![CDATA[<h1 id="问题描述">问题描述</h1>
 <p>我在安卓开发中出现了按钮绑定事件混乱的问题。页面结构是：</p>
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>MainActivity:
    tab1:
@@ -1232,7 +1904,7 @@ Caused by: org.springframework.beans.factory.BeanCreationException: Error creati
 <p>Fragment 管理层级 + FragmentManager 用错了，导致同一个 ConfigEditorFragment 实例被复用 / 覆盖问题，从而按钮事件指向了最后一次绑定的回调（Location 的）。</p>
 
 <h1 id="解决方案">解决方案</h1>
-<p>将 <code class="language-plaintext highlighter-rouge">getParentFragmentManager()</code> 改为 <code class="language-plaintext highlighter-rouge">getChildFragmentManager()</code>。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="android" /><summary type="html"><![CDATA[问题描述 我在安卓开发中出现了按钮绑定事件混乱的问题。页面结构是： MainActivity: tab1: Fragment1(包含一个ConfigEditFragment) tab2: Fragment2(包含一个ConfigEditFragment)]]></summary></entry><entry><title type="html">Xposed模块DeviceInfo开发</title><link href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2025/12/18/Xposed%E6%A8%A1%E5%9D%97DeviceInfo%E5%BC%80%E5%8F%91.html" rel="alternate" type="text/html" title="Xposed模块DeviceInfo开发" /><published>2025-12-18T02:00:00+00:00</published><updated>2025-12-18T02:00:00+00:00</updated><id>/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2025/12/18/Xposed%E6%A8%A1%E5%9D%97DeviceInfo%E5%BC%80%E5%8F%91</id><content type="html" xml:base="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2025/12/18/Xposed%E6%A8%A1%E5%9D%97DeviceInfo%E5%BC%80%E5%8F%91.html"><![CDATA[<h1 id="1-需求描述">1. 需求描述</h1>
+<p>将 <code class="language-plaintext highlighter-rouge">getParentFragmentManager()</code> 改为 <code class="language-plaintext highlighter-rouge">getChildFragmentManager()</code>。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="troubleshooting" /><category term="android" /><summary type="html"><![CDATA[问题描述 我在安卓开发中出现了按钮绑定事件混乱的问题。页面结构是： MainActivity: tab1: Fragment1(包含一个ConfigEditFragment) tab2: Fragment2(包含一个ConfigEditFragment)]]></summary></entry><entry><title type="html">Xposed模块DeviceInfo开发</title><link href="/project-logs/platforms/2025/12/18/Xposed%E6%A8%A1%E5%9D%97DeviceInfo%E5%BC%80%E5%8F%91.html" rel="alternate" type="text/html" title="Xposed模块DeviceInfo开发" /><published>2025-12-18T02:00:00+00:00</published><updated>2025-12-18T02:00:00+00:00</updated><id>/project-logs/platforms/2025/12/18/Xposed%E6%A8%A1%E5%9D%97DeviceInfo%E5%BC%80%E5%8F%91</id><content type="html" xml:base="/project-logs/platforms/2025/12/18/Xposed%E6%A8%A1%E5%9D%97DeviceInfo%E5%BC%80%E5%8F%91.html"><![CDATA[<h1 id="1-需求描述">1. 需求描述</h1>
 <p>本来是想开发一个用于伪造 wifi 和定位信息的用于打卡的 Xposed 模块。后面想逐步完善成一个伪造设备信息的模块，所以命名为 DeviceInfo。目前已实现功能：Wifi 信息伪造（已完成）、定位信息伪造（进行中）、其他尚未实现。</p>
 
 <h1 id="2-开发环境">2. 开发环境</h1>
@@ -2363,318 +3035,4 @@ dependencies {
 </code></pre></div></div>
 <p>这种方式有时会失效，不知道是否和初始化有关，目前没有找到原因。</p>
 
-<p>我还尝试了其他方式，比如通过 ContentProvider + findClass 的方式来检测模块是否激活，但是仍然没有成功。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="开发日志" /><category term="android" /><category term="xposed" /><summary type="html"><![CDATA[1. 需求描述 本来是想开发一个用于伪造 wifi 和定位信息的用于打卡的 Xposed 模块。后面想逐步完善成一个伪造设备信息的模块，所以命名为 DeviceInfo。目前已实现功能：Wifi 信息伪造（已完成）、定位信息伪造（进行中）、其他尚未实现。]]></summary></entry><entry><title type="html">wsl2释放存储空间</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/17/wsl2%E9%87%8A%E6%94%BE%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4.html" rel="alternate" type="text/html" title="wsl2释放存储空间" /><published>2025-12-17T07:00:00+00:00</published><updated>2025-12-17T07:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/17/wsl2%E9%87%8A%E6%94%BE%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/17/wsl2%E9%87%8A%E6%94%BE%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4.html"><![CDATA[<p>在使用 docker desktop 时，即使删除了不需要的镜像和容器，wsl2 分配的存储空间也不会自动释放，导致 C 盘空间越来越小。下面是释放存储空间的方法。</p>
-
-<p>参考：
-<a href="https://gist.github.com/minglewong/8375cc92e6821ac501c27f187511788b">https://gist.github.com/minglewong/8375cc92e6821ac501c27f187511788b</a></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
-<span class="c"># 删除不需要的镜像和容器</span>
-docker system prune
-
-<span class="c"># 然后退出Docker Desktop并关停WSL2实例</span>
-wsl <span class="nt">--shutdown</span>
-
-<span class="c"># 最后打开 Windows 中提供的diskpart工具进行压缩</span>
-diskpart
-<span class="c"># open window Diskpart</span>
-<span class="k">select </span>vdisk <span class="nv">file</span><span class="o">=</span><span class="s2">"C:</span><span class="se">\U</span><span class="s2">sers</span><span class="se">\x</span><span class="s2">xx</span><span class="se">\A</span><span class="s2">ppData</span><span class="se">\L</span><span class="s2">ocal</span><span class="se">\D</span><span class="s2">ocker</span><span class="se">\w</span><span class="s2">sl</span><span class="se">\d</span><span class="s2">ata</span><span class="se">\e</span><span class="s2">xt4.vhdx"</span>
-attach vdisk <span class="nb">readonly
-</span>compact vdisk
-detach vdisk
-<span class="nb">exit</span>
-
-</code></pre></div></div>
-
-<p>我的电脑并不存在上述 data\ext4.vhdx 文件，而是 disk\docker_data.vhdx 和 main\ext4.vhdx 两个文件，所以我执行的是下面的命令(实际执行时只需要压缩docker_data.vhdx文件即可)：</p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">select </span>vdisk <span class="nv">file</span><span class="o">=</span><span class="s2">"C:</span><span class="se">\U</span><span class="s2">sers</span><span class="se">\x</span><span class="s2">xx</span><span class="se">\A</span><span class="s2">ppData</span><span class="se">\L</span><span class="s2">ocal</span><span class="se">\D</span><span class="s2">ocker</span><span class="se">\w</span><span class="s2">sl</span><span class="se">\d</span><span class="s2">isk</span><span class="se">\d</span><span class="s2">ocker_data.vhdx"</span>
-<span class="k">select </span>vdisk <span class="nv">file</span><span class="o">=</span><span class="s2">"C:</span><span class="se">\U</span><span class="s2">sers</span><span class="se">\x</span><span class="s2">xx</span><span class="se">\A</span><span class="s2">ppData</span><span class="se">\L</span><span class="s2">ocal</span><span class="se">\D</span><span class="s2">ocker</span><span class="se">\w</span><span class="s2">sl</span><span class="se">\m</span><span class="s2">ain</span><span class="se">\e</span><span class="s2">xt4.vhdx"</span>
-</code></pre></div></div>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="wsl" /><summary type="html"><![CDATA[在使用 docker desktop 时，即使删除了不需要的镜像和容器，wsl2 分配的存储空间也不会自动释放，导致 C 盘空间越来越小。下面是释放存储空间的方法。]]></summary></entry><entry><title type="html">docker build failed to fetch anonymous token</title><link href="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/17/docker-build-failed-to-fetch-anonymous-token.html" rel="alternate" type="text/html" title="docker build failed to fetch anonymous token" /><published>2025-12-17T06:00:00+00:00</published><updated>2025-12-17T06:00:00+00:00</updated><id>/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/17/docker%20build%20failed%20to%20fetch%20anonymous%20token</id><content type="html" xml:base="/%E7%BC%96%E7%A8%8B%E9%9A%8F%E7%AC%94/2025/12/17/docker-build-failed-to-fetch-anonymous-token.html"><![CDATA[<p>运行 docker build 时报错：</p>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[+] Building 19.0s (2/2) FINISHED                                                                  docker:desktop-linux
- =&gt; [internal] load build definition from Dockerfile                                                               0.1s
- =&gt; =&gt; transferring dockerfile: 4.09kB                                                                             0.0s
- =&gt; ERROR [internal] load metadata for docker.io/library/ubuntu:22.04                                             18.7s
-------
- &gt; [internal] load metadata for docker.io/library/ubuntu:22.04:
-------
-Dockerfile:1
---------------------
-   1 | &gt;&gt;&gt; FROM ubuntu:22.04
-   2 |
-   3 |     ENV DEBIAN_FRONTEND=noninteractive
---------------------
-ERROR: failed to build: failed to solve: failed to fetch anonymous token: Get "https://auth.docker.io/token?scope=repository%3Alibrary%2Fubuntu%3Apull&amp;service=registry.docker.io": net/http: TLS handshake timeout
-
-View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/6ikq51gy10phjaauwjpt6dkjw
-</code></pre></div></div>
-
-<p>解决方法：
-参考:  <a href="https://www.cnblogs.com/xyz/p/18969515">https://www.cnblogs.com/xyz/p/18969515</a></p>
-
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># linux</span>
-<span class="nb">export </span><span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span>0
-<span class="nb">export </span><span class="nv">COMPOSE_DOCKER_CLI_BUILD</span><span class="o">=</span>0
-
-<span class="c"># windows</span>
-<span class="nb">set </span><span class="nv">DOCKER_BUILDKIT</span><span class="o">=</span>0
-<span class="nb">set </span><span class="nv">COMPOSE_DOCKER_CLI_BUILD</span><span class="o">=</span>0
-</code></pre></div></div>
-
-<p>https://gist.github.com/minglewong/8375cc92e6821ac501c27f187511788b</p>
-
-<p>docker system prune
-docker image prune -f -a` : 删除所有不使用的镜像 · docker container prune -f : 删除所有停止的镜像
-然后退出Docker Desktop并关停WSL2实例。</p>
-
-<p>wsl –shutdown
-最后打开 Windows 中提供的diskpart工具进行压缩</p>
-
-<h1 id="代码来自-httpsgithubcommicrosoftwslissues4699issuecomment-627133168">代码来自 https://github.com/microsoft/WSL/issues/4699#issuecomment-627133168</h1>
-
-<p>diskpart</p>
-<h1 id="open-window-diskpart">open window Diskpart</h1>
-<p>select vdisk file=”C:\Users\lxm\AppData\Local\Docker\wsl\data\ext4.vhdx”
-attach vdisk readonly
-compact vdisk
-detach vdisk
-exit
-select vdisk file=”C:\Users\lxm\AppData\Local\Docker\wsl\disk\docker_data.vhdx”
-select vdisk file=”C:\Users\lxm\AppData\Local\Docker\wsl\main\ext4.vhdx”</p>
-
-<p>root@3e23b9bbf132:/workspace/blueos-dev# repo init -u git@github.com:vivoblueos/manifests.git -b main -m manifest.xml
-Downloading Repo source from https://gerrit.googlesource.com/git-repo
-remote: Finding sources: 100% (47/47)
-remote: Total 9544 (delta 5089), reused 9533 (delta 5089)
-repo: Updating release signing keys to keyset ver 2.3</p>
-
-<p>manifests:
-kex_exchange_identification: Connection closed by remote host
-Connection closed by 20.205.243.166 port 22
-fatal: Could not read from remote repository.</p>
-
-<p>Please make sure you have the correct access rights
-and the repository exists.
-manifests: sleeping 4.0 seconds before retrying
-fatal: cannot obtain manifest git@github.com:vivoblueos/manifests.git
-================================================================================
-Repo command failed: UpdateManifestError
-        Unable to sync manifest manifest.xml</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="编程随笔" /><category term="docker" /><summary type="html"><![CDATA[运行 docker build 时报错：]]></summary></entry><entry><title type="html">蓝河操作系统开发环境配置</title><link href="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2025/12/11/%E8%93%9D%E6%B2%B3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html" rel="alternate" type="text/html" title="蓝河操作系统开发环境配置" /><published>2025-12-11T06:00:00+00:00</published><updated>2025-12-11T06:00:00+00:00</updated><id>/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2025/12/11/%E8%93%9D%E6%B2%B3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE</id><content type="html" xml:base="/%E5%BC%80%E5%8F%91%E6%97%A5%E5%BF%97/2025/12/11/%E8%93%9D%E6%B2%B3%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE.html"><![CDATA[<h1 id="1-环境配置">1. 环境配置</h1>
-
-<h2 id="11-操作系统及工具链">1.1. 操作系统及工具链</h2>
-
-<ol>
-  <li>
-    <p>操作系统： WSL2 Ubuntu 22.04</p>
-  </li>
-  <li>
-    <p>参考 blueos 官方文档进行环境搭建 <a href="https://vivoblueos.github.io/book/zh/getting-started.html">https://vivoblueos.github.io/book/zh/getting-started.html</a>，注意 Python 版本需要是 3.11 及以上。</p>
-  </li>
-  <li>
-    <p>参考官方文档搭建 Rust 工具链 <a href="https://vivoblueos.github.io/book/zh/build-rust-toolchain.html">https://vivoblueos.github.io/book/zh/build-rust-toolchain.html</a></p>
-  </li>
-</ol>
-
-<h2 id="12-遇到的问题">1.2. 遇到的问题</h2>
-
-<ol>
-  <li>编译 <code class="language-plaintext highlighter-rouge">qemu v10.0.2</code> 时，<code class="language-plaintext highlighter-rouge">configure</code>步骤报错:</li>
-</ol>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>../meson.build:1027:10: ERROR: Dependency lookup for glib-2.0 with method 'pkgconfig' failed: Invalid version, need 'glib-2.0' ['&gt;=2.66.0'] found '2.64.6'.
-</code></pre></div></div>
-
-<p>解决方法：升级 <code class="language-plaintext highlighter-rouge">glib</code>，但由于 <code class="language-plaintext highlighter-rouge">glib</code> 不是普通包，所以有些麻烦。这个错误是在 Ubuntu 20.04 上出现的，升级到 Ubuntu 22.04 后问题解决。</p>
-
-<ol>
-  <li>运行<code class="language-plaintext highlighter-rouge">ninja -C out/qemu_mps2_an385.release</code>时报错:</li>
-</ol>
-
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>error loading target specification: could not find specification for target "thumbv7m-vivo-blueos-newlibeabi"
-</code></pre></div></div>
-
-<p>解决方法：确保蓝河官方的 Rust 工具链正确安装且环境变量配置正确。</p>
-
-<ol>
-  <li>
-    <p>运行<code class="language-plaintext highlighter-rouge">ninja -C out/qemu_mps2_an385.release check_all</code>时报错:</p>
-
-    <ol>
-      <li>报错 1:</li>
-    </ol>
-
-    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>No such file or directory: 'bindgen'
-</code></pre></div>    </div>
-
-    <ul>
-      <li>解决方法：由于上述工具链不含 cargo，所以另外安装 rustup，并通过 cargo 安装 <code class="language-plaintext highlighter-rouge">bindgen</code>。注意 rustup 安装的 rust 工具链不要在环境变量中覆盖蓝河官方的工具链。</li>
-    </ul>
-
-    <ol>
-      <li>报错 2:</li>
-    </ol>
-
-    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>AttributeError: module 'asyncio' has no attribute 'timeout'
-</code></pre></div>    </div>
-
-    <ul>
-      <li>解决方法：重新安装 Python3.11 及以上版本，并重新编译安装 qemu v10.0.2。</li>
-    </ul>
-
-    <ol>
-      <li>报错 3: check_all 测试未通过</li>
-    </ol>
-
-    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[smoltcp Tcp Socket Test]: Enter poll device loop
-[smoltcp Tcp Socket Test]: Socket listening
-[smoltcp Tcp Socket Test]: Socket connecting
-[smoltcp Tcp Socket Test]: iface resuming Check Timeout
-ninja: build stopped: subcommand failed.
-</code></pre></div>    </div>
-    <ul>
-      <li>WSL2 网络问题，暂时没有解决，暂时先忽略该错误。</li>
-    </ul>
-  </li>
-  <li>
-    <p>WSL2 网络问题
-使用 repo 同步代码时，WSL2 经常出现网络问题。配置 <code class="language-plaintext highlighter-rouge">http_proxy</code>等环境变量未必能解决问题。解决方法如下: 1. Windows 端 Clash 客户端开启 TUN 模式 2. <code class="language-plaintext highlighter-rouge">repo init</code>时加上<code class="language-plaintext highlighter-rouge">--no-clone-bundle</code>参数 3. 更新 DNS。<code class="language-plaintext highlighter-rouge">/etc/systemd/resolved.conf</code>和<code class="language-plaintext highlighter-rouge">/etc/resolv.conf</code>。</p>
-  </li>
-</ol>
-
-<h1 id="2-docker-配置">2. Docker 配置</h1>
-<p>根据上述步骤，我整理了一个 Dockerfile，可以快速搭建蓝河操作系统开发环境。</p>
-
-<h2 id="21-dockerfile">2.1. dockerfile</h2>
-<div class="language-Dockerfile highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">FROM</span><span class="s"> ubuntu:22.04</span>
-
-<span class="k">ENV</span><span class="s"> SRC_DIR=/opt/src</span>
-<span class="k">ENV</span><span class="s"> DESTDIR=/opt/blueos-toolchain</span>
-
-<span class="k">RUN </span><span class="nb">mkdir</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">SRC_DIR</span><span class="k">}</span> <span class="k">${</span><span class="nv">DESTDIR</span><span class="k">}</span>/usr/local
-
-<span class="c"># =========================================================</span>
-<span class="c"># 1. 系统依赖</span>
-<span class="c"># =========================================================</span>
-<span class="k">RUN </span>apt update <span class="o">&amp;&amp;</span> apt <span class="nb">install</span> <span class="nt">-y</span> <span class="se">\
-</span>    build-essential cmake ninja-build pkg-config libssl-dev <span class="se">\
-</span>    curl git wget gdb-multiarch <span class="se">\
-</span>    python3.11 python3.11-venv python3-pip <span class="se">\
-</span>    meson libglib2.0-dev libslirp-dev <span class="se">\
-</span>    flex bison libfdt-dev <span class="se">\
-</span>    clang llvm lld <span class="se">\
-</span>    gcc-riscv64-unknown-elf <span class="se">\
-</span>    python3-kconfiglib python3-tomli <span class="se">\
-</span>    ca-certificates xz-utils unzip <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">ln</span> <span class="nt">-sf</span> /usr/bin/python3.11 /usr/bin/python3 <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /var/lib/apt/lists/<span class="k">*</span>
-
-<span class="c"># =========================================================</span>
-<span class="c"># 2. repo &amp; gn</span>
-<span class="c"># =========================================================</span>
-<span class="k">RUN </span>curl <span class="nt">-o</span> /usr/local/bin/repo <span class="se">\
-</span>    https://storage.googleapis.com/git-repo-downloads/repo <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">chmod</span> +x /usr/local/bin/repo
-
-<span class="k">COPY</span><span class="s"> gn-linux-amd64.zip /tmp/gn.zip</span>
-<span class="k">RUN </span>unzip /tmp/gn.zip <span class="nt">-d</span> /tmp/gn <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">mv</span> /tmp/gn/gn /usr/local/bin/gn <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">chmod</span> +x /usr/local/bin/gn <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> /tmp/gn /tmp/gn.zip
-
-<span class="c"># =========================================================</span>
-<span class="c"># 3. ARM Toolchains</span>
-<span class="c"># =========================================================</span>
-<span class="k">WORKDIR</span><span class="s"> ${SRC_DIR}</span>
-
-<span class="k">RUN </span>wget <span class="nt">-q</span> https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">tar </span>xf arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz <span class="nt">-C</span> /opt <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">rm </span>arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi.tar.xz <span class="se">\
-</span> <span class="o">&amp;&amp;</span> wget <span class="nt">-q</span> https://developer.arm.com/-/media/Files/downloads/gnu/14.3.rel1/binrel/arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">tar </span>xf arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz <span class="nt">-C</span> /opt <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">rm </span>arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf.tar.xz
-
-<span class="k">ENV</span><span class="s"> PATH=/opt/arm-gnu-toolchain-14.3.rel1-x86_64-arm-none-eabi/bin:\</span>
-/opt/arm-gnu-toolchain-14.3.rel1-x86_64-aarch64-none-elf/bin:${PATH}
-
-# =========================================================
-# 4. QEMU
-<span class="c"># =========================================================</span>
-<span class="k">RUN </span>wget <span class="nt">-q</span> https://download.qemu.org/qemu-10.0.2.tar.xz <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">tar </span>xf qemu-10.0.2.tar.xz <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">cd </span>qemu-10.0.2 <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">mkdir </span>build <span class="o">&amp;&amp;</span> <span class="nb">cd </span>build <span class="se">\
-</span> <span class="o">&amp;&amp;</span> ../configure <span class="nt">--prefix</span><span class="o">=</span>/opt/qemu <span class="nt">--enable-slirp</span> <span class="se">\
-</span> <span class="o">&amp;&amp;</span> make <span class="nt">-j</span><span class="si">$(</span><span class="nb">nproc</span><span class="si">)</span> <span class="se">\
-</span> <span class="o">&amp;&amp;</span> make <span class="nb">install</span> <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">cd</span> / <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">${</span><span class="nv">SRC_DIR</span><span class="k">}</span>/qemu-10.0.2<span class="k">*</span> 
-
-<span class="k">ENV</span><span class="s"> PATH=/opt/qemu/bin:${PATH}</span>
-
-<span class="c"># =========================================================</span>
-<span class="c"># 5. Rust toolchain</span>
-<span class="c"># =========================================================</span>
-<span class="k">ENV</span><span class="s"> RUSTUP_DIST_SERVER=https://mirrors.ustc.edu.cn/rust-static</span>
-<span class="k">ENV</span><span class="s"> RUSTUP_UPDATE_ROOT=https://mirrors.ustc.edu.cn/rust-static/rustup</span>
-
-<span class="k">RUN </span>curl https://sh.rustup.rs <span class="nt">-sSf</span> | sh <span class="nt">-s</span> <span class="nt">--</span> <span class="nt">-y</span>
-<span class="k">ENV</span><span class="s"> PATH=/root/.cargo/bin:${PATH}</span>
-
-<span class="k">RUN </span>cargo <span class="nb">install </span>bindgen-cli
-
-<span class="c"># =========================================================</span>
-<span class="c"># 6. BlueOS Rust toolchain</span>
-<span class="c"># =========================================================</span>
-<span class="k">WORKDIR</span><span class="s"> ${SRC_DIR}</span>
-
-<span class="k">RUN </span>git clone https://github.com/vivoblueos/rust.git <span class="se">\
-</span> <span class="o">&amp;&amp;</span> git clone https://github.com/vivoblueos/cc-rs.git <span class="se">\
-</span> <span class="o">&amp;&amp;</span> git clone https://github.com/vivoblueos/libc.git
-
-<span class="k">WORKDIR</span><span class="s"> ${SRC_DIR}/rust</span>
-<span class="k">RUN </span><span class="nb">cp </span>config.blueos.toml config.toml <span class="se">\
-</span> <span class="o">&amp;&amp;</span> ./x.py <span class="nb">install</span> <span class="nt">-i</span> <span class="nt">--stage</span> 1 compiler/rustc <span class="se">\
-</span> <span class="o">&amp;&amp;</span> ./x.py <span class="nb">install</span> <span class="nt">-i</span> <span class="nt">--stage</span> 1 library/std <span class="nt">--target</span> thumbv7m-vivo-blueos-newlibeabi <span class="se">\
-</span> <span class="o">&amp;&amp;</span> ./x.py <span class="nb">install</span> <span class="nt">-i</span> <span class="nt">--stage</span> 1 library/std <span class="nt">--target</span> aarch64-vivo-blueos-newlib <span class="se">\
-</span> <span class="o">&amp;&amp;</span> ./x.py <span class="nb">install</span> <span class="nt">-i</span> <span class="nt">--stage</span> 1 library/std <span class="nt">--target</span> riscv64-vivo-blueos <span class="se">\
-</span> <span class="o">&amp;&amp;</span> ./x.py <span class="nb">install</span> <span class="nt">-i</span> <span class="nt">--stage</span> 0 rustfmt rust-analyzer clippy <span class="se">\
-</span> <span class="o">&amp;&amp;</span> ./x.py <span class="nb">install</span> <span class="nt">-i</span> <span class="nt">--stage</span> 1 library/std <span class="nt">--target</span> x86_64-unknown-linux-gnu <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">cp</span> <span class="nt">-rav</span> build/x86_64-unknown-linux-gnu/llvm/bin <span class="k">${</span><span class="nv">DESTDIR</span><span class="k">}</span>/usr/local/ <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">cp</span> <span class="nt">-rav</span> build/x86_64-unknown-linux-gnu/llvm/lib <span class="k">${</span><span class="nv">DESTDIR</span><span class="k">}</span>/usr/local/ <span class="se">\
-</span> <span class="o">&amp;&amp;</span> <span class="nb">rm</span> <span class="nt">-rf</span> <span class="k">${</span><span class="nv">SRC_DIR</span><span class="k">}</span>
-
-<span class="k">ENV</span><span class="s"> PATH=${DESTDIR}/usr/local/bin:${PATH}</span>
-
-<span class="k">WORKDIR</span><span class="s"> /workspace</span>
-<span class="k">CMD</span><span class="s"> ["/bin/bash"]</span>
-
-</code></pre></div></div>
-
-<h2 id="22-dockerignore">2.2. .dockerignore</h2>
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.git
-.gitignore
-
-build/
-out/
-target/
-
-*.log
-*.tmp
-
-node_modules/
-__pycache__/
-
-*.tar
-*.tar.gz
-*.tar.xz
-</code></pre></div></div>
-
-<h2 id="23-构建及运行">2.3. 构建及运行</h2>
-
-<ol>
-  <li>前往 https://chrome-infra-packages.appspot.com/dl/gn/gn/linux-amd64/+/latest 下载 gn-linux-amd64.zip</li>
-  <li>将上述gn-linux-amd64.zip、Dockerfile、.dockerignore放在同一目录下。</li>
-  <li>在该目录下使用 docker build -t blueos-dev . 构建，大约需要2-3小时。至少预留20GB的存储空间。网络上确保代理正常，能够访问github等网站。</li>
-  <li>运行：docker run -it –rm blueos-dev:latest /bin/bash</li>
-</ol>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="开发日志" /><category term="rust" /><category term="blueos" /><summary type="html"><![CDATA[1. 环境配置]]></summary></entry></feed>
+<p>我还尝试了其他方式，比如通过 ContentProvider + findClass 的方式来检测模块是否激活，但是仍然没有成功。</p>]]></content><author><name>Long, Xiaoming</name><email>lxmghct@gmail.com</email></author><category term="project-logs" /><category term="platforms" /><category term="android" /><category term="xposed" /><summary type="html"><![CDATA[1. 需求描述 本来是想开发一个用于伪造 wifi 和定位信息的用于打卡的 Xposed 模块。后面想逐步完善成一个伪造设备信息的模块，所以命名为 DeviceInfo。目前已实现功能：Wifi 信息伪造（已完成）、定位信息伪造（进行中）、其他尚未实现。]]></summary></entry></feed>

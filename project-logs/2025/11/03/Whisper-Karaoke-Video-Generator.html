@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0,minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Whisper Karaoke Video Generator | lxmghct's blog</title>
+  <meta name="description"
+    content="本项目基本功能是：根据音频和封面图片，自动生成带有逐字高亮字幕的歌词视频。">
+
+
+  <link rel="stylesheet" href=" /assets/css/bootstrap.css">
+  <link rel="stylesheet" href=" /assets/css/font-awesome.css">
+  <link rel="stylesheet" href=" /assets/css/main.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/default.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/default.min.css">
+  <link rel="stylesheet" href=" /assets/css/includes/header.css">
+  <link rel="stylesheet" href=" /assets/css/includes/footer.css">
+  <link rel="stylesheet" href=" /assets/css/includes/search.css">
+  <link rel="stylesheet" href=" /assets/css/includes/pagination.css">
+  <link rel="stylesheet" href=" /assets/css/layouts/post.css">
+  <link rel="stylesheet" href=" /assets/css/highlight/post-highlight.css">
+  <link rel="stylesheet" href=" /assets/css/pages/index.css">
+  <link rel="shortcut icon" href="" />
+  <link rel="canonical" href="/project-logs/2025/11/03/Whisper-Karaoke-Video-Generator.html">
+  <link rel="alternate" type="application/rss+xml" title="lxmghct's blog" href=" /feed.xml" />
+  <script type="text/javascript" src="/assets/js/ua-parser.js"></script>
+  <script type="text/javascript" async src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+</head>
+
+
+<body>
+
+  <div class="site-header">
+	<div class="container">
+		<div class="row">
+			<div class="navbar navbar-default" role="navigation">
+
+				<div class="navbar-header col-xs-8 col-sm-8 col-md-3 col-lg-3 center">
+					<div class="header-title">
+						<a href="/" title="首页"></a>
+						<i class="fa fa-home fa-2x"></i>
+						<a class="site-title" href="/">lxmghct's blog</a>
+					</div>
+				</div>
+
+				<div class="col-md-6 col-lg-6 hidden-sm hidden-xs center">
+					<div class="site-nav">
+						<ul class="nav nav-pills">
+							<li class="select"><a class="page-link" href="/pages/classify.html">分类</a></li>
+							<li class="select"><a class="page-link" href="/pages/archive.html">归档</a></li>
+							<li class="select"><a class="page-link" href="/pages/tags.html">标签</a></li>
+							<li class="select"><a class="page-link" href="/pages/about.html">关于</a></li>
+						</ul>
+					</div>
+				</div>
+
+				<div class="col-md-3 col-lg-3 hidden-xs hidden-sm">
+					<div id="header-search" class="search-input-container">
+						<input id="header-search-input" type="text" class="header-search-input" placeholder="Search">
+						<!--搜索图标-->
+						<i class="fa fa-search fa-lg search-icon"></i>
+					</div>
+				</div>
+
+				<!-- 宽度不够时显示 -->
+				<div class="hidden-lg hidden-md col-sm-4 col-xs-4">
+					<div class="header-hidden-buttons">
+						<i class="fa fa-search fa-lg search-icon"></i>
+						<i class="fa fa-bars fa-2x menu-icon"></i>
+						<!-- 用于控制菜单的显示和隐藏 -->
+						<input type="checkbox" id="nav-trigger" class="nav-trigger">
+					</div>
+				</div>
+
+				<div class="phone-nav">
+					<ul>
+						<li><a href="/">首 页</a></li>
+						<li><a href="/pages/classify.html">分 类</a></li>
+						<li><a href="/pages/archive.html">归 档</a></li>
+						<li><a href="/pages/tags.html">标 签</a></li>
+						<li><a href="/pages/about.html">关 于</a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--遮罩层-->
+<div class="search-mask"></div>
+<div class="search-container">
+  <!-- 右上角关闭按钮 -->
+  <i class="fa fa-times fa-2x search-container-close"></i>
+  <div class="search-container-main">
+    <div class="search-container-wrapper">
+      <div class="search-input-container">
+        <input type="text" class="search-input" placeholder="Search">
+        <!--搜索图标-->
+        <i class="fa fa-search fa-lg search-icon search-start"></i>
+        <!--关闭图标-->
+        <i class="fa fa-times fa-lg search-icon search-clear"></i>
+      </div>
+      <div class="search-filter">
+        <!--只查找标题选择框-->
+        <input type="checkbox" class="search-filter-input">
+        <span class="search-filter-text">只查找标题</span>
+      </div>
+      <div class="search-result-summary"></div>
+      <div class="search-result-container">
+      </div>
+      <div class="search-pagination">
+        <!-- pagination.html -->
+
+<div class="my-pagination">
+  <ul class="my-pager">
+    <li class="active">1</li>
+    <li>2</li>
+  </ul>
+  <span class="my-pagination__sizes">
+    <span class="my-pagination__sizes__label">每页</span>
+    <select class="my-pagination__sizes__select" autocomplete="off">
+      <option>5</option>
+      <option>10</option>
+      <option>20</option>
+    </select>
+    <span class="my-pagination__sizes__label">条</span>
+  </span>
+  <span class="my-pagination__total">共 0 条</span>
+  <span class="my-pagination__goto">
+    <span class="my-pagination__goto__label">前往</span>
+    <input class="my-pagination__goto__input" type="text" />
+    <span class="my-pagination__goto__label">页</span>
+  </span>
+</div>
+
+<script>
+  (function () {
+    const contentSelector = '.search-result-container';
+    const parentSelector = '.search-pagination';
+    const contentContainer = document.querySelector(`${contentSelector}`);
+    if (!contentContainer || !contentSelector || !parentSelector) {
+      console.error("pagination.html: content or parent is not defined");
+      return;
+    }
+    const pageItems = []
+    const pagerContainer = document.querySelector(`${parentSelector} .my-pager`);
+    const totalContainer = document.querySelector(`${parentSelector} .my-pagination__total`);
+    const sizesSelect = document.querySelector(`${parentSelector} .my-pagination__sizes__select`);
+    const gotoInput = document.querySelector(`${parentSelector} .my-pagination__goto__input`);
+
+    const paginationData = {
+      total: 0,
+      pageSize: 10,
+      currentPage: 1
+    }
+    sizesSelect.value = paginationData.pageSize;
+
+    function showPagerList() {
+      const totalPage = Math.ceil(paginationData.total / paginationData.pageSize);
+      pagerContainer.innerHTML = "";
+      const createLi = (i) => {
+        const li = document.createElement("li");
+        li.innerText = i;
+        pagerContainer.appendChild(li);
+        // add click event
+        if (i !== "...") {
+          li.addEventListener("click", () => {
+            paginationData.currentPage = i;
+            changePage();
+          });
+        }
+        // set active
+        if (i === paginationData.currentPage) {
+          li.classList.add("active");
+        }
+      }
+      const start = 1, end = totalPage;
+      const pagerNumberList = [];
+      if (paginationData.currentPage - start > 3) {
+        pagerNumberList.push(...[start, start + 1, "...", paginationData.currentPage - 1, paginationData.currentPage]);
+      } else {
+        for (let i = start; i <= paginationData.currentPage; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      if (end - paginationData.currentPage > 3) {
+        pagerNumberList.push(...[paginationData.currentPage + 1, "...", end - 1, end]);
+      } else {
+        for (let i = paginationData.currentPage + 1; i <= end; i++) {
+          pagerNumberList.push(i);
+        }
+      }
+      pagerNumberList.forEach((item) => {
+        createLi(item);
+      });
+    }
+
+    function changeTotal() {
+      pageItems.length = 0;
+      for (let i = 0; i < contentContainer.children.length; i++) {
+        if (contentContainer.children[i].classList.contains("my-pagination") || contentContainer.children[i].tagName === "SCRIPT") {
+          continue;
+        }
+        pageItems.push(contentContainer.children[i]);
+      }
+      paginationData.total = pageItems.length;
+      totalContainer.innerText = `共 ${paginationData.total} 条`;
+    }
+
+    function changeContentShow() {
+      const showPageStart = paginationData.pageSize * (paginationData.currentPage - 1);
+      const showPageEnd = paginationData.pageSize * paginationData.currentPage;
+      for (let i = 0; i < paginationData.total; i++) {
+        if (i >= showPageStart && i < showPageEnd) {
+          pageItems[i].classList.remove("hide");
+        } else {
+          pageItems[i].classList.add("hide");
+        }
+      }
+    }
+
+    function changePage() {
+      showPagerList();
+      changeContentShow();
+      gotoInput.value = paginationData.currentPage;
+    }
+
+    function startPagination() {
+      changeTotal();
+      changePage();
+    }
+
+    sizesSelect.addEventListener("change", (e) => {
+      paginationData.pageSize = e.target.value;
+      paginationData.currentPage = 1;
+      changePage();
+    });
+
+    gotoInput.addEventListener("keyup", (e) => {
+      if (e.keyCode === 13) {
+        const gotoPage = parseInt(e.target.value);
+        if (gotoPage > 0 && gotoPage <= Math.ceil(paginationData.total / paginationData.pageSize)) {
+          paginationData.currentPage = gotoPage;
+          changePage();
+        }
+      }
+    });
+
+    // 监听内容变化
+    const observer = new MutationObserver((mutationsList) => {
+      for (let mutation of mutationsList) {
+        if (mutation.type === 'childList') {
+          changeTotal();
+          paginationData.currentPage = 1;
+          changePage();
+        }
+      }
+    });
+    observer.observe(contentContainer, { childList: true });
+
+    startPagination();
+  })();
+</script>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="content">
+    <div class="container">
+      <div class="row main-container">
+
+        
+          <div class="col-md-2 col-lg-2 hidden-xs hidden-sm left-side fadein-left">
+            
+<div class="toc-container">
+  <div class="toc-header">
+    <h3>目录导航</h3>
+  </div>
+  <ul id="toc-list"></ul>
+</div>
+
+          </div>
+          <div class="my-col col-xs-12 col-sm-12 col-md-8 col-lg-8 fadein-right">
+            <div class="page-content box-shadow"><div class="post">
+
+  <header class="post-header">
+    <h1 class="post-title">Whisper Karaoke Video Generator</h1>
+    <div class="info">
+      <p class="post-meta">
+        <i class="fa fa-calendar"></i>
+        &nbsp;
+        2025-11-03 12:00
+        
+        
+      </p>
+      
+      <span class="post-classify-list">
+        <i class="fa fa-folder-open"></i>
+        
+        <a class="category" data-tag="project-logs">project-logs</a>
+        
+      </span>
+      &nbsp;
+      
+      
+      <span class="post-tag-list">
+        <i class="fa fa-tags"></i>
+        <span class="index-post-tag">
+          
+          <a data-tag="python">python</a>
+          
+        </span>
+      </span>
+      
+    </div>
+  </header>
+
+  <article class="post-content">
+    <p>本项目基本功能是：根据音频和封面图片，自动生成带有逐字高亮字幕的歌词视频。</p>
+
+<h1 id="1-需求简介">1. 需求简介</h1>
+<p>最近有个给视频添加类似于 ktv 效果字幕的需求，也就是那种逐字高亮显示的歌词字幕。只想做一个简单的歌词视频，所以不想使用复杂的视频剪辑软件，也不想手动逐句对时间轴，所以做了这样一个小工具，可以从音频文件自动生成带有逐字高亮字幕的歌词视频。</p>
+
+<p>整个流程基于：</p>
+
+<ul>
+  <li>OpenAI Whisper（语音识别 + 逐字时间戳）</li>
+  <li>ASS 字幕格式（实现 KTV 高亮效果）</li>
+  <li>moviepy（生成图片视频）</li>
+  <li>ffmpeg（将字幕写入视频）</li>
+</ul>
+
+<p>项目地址：<a href="https://github.com/lxmghct/whisper-karaoke-video-generator">https://github.com/lxmghct/whisper-karaoke-video-generator</a></p>
+
+<h1 id="2-整体流程设计">2. 整体流程设计</h1>
+
+<p>完整流程分为两个阶段：</p>
+
+<h2 id="阶段一prepare生成歌词草稿">阶段一：prepare（生成歌词草稿）</h2>
+<p>Whisper 识别音频，根据识别的歌词结果以及逐字时间戳，生成一个 ass 歌词文件。由于识别结果会有不准确，所以可以在这一步手动修改一些不准确的歌词。不过直接改 ass 比较麻烦，因为混杂大量的时间信息不好修改，所以这里会附带生成一个歌词纯文本txt文件。</p>
+
+<h2 id="阶段二finalize生成最终视频">阶段二：finalize（生成最终视频）</h2>
+<p>根据人工修改后的 txt 重新生成 ass，然后根据音频和封面图片直接生成一个和音频时长相同的视频，并使用 ffmpeg 写入字幕。</p>
+
+<h1 id="3-项目结构">3. 项目结构</h1>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>.
+├── main.py
+├── create_video.py
+├── update_lyrics.py
+├── convert_chinese.py
+├── utils/
+│   ├── sequence_diff.py
+│   └── st_utils.py
+└── outputs/
+</code></pre></div></div>
+
+<ul>
+  <li>main.py
+    <ul>
+      <li>主程序入口，负责调用 Whisper、管理流程、调用各工具模块</li>
+    </ul>
+  </li>
+  <li>update_lyrics.py
+    <ul>
+      <li>对比原始 Whisper 歌词与人工修正歌词，生成新的 .ass 文件</li>
+    </ul>
+  </li>
+  <li>convert_chinese.py
+    <ul>
+      <li>简繁转换</li>
+    </ul>
+  </li>
+  <li>create_video.py
+    <ul>
+      <li>使用 moviepy 根据单张图片生成匹配音频时长的视频</li>
+    </ul>
+  </li>
+</ul>
+
+<h1 id="4-实现思路">4. 实现思路</h1>
+<h2 id="41-whisper生成逐字的时间戳">4.1. Whisper生成逐字的时间戳</h2>
+<p>Whisper 的调用方式如下：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model</span> <span class="o">=</span> <span class="n">whisper</span><span class="p">.</span><span class="nf">load_model</span><span class="p">(</span><span class="sh">"</span><span class="s">medium</span><span class="sh">"</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="nf">transcribe</span><span class="p">(</span>
+    <span class="n">audio_file</span><span class="p">,</span>
+    <span class="n">language</span><span class="o">=</span><span class="sh">"</span><span class="s">zh</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">word_timestamps</span><span class="o">=</span><span class="bp">True</span>
+<span class="p">)</span>
+</code></pre></div></div>
+<p>这里需要加上<code class="language-plaintext highlighter-rouge">word_timestamps=True</code>参数否则没有各个字的时间戳。得到的 result 格式如下：</p>
+<div class="language-json highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="p">{</span><span class="w">
+    </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"第一段测试文本这是一段测试的文本"</span><span class="p">,</span><span class="w">
+    </span><span class="nl">"segments"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"seek"</span><span class="p">:</span><span class="w"> </span><span class="mi">5344</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">73.8</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">80.54</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"第一段测试文本"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"tokens"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">7437</span><span class="p">,</span><span class="w"> </span><span class="mi">237</span><span class="p">,</span><span class="w"> </span><span class="mi">15157</span><span class="p">,</span><span class="w"> </span><span class="mi">8052</span><span class="p">,</span><span class="w"> </span><span class="mi">97</span><span class="p">,</span><span class="w"> </span><span class="mi">163</span><span class="p">,</span><span class="w"> </span><span class="mi">18304</span><span class="p">,</span><span class="w"> </span><span class="mi">12565</span><span class="p">,</span><span class="w"> </span><span class="mi">4510</span><span class="p">,</span><span class="w"> </span><span class="mi">224</span><span class="p">,</span><span class="w"> </span><span class="mi">4510</span><span class="p">,</span><span class="w"> </span><span class="mi">98</span><span class="p">,</span><span class="w"> </span><span class="mi">51714</span><span class="p">],</span><span class="w"> </span><span class="nl">"temperature"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"avg_logprob"</span><span class="p">:</span><span class="w"> </span><span class="mf">-0.1458473707500257</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"compression_ratio"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.0704225352112675</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"no_speech_prob"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.059459488838911057</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"words"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"第"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">77.2</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">77.36</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9983946979045868</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"一"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">77.36</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">77.5</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9944168329238892</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"段"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">77.5</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">77.98</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9919532835483551</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"测"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">77.98</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">78.12</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9989977777004242</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"试"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">78.12</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">78.56</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9704233407974243</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"文"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">78.56</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">79.2</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8886126279830933</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"本"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">79.2</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">80.54</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9925932884216309</span><span class="p">}</span><span class="w">
+            </span><span class="p">]</span><span class="w">
+        </span><span class="p">},</span><span class="w">
+        </span><span class="p">{</span><span class="w">
+            </span><span class="nl">"id"</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"seek"</span><span class="p">:</span><span class="w"> </span><span class="mi">8054</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">80.54</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">86.54</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"text"</span><span class="p">:</span><span class="w"> </span><span class="s2">"这是一段测试的文本"</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"tokens"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="mi">50364</span><span class="p">,</span><span class="w"> </span><span class="mi">7093</span><span class="p">,</span><span class="w"> </span><span class="mi">1530</span><span class="p">,</span><span class="w"> </span><span class="mi">233</span><span class="p">,</span><span class="w"> </span><span class="mi">25085</span><span class="p">,</span><span class="w"> </span><span class="mi">23661</span><span class="p">,</span><span class="w"> </span><span class="mi">230</span><span class="p">,</span><span class="w"> </span><span class="mi">37486</span><span class="p">,</span><span class="w"> </span><span class="mi">49640</span><span class="p">,</span><span class="w"> </span><span class="mi">1546</span><span class="p">,</span><span class="w"> </span><span class="mi">163</span><span class="p">,</span><span class="w"> </span><span class="mi">246</span><span class="p">,</span><span class="w"> </span><span class="mi">233</span><span class="p">,</span><span class="w"> </span><span class="mi">18637</span><span class="p">,</span><span class="w"> </span><span class="mi">224</span><span class="p">,</span><span class="w"> </span><span class="mi">50664</span><span class="p">],</span><span class="w">
+            </span><span class="nl">"temperature"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"avg_logprob"</span><span class="p">:</span><span class="w"> </span><span class="mf">-0.2546422884061739</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"compression_ratio"</span><span class="p">:</span><span class="w"> </span><span class="mf">1.1142857142857143</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"no_speech_prob"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.003794977441430092</span><span class="p">,</span><span class="w">
+            </span><span class="nl">"words"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"这"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">80.54</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">81.34</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.19986386597156525</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"是"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">81.34</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">81.66</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8290749788284302</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"一"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">81.66</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">82.22</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.8470391035079956</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"段"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">82.22</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">82.52</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.6162168309092522</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"测"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">82.52</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">83.12</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.986365795135498</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"试"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">83.12</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">83.52</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9633646011352539</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"的"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">83.52</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">83.9</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9898779392242432</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"文"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">83.9</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">84.42</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.7953768372535706</span><span class="p">},</span><span class="w">
+                </span><span class="p">{</span><span class="nl">"word"</span><span class="p">:</span><span class="w"> </span><span class="s2">"本"</span><span class="p">,</span><span class="w"> </span><span class="nl">"start"</span><span class="p">:</span><span class="w"> </span><span class="mf">84.42</span><span class="p">,</span><span class="w"> </span><span class="nl">"end"</span><span class="p">:</span><span class="w"> </span><span class="mf">86.54</span><span class="p">,</span><span class="w"> </span><span class="nl">"probability"</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9989916086196899</span><span class="p">}</span><span class="w">
+            </span><span class="p">]</span><span class="w">
+        </span><span class="p">}</span><span class="w">
+    </span><span class="p">],</span><span class="w">
+    </span><span class="nl">"language"</span><span class="p">:</span><span class="w"> </span><span class="s2">"zh"</span><span class="w">
+</span><span class="p">}</span><span class="w">
+</span></code></pre></div></div>
+
+<h2 id="42-whisper结果转为-ass-歌词文件">4.2. Whisper结果转为 ass 歌词文件</h2>
+<p>Whisper 结果里的<code class="language-plaintext highlighter-rouge">start</code>和<code class="language-plaintext highlighter-rouge">end</code>可以转为 ass 文件中的<code class="language-plaintext highlighter-rouge">{\kf??}</code>或者<code class="language-plaintext highlighter-rouge">{\k??}</code>标签用来标识每个字的持续时间。由于 ass 所需信息都有，所以可以很容易将上述结果转为 ass 歌词文件。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">whisper_to_ass</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">audio_file</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">):</span>
+    <span class="n">header</span> <span class="o">=</span> <span class="sh">"""</span><span class="s">[Script Info]
+Title: Karaoke Lyrics
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,48,&amp;H0000FF00,&amp;H00FFFFFF,&amp;H00000000,&amp;H64000000,-1,0,0,0,100,100,0,0,1,3,0,2,10,10,30,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+</span><span class="sh">"""</span>
+
+    <span class="n">events</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">text_lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">segments</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="sh">"</span><span class="s">segments</span><span class="sh">"</span><span class="p">]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">seg</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="nf">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="c1"># whisper有时会在开头或结尾添加「詞曲 李宗盛」，有则忽略
+</span>            <span class="n">text</span> <span class="o">=</span> <span class="n">seg</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">text</span><span class="sh">"</span><span class="p">,</span> <span class="sh">""</span><span class="p">)</span>
+            <span class="k">if</span> <span class="sh">"</span><span class="s">李宗盛</span><span class="sh">"</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+                <span class="k">continue</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">seg</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">words</span><span class="sh">"</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">words</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">line_start</span> <span class="o">=</span> <span class="n">words</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="sh">"</span><span class="s">start</span><span class="sh">"</span><span class="p">]</span>
+        <span class="n">line_end</span> <span class="o">=</span> <span class="n">words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="sh">"</span><span class="s">end</span><span class="sh">"</span><span class="p">]</span>
+
+        <span class="n">ass_lyric</span> <span class="o">=</span> <span class="sh">""</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="sh">""</span>
+
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span><span class="p">:</span>
+            <span class="n">dur_cs</span> <span class="o">=</span> <span class="nf">int</span><span class="p">((</span><span class="n">w</span><span class="p">[</span><span class="sh">"</span><span class="s">end</span><span class="sh">"</span><span class="p">]</span> <span class="o">-</span> <span class="n">w</span><span class="p">[</span><span class="sh">"</span><span class="s">start</span><span class="sh">"</span><span class="p">])</span> <span class="o">*</span> <span class="mi">100</span><span class="p">)</span>
+            <span class="n">ass_lyric</span> <span class="o">+=</span> <span class="sa">f</span><span class="sh">"</span><span class="s">{{</span><span class="se">\\</span><span class="s">kf</span><span class="si">{</span><span class="n">dur_cs</span><span class="si">}</span><span class="s">}}</span><span class="si">{</span><span class="n">w</span><span class="p">[</span><span class="sh">'</span><span class="s">word</span><span class="sh">'</span><span class="p">]</span><span class="si">}</span><span class="sh">"</span>
+            <span class="n">text</span> <span class="o">+=</span> <span class="n">w</span><span class="p">[</span><span class="sh">"</span><span class="s">word</span><span class="sh">"</span><span class="p">]</span>
+
+        <span class="n">events</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span>
+            <span class="sa">f</span><span class="sh">"</span><span class="s">Dialogue: 0,</span><span class="si">{</span><span class="nf">format_ass_time</span><span class="p">(</span><span class="n">line_start</span><span class="p">)</span><span class="si">}</span><span class="s">,</span><span class="si">{</span><span class="nf">format_ass_time</span><span class="p">(</span><span class="n">line_end</span><span class="p">)</span><span class="si">}</span><span class="s">,Default,,0,0,0,,</span><span class="si">{</span><span class="n">ass_lyric</span><span class="si">}</span><span class="sh">"</span>
+        <span class="p">)</span>
+        <span class="n">text_lines</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="n">base_name</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">splitext</span><span class="p">(</span><span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">basename</span><span class="p">(</span><span class="n">audio_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">ass_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sh">"</span><span class="s">old_lyrics.ass</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">txt_path</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">output_dir</span><span class="p">,</span> <span class="sh">"</span><span class="s">lyrics_raw.txt</span><span class="sh">"</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">ass_path</span><span class="p">,</span> <span class="sh">"</span><span class="s">w</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">header</span> <span class="o">+</span> <span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">events</span><span class="p">))</span>
+
+    <span class="k">with</span> <span class="nf">open</span><span class="p">(</span><span class="n">txt_path</span><span class="p">,</span> <span class="sh">"</span><span class="s">w</span><span class="sh">"</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="sh">"</span><span class="s">utf-8</span><span class="sh">"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="sh">"</span><span class="se">\n</span><span class="sh">"</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">text_lines</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">ass_path</span><span class="p">,</span> <span class="n">txt_path</span>
+</code></pre></div></div>
+
+<p>转换后的示例内容如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Script Info]
+Title: Karaoke Lyrics
+ScriptType: v4.00+
+PlayResX: 1280
+PlayResY: 720
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Default,Arial,48,&amp;H0000FF00,&amp;H00FFFFFF,&amp;H00000000,&amp;H64000000,-1,0,0,0,100,100,0,0,1,3,0,2,10,10,30,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:01.00,0:00:01.34,Default,,0,0,0,,{\kf15}第{\kf14}一{\kf48}段{\kf14}测{\kf43}试{\kf64}文{\kf134}本
+Dialogue: 0,0:00:01.34,0:00:07.54,Default,,0,0,0,,{\kf79}这{\kf31}是{\kf56}一{\kf29}段{\kf60}测{\kf39}试{\kf38}的{\kf51}文{\kf212}本
+</code></pre></div></div>
+
+<p><strong>ass文件解析</strong>：</p>
+
+<ul>
+  <li>
+    <p>在 <code class="language-plaintext highlighter-rouge">[V4+ Style]</code> 这个标签里有一些样式，我需要用到的主要是 <code class="language-plaintext highlighter-rouge">PrimaryColour</code> 和 <code class="language-plaintext highlighter-rouge">SecondaryColour</code>，这里的变量名可能有点反直觉，实际 <code class="language-plaintext highlighter-rouge">SecondaryColour</code> 才是字初始时的颜色，也就是进度未到达该字的颜色，而 <code class="language-plaintext highlighter-rouge">PrimaryColour</code> 才是高亮时的颜色。</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">[Events]</code> 里每一行 <code class="language-plaintext highlighter-rouge">Dialogue</code> 就是每次显示的歌词行，如果多行歌词在时间上有重叠，会自动换行显示。</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">{\kf}</code>标签中的时间单位是<strong>百分之一秒</strong>，会平均分配给直到下一个标签之前的除空格外的所有字，比如<code class="language-plaintext highlighter-rouge">{\kf20}测试{\kf??}</code>，这里<code class="language-plaintext highlighter-rouge">测试</code>这两个字每个都持续0.1秒。</p>
+  </li>
+  <li>
+    <p><code class="language-plaintext highlighter-rouge">{\kf??}</code>标签是该字渐变持续的时间，而<code class="language-plaintext highlighter-rouge">{\k??}</code>则会立刻切换该字的颜色并持续指定时间，并没有渐变效果。</p>
+  </li>
+</ul>
+
+<h2 id="43-ass-歌词文件预览">4.3. ass 歌词文件预览</h2>
+
+<p>为了测试上述字幕的效果，我使用了一个开源工具 Aegisub(<a href="https://github.com/Aegisub/Aegisub">https://github.com/Aegisub/Aegisub</a>)，可以查看把字幕贴到视频上的效果。其界面如下图所示：</p>
+
+<p><img src="/post_assets/images/2025/11/03-aegisub-ui.png" alt="Alt text" /></p>
+
+<p>在顶部点击<code class="language-plaintext highlighter-rouge">视频 -&gt; 打开视频</code>，然后点击<code class="language-plaintext highlighter-rouge">文件 -&gt; 打开字幕</code>，即可预览字幕贴到视频上的效果。</p>
+
+<p>上面歌词的效果如下图所示：</p>
+
+<p><img src="/post_assets/images/2025/11/03-lyrics-example-kf.gif" alt="歌词预览" /></p>
+
+<p>如果改用<code class="language-plaintext highlighter-rouge">{\k}</code>标签，得到的效果则如下图所示：</p>
+
+<p><img src="/post_assets/images/2025/11/03-lyrics-example-k.gif" alt="歌词预览" /></p>
+
+<p>不过 Aegisub 并不支持直接导出该视频，所以后续还是需要用 ffmpeg 来生成最终带字幕的视频。</p>
+
+<h2 id="44-歌词处理">4.4. 歌词处理</h2>
+<h3 id="441-去除词曲作者">4.4.1. 去除词曲作者</h3>
+<p>当歌词有前奏和尾奏时，Whisper 总是会在开头和结尾加上”<code class="language-plaintext highlighter-rouge">詞曲 李宗盛</code>“，有可能是 Whisper 训练语料的问题。所以需要统一删除开头和结尾的词曲作者。</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">seg</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">segments</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="nf">len</span><span class="p">(</span><span class="n">segments</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">seg</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="sh">"</span><span class="s">text</span><span class="sh">"</span><span class="p">,</span> <span class="sh">""</span><span class="p">)</span>
+            <span class="k">if</span> <span class="sh">"</span><span class="s">李宗盛</span><span class="sh">"</span> <span class="ow">in</span> <span class="n">text</span><span class="p">:</span>
+                <span class="k">continue</span>
+</code></pre></div></div>
+
+<h3 id="442-简繁转换">4.4.2. 简繁转换</h3>
+<p>Whisper 不同模型输出的中文的简体繁体似乎并不固定，我是用<code class="language-plaintext highlighter-rouge">medium</code>模型基本都是繁体，但如果换成<code class="language-plaintext highlighter-rouge">small</code>有时输出了简体。所以这里需要统一处理一下。这里使用的方案比较简单粗暴，直接构造所有简体繁体中文字对应表。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">typing</span> <span class="kn">import</span> <span class="n">Dict</span>
+
+<span class="c1"># 简体
+</span><span class="k">def</span> <span class="nf">simp_py_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sh">'</span><span class="s">啊阿埃...</span><span class="sh">'</span>
+
+<span class="c1"># 繁体
+</span><span class="k">def</span> <span class="nf">ft_py_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sh">'</span><span class="s">啊阿埃...</span><span class="sh">'</span>
+
+<span class="c1"># 特殊/异体字
+</span><span class="k">def</span> <span class="nf">qq_py_str</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">return</span> <span class="sh">'</span><span class="s">娿婀埃...</span><span class="sh">'</span>
+
+<span class="c1"># --- 优化构建阶段：建立映射字典 ---
+</span><span class="k">def</span> <span class="nf">_build_maps</span><span class="p">():</span>
+    <span class="n">simp</span> <span class="o">=</span> <span class="nf">simp_py_str</span><span class="p">()</span>
+    <span class="n">ft</span> <span class="o">=</span> <span class="nf">ft_py_str</span><span class="p">()</span>
+    <span class="n">qq</span> <span class="o">=</span> <span class="nf">qq_py_str</span><span class="p">()</span>
+
+    <span class="n">s2t_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">t2s_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="c1"># 简 -&gt; 繁
+</span>    <span class="k">for</span> <span class="n">s</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">simp</span><span class="p">,</span> <span class="n">ft</span><span class="p">):</span>
+        <span class="n">s2t_map</span><span class="p">[</span><span class="n">s</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="n">t2s_map</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">s</span>
+
+    <span class="c1"># 异体字处理
+</span>    <span class="k">for</span> <span class="n">q</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nf">zip</span><span class="p">(</span><span class="n">qq</span><span class="p">,</span> <span class="n">ft</span><span class="p">):</span>
+        <span class="n">s2t_map</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">t</span>
+        <span class="n">t2s_map</span><span class="p">[</span><span class="n">q</span><span class="p">]</span> <span class="o">=</span> <span class="n">simp</span><span class="p">[</span><span class="n">ft</span><span class="p">.</span><span class="nf">index</span><span class="p">(</span><span class="n">t</span><span class="p">)]</span> <span class="k">if</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">ft</span> <span class="k">else</span> <span class="n">q</span>
+
+    <span class="k">return</span> <span class="n">s2t_map</span><span class="p">,</span> <span class="n">t2s_map</span>
+
+<span class="n">_S2T_MAP</span><span class="p">,</span> <span class="n">_T2S_MAP</span> <span class="o">=</span> <span class="nf">_build_maps</span><span class="p">()</span>
+
+
+<span class="c1"># --- 转换函数 ---
+</span><span class="k">def</span> <span class="nf">traditionalized</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">简体 → 繁体</span><span class="sh">"""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sh">''</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">_S2T_MAP</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="n">ch</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+    <span class="k">return</span> <span class="sh">''</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">simplized</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">繁体 → 简体</span><span class="sh">"""</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sh">''</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">_T2S_MAP</span><span class="p">.</span><span class="nf">get</span><span class="p">(</span><span class="n">ch</span><span class="p">,</span> <span class="n">ch</span><span class="p">)</span> <span class="k">for</span> <span class="n">ch</span> <span class="ow">in</span> <span class="n">text</span><span class="p">]</span>
+    <span class="k">return</span> <span class="sh">''</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<h3 id="443-歌词手动修改">4.4.3. 歌词手动修改</h3>
+<p>Whisper 识别的歌词大多数情况下会有不准确的情况，所以需要人工修正。如果直接修正 ass 文件，则非常不方便，因为 ass 文件中的歌词和时间标签穿插在一起，要改只能一个字一个字的改。所以前面的步骤里另外生成了一份纯歌词txt文件，方便快速修改。后续再根据修改后的歌词文本和 ass 歌词文件进行更新。</p>
+
+<p>手动修改歌词和 ass 对照更新其实有一定的问题，比如合并时出现字数不同、歌词截断不同等情况应该以谁为基准，如何设计才能降低这部分代码的复杂度等。目前对于手动修改部分的策略是：</p>
+<ol>
+  <li>空格和换行可以任意增删，方便处理 whisper 分割歌词不正确的问题。最终歌词的分割以手动修改的这份 txt 为准。</li>
+  <li>歌词修改时需要确保修改前后的字数相同，不然后续合并 ass 时会出现错位。如果确实 whisper 少识别或者多识别的某几个字，则需要去 ass 文件里的对应位置也增删相应的内容。</li>
+</ol>
+
+<h3 id="444-歌词修改后的文本与-ass-文件合并">4.4.4. 歌词修改后的文本与 ass 文件合并</h3>
+<p>合并时大体采用以下步骤：</p>
+
+<ol>
+  <li><strong>提取旧歌词结构</strong></li>
+</ol>
+
+<p>从原来的 ass 文件里解析出：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[字, 所属dialogue行, 时间标签]
+</code></pre></div></div>
+<p>例如：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>["你", 0, "kf20"]
+["好", 0, "kf30"]
+...
+</code></pre></div></div>
+
+<p>整个处理过程涉及较多对于 ass 的时间处理，而在 ass 文件中，时间最小单位是百分之一秒，所以这里建一个类统一处理：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">AssTime</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="sh">"""</span><span class="s">
+        time_str: 字符串，格式为 </span><span class="sh">"</span><span class="s">时:分:秒.百分秒</span><span class="sh">"</span><span class="s">，例如 </span><span class="sh">"</span><span class="s">0:00:12.41
+        </span><span class="sh">"""</span>
+        <span class="k">if</span> <span class="nf">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">total_hundredths</span> <span class="o">=</span> <span class="n">arg</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">hours</span><span class="p">,</span> <span class="n">minutes</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">arg</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="sh">'</span><span class="s">:</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">seconds</span><span class="p">,</span> <span class="n">hundredths</span> <span class="o">=</span> <span class="n">rest</span><span class="p">.</span><span class="nf">split</span><span class="p">(</span><span class="sh">'</span><span class="s">.</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">self</span><span class="p">.</span><span class="n">total_hundredths</span> <span class="o">=</span> <span class="p">(</span><span class="nf">int</span><span class="p">(</span><span class="n">hours</span><span class="p">)</span> <span class="o">*</span> <span class="mi">3600</span> <span class="o">+</span> <span class="nf">int</span><span class="p">(</span><span class="n">minutes</span><span class="p">)</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">+</span> <span class="nf">int</span><span class="p">(</span><span class="n">seconds</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span> <span class="o">+</span> <span class="nf">int</span><span class="p">(</span><span class="n">hundredths</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">add_time</span><span class="p">):</span>
+        <span class="n">self</span><span class="p">.</span><span class="n">total_hundredths</span> <span class="o">+=</span> <span class="n">add_time</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="n">total_seconds</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">total_hundredths</span> <span class="o">//</span> <span class="mi">100</span>
+        <span class="n">remaining_hundredths</span> <span class="o">=</span> <span class="n">self</span><span class="p">.</span><span class="n">total_hundredths</span> <span class="o">%</span> <span class="mi">100</span>
+
+        <span class="n">hours</span> <span class="o">=</span> <span class="n">total_seconds</span> <span class="o">//</span> <span class="mi">3600</span>
+        <span class="n">remaining_seconds</span> <span class="o">=</span> <span class="n">total_seconds</span> <span class="o">%</span> <span class="mi">3600</span>
+        <span class="n">minutes</span> <span class="o">=</span> <span class="n">remaining_seconds</span> <span class="o">//</span> <span class="mi">60</span>
+        <span class="n">seconds</span> <span class="o">=</span> <span class="n">remaining_seconds</span> <span class="o">%</span> <span class="mi">60</span>
+
+        <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">hours</span><span class="si">}</span><span class="s">:</span><span class="si">{</span><span class="n">minutes</span><span class="si">:</span><span class="mi">02</span><span class="n">d</span><span class="si">}</span><span class="s">:</span><span class="si">{</span><span class="n">seconds</span><span class="si">:</span><span class="mi">02</span><span class="n">d</span><span class="si">}</span><span class="s">.</span><span class="si">{</span><span class="n">remaining_hundredths</span><span class="si">:</span><span class="mi">02</span><span class="n">d</span><span class="si">}</span><span class="sh">"</span>
+    
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="n">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nc">AssTime</span><span class="p">(</span><span class="n">self</span><span class="p">.</span><span class="n">total_hundredths</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ol>
+  <li><strong>重新分配时间</strong></li>
+</ol>
+
+<p>保留原有时间标签，仅替换字符内容。只要总字数不变，每个字的时间仍然是原来的，视觉效果不变。时间精度不损失。</p>
+
+<p>歌词提取：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+    <span class="c1"># 格式化旧歌词 [[word, dialogue_time_row, tag]]
+</span>    <span class="n">lyric_words</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># 存储每个dialogue的时间[start_time, end_time]
+</span>    <span class="n">dialogue_time_rows</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">dialogue_lines</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">line</span><span class="p">.</span><span class="nf">strip</span><span class="p">().</span><span class="nf">split</span><span class="p">(</span><span class="sh">'</span><span class="s">,</span><span class="sh">'</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+        <span class="n">dialogue_time_rows</span><span class="p">.</span><span class="nf">append</span><span class="p">([</span><span class="nc">AssTime</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="nc">AssTime</span><span class="p">(</span><span class="n">parts</span><span class="p">[</span><span class="mi">2</span><span class="p">])])</span>
+        <span class="n">lyric_part</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">9</span><span class="p">].</span><span class="nf">strip</span><span class="p">()</span>
+        <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">lyric_len</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">lyric_part</span><span class="p">)</span>
+        <span class="n">current_lyric_word</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+        <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">lyric_len</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">lyric_part</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">ignore_space</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">lyric_words</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span>
+                <span class="k">elif</span> <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="sh">'</span><span class="s">{</span><span class="sh">'</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">=</span> <span class="n">j</span>
+                <span class="k">while</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">lyric_len</span> <span class="ow">and</span> <span class="n">lyric_part</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">!=</span> <span class="sh">'</span><span class="s">}</span><span class="sh">'</span><span class="p">:</span>
+                    <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">lyric_part</span><span class="p">[</span><span class="n">t</span><span class="p">:</span> <span class="n">j</span><span class="p">]</span>
+                <span class="n">j</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">continue</span>
+            <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span> <span class="k">if</span> <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">current_lyric_word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">c</span>
+            <span class="n">lyric_words</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">current_lyric_word</span><span class="p">)</span>
+            <span class="n">current_lyric_word</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="bp">None</span><span class="p">]</span>
+</code></pre></div></div>
+
+<p>歌词合并：</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">word_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">new_word_rows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">total_words</span> <span class="o">=</span> <span class="nf">len</span><span class="p">(</span><span class="n">lyric_words</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">txt_lines</span><span class="p">:</span>
+        <span class="n">row</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_word_rows</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">word_index</span> <span class="o">&gt;=</span> <span class="n">total_words</span><span class="p">:</span>
+                <span class="k">break</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="o">==</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span> <span class="ow">and</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">:</span>
+                    <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">:</span>
+                <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span> <span class="o">+</span> <span class="n">c</span>
+            <span class="k">elif</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span><span class="p">:</span>
+                <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span> <span class="o">+</span> <span class="sh">'</span><span class="s"> </span><span class="sh">'</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>
+            <span class="n">row</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">])</span>
+            <span class="n">word_index</span> <span class="o">+=</span> <span class="mi">1</span>
+</code></pre></div></div>
+<p>上面代码里还另外处理了一下空格的问题，因为允许在手动修改的 txt 里随意增删空格，而 Whisper 生成的歌词往往会把空格放在某个歌词之前标签之后(例如<code class="language-plaintext highlighter-rouge">{\kf20}你{\kf30} 好</code>)，经过上述代码统一处理后，统一将空格放在歌词字的前面(例如<code class="language-plaintext highlighter-rouge">{\kf20}你 {\kf30}好</code>)，这样视觉上更自然一些。</p>
+
+<p>不过还有个问题，如果修改后的歌词与原始歌词的截断不一致，而 ass 文件里每个 Dialogue 都会在开头记录整行歌词的起始和结束时间，所以这种情况就需要根据<code class="language-plaintext highlighter-rouge">{\kf??}</code>标签中的时间重新计算新 Dialogue 的起止时间，为方便计算，需要另外存储一下原始 ass 每一行 Dialogue 的起止时间。不过这个步骤并不是完美的，每行歌词持续时间有时是会超过每个词持续时间之和的，因为有时歌曲会有短暂的空档期。目前也就只能让新的截断歌词统一通过 start_time 来重新计算，避免从 end_time 来计算。</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="c1"># 生成新的 dialogue 行
+</span>    <span class="n">dialogue_example_line</span> <span class="o">=</span> <span class="n">dialogue_lines</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">example_parts</span> <span class="o">=</span> <span class="n">dialogue_example_line</span><span class="p">.</span><span class="nf">strip</span><span class="p">().</span><span class="nf">split</span><span class="p">(</span><span class="sh">'</span><span class="s">,</span><span class="sh">'</span><span class="p">,</span> <span class="mi">9</span><span class="p">)</span>
+
+    <span class="n">new_dialogues</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="n">word_index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">word_row</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">new_word_rows</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">word_row</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># 计算 start_time
+</span>        <span class="n">start_time_row_index</span> <span class="o">=</span> <span class="n">word_row</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">word_index</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">while</span> <span class="n">t</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">start_time_row_index</span><span class="p">:</span>
+            <span class="n">t</span> <span class="o">-=</span> <span class="mi">1</span>
+        <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">word_index</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">temp_start</span> <span class="o">=</span> <span class="n">dialogue_time_rows</span><span class="p">[</span><span class="n">lyric_words</span><span class="p">[</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">t</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">word_index</span><span class="p">):</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
+                    <span class="n">temp_start</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nf">int</span><span class="p">(</span><span class="n">re</span><span class="p">.</span><span class="nf">search</span><span class="p">(</span><span class="sa">r</span><span class="sh">'</span><span class="s">\d+</span><span class="sh">'</span><span class="p">,</span> <span class="n">tag</span><span class="p">).</span><span class="nf">group</span><span class="p">()))</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">temp_start</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">dialogue_time_rows</span><span class="p">[</span><span class="n">start_time_row_index</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        
+        <span class="c1"># 计算 end_time (如果最后一个字恰好是该行最后一个字，则取该行end_time而非start_time加偏移量)
+</span>        <span class="n">word_index</span> <span class="o">+=</span> <span class="nf">len</span><span class="p">(</span><span class="n">word_row</span><span class="p">)</span>
+        <span class="n">end_time_row_index</span> <span class="o">=</span> <span class="n">word_row</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">word_index</span> <span class="o">&lt;</span> <span class="n">total_words</span> <span class="ow">and</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">end_time_row_index</span><span class="p">:</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">dialogue_time_rows</span><span class="p">[</span><span class="n">end_time_row_index</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># 旧歌词的end_time会稍有偏移量，故采用start_time加偏移量的方式计算
+</span>            <span class="n">t</span> <span class="o">=</span> <span class="mi">2</span>
+            <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="nf">len</span><span class="p">(</span><span class="n">word_row</span><span class="p">)</span> <span class="ow">and</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span> <span class="o">-</span> <span class="n">t</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">end_time_row_index</span><span class="p">:</span>
+                <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">temp_end</span> <span class="o">=</span> <span class="n">dialogue_time_rows</span><span class="p">[</span><span class="n">lyric_words</span><span class="p">[</span><span class="n">word_index</span> <span class="o">-</span> <span class="n">t</span><span class="p">][</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">].</span><span class="nf">copy</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="n">word_index</span> <span class="o">-</span> <span class="n">t</span><span class="p">,</span> <span class="n">word_index</span><span class="p">):</span>
+                <span class="n">tag</span> <span class="o">=</span> <span class="n">lyric_words</span><span class="p">[</span><span class="n">p</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">tag</span><span class="p">:</span>
+                    <span class="n">temp_end</span><span class="p">.</span><span class="nf">add</span><span class="p">(</span><span class="nf">int</span><span class="p">(</span><span class="n">re</span><span class="p">.</span><span class="nf">search</span><span class="p">(</span><span class="sa">r</span><span class="sh">'</span><span class="s">\d+</span><span class="sh">'</span><span class="p">,</span> <span class="n">tag</span><span class="p">).</span><span class="nf">group</span><span class="p">()))</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">temp_end</span>
+
+        <span class="c1"># 生成新的 lyric 部分
+</span>        <span class="n">new_lyric_part_io</span> <span class="o">=</span> <span class="nc">StringIO</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">word_row</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]:</span>
+                <span class="n">new_lyric_part_io</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="sh">'</span><span class="s">{</span><span class="sh">'</span> <span class="o">+</span> <span class="n">w</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="sh">'</span><span class="s">}</span><span class="sh">'</span><span class="p">)</span>
+            <span class="n">new_lyric_part_io</span><span class="p">.</span><span class="nf">write</span><span class="p">(</span><span class="n">w</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="n">example_parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="nf">str</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+        <span class="n">example_parts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="nf">str</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span>
+        <span class="n">example_parts</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_lyric_part_io</span><span class="p">.</span><span class="nf">getvalue</span><span class="p">()</span>
+
+        <span class="n">new_dialogue_line</span> <span class="o">=</span> <span class="sh">'</span><span class="s">,</span><span class="sh">'</span><span class="p">.</span><span class="nf">join</span><span class="p">(</span><span class="n">example_parts</span><span class="p">)</span> <span class="o">+</span> <span class="sh">'</span><span class="se">\n</span><span class="sh">'</span>
+        <span class="n">new_dialogues</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">new_dialogue_line</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ol>
+  <li><strong>关于错位的处理</strong>
+为方便用户体验以及代码调试，当出现错位时，最好能够精确指出错位位置，方便用户对照修改。这里使用了 Python的 <code class="language-plaintext highlighter-rouge">difflib.SequenceMatcher</code> 来找出最长公共子串，从而定位错位位置。</li>
+</ol>
+
+<p>difflib.SequenceMatcher 会输出：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Match(a, b, size)
+</code></pre></div></div>
+<p>表示：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ref[a:a+size]
+pred[b:b+size]
+</code></pre></div></div>
+<p>是相同的。</p>
+
+<p>然后可以利用 offset 判断是否发生位移</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">offset</span> <span class="o">=</span> <span class="n">match</span><span class="p">.</span><span class="n">b</span> <span class="o">-</span> <span class="n">match</span><span class="p">.</span><span class="n">a</span>
+</code></pre></div></div>
+
+<p>如果 offset 不变，说明两个字符串在这一段是对齐的。反之说明发生了插入 / 删除 / 错位。</p>
+
+<p>此外还需要注意：</p>
+<ul>
+  <li>还需要过滤短匹配，避免偶然匹配（例如单个“的”、“了”）。</li>
+  <li>还要过滤远距离重复，歌词中有时会有重复的句子，如果距离过远则不认为是没有对齐的。</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">difflib</span> <span class="kn">import</span> <span class="n">SequenceMatcher</span>
+
+<span class="k">def</span> <span class="nf">find_misalignment_intervals</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">pred</span><span class="p">,</span> <span class="n">min_match_len</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">offset_tolerance</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">
+    查找两个歌词字符串中的错位区间。
+
+    参数：
+        ref (str): 正确歌词
+        pred (str): 识别歌词
+        min_match_len (int): 最小匹配子串长度，过滤掉太短的偶然匹配
+        offset_tolerance (int): 最大允许的匹配位置差，避免歌词重复误判
+
+    返回：
+        list[dict]: 错位区间列表，例如：
+        [
+            {</span><span class="sh">"</span><span class="s">start_ref</span><span class="sh">"</span><span class="s">: 50, </span><span class="sh">"</span><span class="s">end_ref</span><span class="sh">"</span><span class="s">: 120, </span><span class="sh">"</span><span class="s">start_pred</span><span class="sh">"</span><span class="s">: 48, </span><span class="sh">"</span><span class="s">end_pred</span><span class="sh">"</span><span class="s">: 118, </span><span class="sh">"</span><span class="s">offset</span><span class="sh">"</span><span class="s">: -2},
+</span><span class="gp">            ...</span>
+        <span class="p">]</span>
+    <span class="sh">"""</span>
+    <span class="n">matcher</span> <span class="o">=</span> <span class="nc">SequenceMatcher</span><span class="p">(</span><span class="bp">None</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">pred</span><span class="p">)</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">matcher</span><span class="p">.</span><span class="nf">get_matching_blocks</span><span class="p">()</span>
+
+    <span class="n">intervals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">prev_offset</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nf">enumerate</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">.</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">min_match_len</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">offset</span> <span class="o">=</span> <span class="n">match</span><span class="p">.</span><span class="n">b</span> <span class="o">-</span> <span class="n">match</span><span class="p">.</span><span class="n">a</span>
+
+        <span class="c1"># 跳过明显不对应的（比如副歌重复太远）
+</span>        <span class="k">if</span> <span class="nf">abs</span><span class="p">(</span><span class="n">offset</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">offset_tolerance</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="n">offset</span> <span class="o">!=</span> <span class="n">prev_offset</span><span class="p">:</span>
+            <span class="n">last_match</span> <span class="o">=</span> <span class="n">matches</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">{</span><span class="sh">"</span><span class="s">a</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="sh">"</span><span class="s">b</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="sh">"</span><span class="s">size</span><span class="sh">"</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+            <span class="n">inteval</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="sh">"</span><span class="s">start_ref</span><span class="sh">"</span><span class="p">:</span> <span class="n">last_match</span><span class="p">.</span><span class="n">a</span> <span class="o">+</span> <span class="n">last_match</span><span class="p">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">start_pred</span><span class="sh">"</span><span class="p">:</span> <span class="n">last_match</span><span class="p">.</span><span class="n">b</span> <span class="o">+</span> <span class="n">last_match</span><span class="p">.</span><span class="n">size</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">end_ref</span><span class="sh">"</span><span class="p">:</span> <span class="n">match</span><span class="p">.</span><span class="n">a</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">end_pred</span><span class="sh">"</span><span class="p">:</span> <span class="n">match</span><span class="p">.</span><span class="n">b</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">offset</span><span class="sh">"</span><span class="p">:</span> <span class="n">offset</span> <span class="o">-</span> <span class="n">prev_offset</span><span class="p">,</span>
+                <span class="sh">"</span><span class="s">lyric_ref</span><span class="sh">"</span><span class="p">:</span> <span class="n">ref</span><span class="p">[</span><span class="n">last_match</span><span class="p">.</span><span class="n">a</span> <span class="o">+</span> <span class="n">last_match</span><span class="p">.</span><span class="n">size</span><span class="p">:</span> <span class="n">match</span><span class="p">.</span><span class="n">a</span><span class="p">],</span>
+                <span class="sh">"</span><span class="s">lyric_pred</span><span class="sh">"</span><span class="p">:</span> <span class="n">pred</span><span class="p">[</span><span class="n">last_match</span><span class="p">.</span><span class="n">b</span> <span class="o">+</span> <span class="n">last_match</span><span class="p">.</span><span class="n">size</span><span class="p">:</span> <span class="n">match</span><span class="p">.</span><span class="n">b</span><span class="p">],</span>
+            <span class="p">}</span>
+            <span class="n">intervals</span><span class="p">.</span><span class="nf">append</span><span class="p">(</span><span class="n">inteval</span><span class="p">)</span>
+            <span class="n">prev_offset</span> <span class="o">=</span> <span class="n">offset</span>
+
+    <span class="k">return</span> <span class="n">intervals</span>
+
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="n">ref_lyric</span> <span class="o">=</span> <span class="sh">"</span><span class="s">这是正确的歌词，用于测试错位检测功能。</span><span class="sh">"</span>
+    <span class="n">pred_lyric</span> <span class="o">=</span> <span class="sh">"</span><span class="s">这是错误的歌词，用于测试检测功能。</span><span class="sh">"</span>
+
+    <span class="n">intervals</span> <span class="o">=</span> <span class="nf">find_misalignment_intervals</span><span class="p">(</span><span class="n">ref_lyric</span><span class="p">,</span> <span class="n">pred_lyric</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">interval</span> <span class="ow">in</span> <span class="n">intervals</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="n">interval</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="45-生成视频">4.5. 生成视频</h3>
+<p>我这里为了方便测试，直接使用 moviepy 根据单张图片生成一个和音频时长相同的视频，然后再用 ffmpeg 将字幕写入视频。moviepy 生成视频的代码如下：</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">image_to_video</span><span class="p">(</span><span class="n">image_path</span><span class="p">,</span> <span class="n">audio_path</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="sh">"</span><span class="s">output.mp4</span><span class="sh">"</span><span class="p">,</span> <span class="n">volume</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">
+    生成视频：单张图片 + 背景音乐
+    :param image_path: 图片路径 (jpg/png/jpeg)
+    :param audio_path: 音频路径 (mp3)
+    :param output_path: 输出视频路径 (默认 output.mp4)
+    :param volume: 音量大小 (1.0为原音量，0.5为一半音量)
+    </span><span class="sh">"""</span>
+    <span class="c1"># 加载音频
+</span>    <span class="n">audio</span> <span class="o">=</span> <span class="nc">AudioFileClip</span><span class="p">(</span><span class="n">audio_path</span><span class="p">).</span><span class="nf">volumex</span><span class="p">(</span><span class="n">volume</span><span class="p">)</span>
+    <span class="n">duration</span> <span class="o">=</span> <span class="n">audio</span><span class="p">.</span><span class="n">duration</span>  <span class="c1"># 音频持续时间
+</span>    <span class="nf">print</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="c1"># 创建图片视频片段（持续时间与音频相同）
+</span>    <span class="c1"># clip = ImageClip(image_path, duration=duration)
+</span>    <span class="n">clip</span> <span class="o">=</span> <span class="nc">ImageClip</span><span class="p">(</span><span class="n">image_path</span><span class="p">).</span><span class="nf">resize</span><span class="p">(</span><span class="n">height</span><span class="o">=</span><span class="mi">480</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">720</span><span class="p">).</span><span class="nf">set_duration</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span>
+
+    <span class="c1"># 设置视频的音频
+</span>    <span class="n">video</span> <span class="o">=</span> <span class="n">clip</span><span class="p">.</span><span class="nf">set_audio</span><span class="p">(</span><span class="n">audio</span><span class="p">)</span>
+
+    <span class="c1"># 导出视频
+</span>    <span class="n">video</span><span class="p">.</span><span class="nf">write_videofile</span><span class="p">(</span>
+        <span class="n">output_path</span><span class="p">,</span>
+        <span class="n">fps</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>          <span class="c1"># 帧率
+</span>        <span class="c1"># codec="libx264",
+</span>        <span class="c1"># audio_codec="aac",
+</span>        <span class="c1"># ffmpeg_params=[
+</span>        <span class="c1">#     "-pix_fmt", "yuv420p",
+</span>        <span class="c1">#     "-movflags", "+faststart"
+</span>        <span class="c1"># ]
+</span>    <span class="p">)</span>
+
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">✅ 视频已生成: </span><span class="si">{</span><span class="n">output_path</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>然后使用 ffmpeg 将字幕写入视频，命令如下：</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ffmpeg <span class="nt">-i</span> temp_video.mp4 <span class="nt">-vf</span> <span class="nv">ass</span><span class="o">=</span>lyrics.ass output.mp4
+</code></pre></div></div>
+
+<p>在 Python 中调用 ffmpeg:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">burn_ass</span><span class="p">(</span><span class="n">video_input</span><span class="p">,</span> <span class="n">ass_path</span><span class="p">,</span> <span class="n">output_path</span><span class="p">):</span>
+    <span class="c1"># ffmpeg -i audio.mp4 -vf ass=lyrics.ass output.mp4
+</span>    <span class="c1"># 下面的ass=参数不能用"\\"作为路径分隔符，必须使用"/"
+</span>    <span class="n">ass_path</span> <span class="o">=</span> <span class="n">ass_path</span><span class="p">.</span><span class="nf">replace</span><span class="p">(</span><span class="sh">"</span><span class="se">\\</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">/</span><span class="sh">"</span><span class="p">)</span>
+    <span class="n">subprocess</span><span class="p">.</span><span class="nf">run</span><span class="p">([</span>
+        <span class="sh">"</span><span class="s">ffmpeg</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">-y</span><span class="sh">"</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">-i</span><span class="sh">"</span><span class="p">,</span> <span class="n">video_input</span><span class="p">,</span>
+        <span class="sh">"</span><span class="s">-vf</span><span class="sh">"</span><span class="p">,</span> <span class="sa">f</span><span class="sh">"</span><span class="s">ass=</span><span class="si">{</span><span class="n">ass_path</span><span class="si">}</span><span class="sh">"</span><span class="p">,</span>
+        <span class="n">output_path</span>
+    <span class="p">],</span> <span class="n">check</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h1 id="5-总结">5. 总结</h1>
+<p>本项目本质上做了三件事：</p>
+<ul>
+  <li>把 Whisper 的逐字时间戳转成 ASS 字幕</li>
+  <li>设计一个安全的歌词手动修改机制</li>
+  <li>自动完成视频合成</li>
+</ul>
+
+<p>完整代码：<a href="https://github.com/lxmghct/whisper-karaoke-video-generator">https://github.com/lxmghct/whisper-karaoke-video-generator</a></p>
+
+  </article>
+</div>
+
+<div class="prev-and-next">
+  
+  <div>
+    <span>上一篇 ：</span><a href="/project-logs/2025/11/28/tauri2-task-manager.html" title="tauri2 task manager">tauri2 task manager</a>
+  </div>
+  
+  
+  <div>
+    <span>下一篇 ：</span><a href="/platforms/2025/10/28/%E9%AB%98%E7%89%88%E6%9C%AC%E5%AE%89%E5%8D%93%E5%AE%89%E8%A3%85%E4%BD%8E%E7%89%88%E6%9C%AC%E4%B8%8D%E5%85%BC%E5%AE%B9app.html"
+      title="高版本安卓安装低版本不兼容app">高版本安卓安装低版本不兼容app</a>
+  </div>
+  
+  <div>
+    <span> 版权所有，转载时必须以链接形式注明原始出处</span>
+  </div>
+
+</div>
+
+<script>
+    // 点击<a>跳转到/pages/tags.html#
+    document.querySelectorAll(".index-post-tag a").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/tags.html#" + item.getAttribute("data-tag");
+        });
+    });
+    document.querySelectorAll(".post-header a.category").forEach((item) => {
+        item.addEventListener("click", () => {
+            window.location.href = "/pages/classify.html#" + item.getAttribute("data-tag");
+        });
+    });
+
+    // 生成目录
+    // 获取文章内容的标题
+    const headings = document.querySelectorAll(".post-content h1, .post-content h2, .post-content h3, .post-content h4, .post-content h5, .post-content h6");
+    if (headings.length === 0) {
+        document.querySelector(".toc-container").classList.add("hidden");
+    } else {
+        document.querySelector(".toc-container").classList.remove("hidden");
+    }
+    // 目录容器
+    const tocList = document.getElementById("toc-list");
+    const tempTocData = []
+
+    // 遍历标题，生成目录
+    headings.forEach((heading) => {
+        const level = parseInt(heading.tagName.charAt(1), 10); // 获取标题级别
+        const listItem = document.createElement("li");
+        const link = document.createElement("a");
+
+        link.textContent = heading.textContent;
+        if (!heading.id) {
+            heading.id = heading.textContent.replace(/\s+/g, "-").toLowerCase();
+        }
+        link.href = `#${heading.id}`;
+        listItem.appendChild(link);
+        tocList.appendChild(listItem);
+        tempTocData.push({
+            level: level,
+            dom: listItem
+        })
+    });
+
+    // 设置目录项的左边距
+    const minLevel = Math.min(...tempTocData.map(item => item.level))
+    tempTocData.forEach(item => {
+        let diff = item.level - minLevel
+        item.dom.style.marginLeft = diff * 20 + "px"
+        if (diff === 0) {
+            item.dom.classList.add("root-toc")
+        }
+    })
+
+</script>
+
+<script type="text/javascript" src="/assets/js/highlight/highlight.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/highlightjs-line-numbers.min.js"></script>
+<script type="text/javascript" src="/assets/js/highlight/run-highlight.js"></script>
+
+<!-- beaudar评论, 日期+标题作为issue名 -->
+<script src="https://beaudar.lipk.org/client.js"
+  repo="lxmghct/blog-comments"
+  branch="master"
+  issue-term="【2025-11-03】 Whisper Karaoke Video Generator"
+  theme="github-light"
+  loading="false"
+  crossorigin="anonymous" async>
+</script></div>
+          </div>
+        
+
+
+      </div>
+    </div>
+  </div>
+
+  <div id="back-to-top">
+    <a href="#"><i class="fa fa-arrow-circle-up"></i></a>
+  </div>
+
+  <footer class="site-footer">
+
+  <div class="footer-col-wrapper">
+    <div class="footer-col  footer-col-1">
+      <ul class="contact-list">
+        <li>lxmghct's blog</li>
+        <li><a href="mailto:lxmghct@gmail.com">lxmghct@gmail.com</a></li>
+        <li></li>
+      </ul>
+    </div>
+
+    <div class="footer-col  footer-col-2">
+      <div class="social-media-list">
+        
+        <a class="github" href="https://github.com/lxmghct" target="_blank" title="github"></a>
+        
+        
+        <a class="rss" href="/feed.xml" target="_blank" title="rss"></a>
+        
+      </div>
+    </div>
+
+    <div class="footer-col  footer-col-3">
+      <p class="text">学习、实践、分享<br> Learning, Practicing, Sharing</p>
+    </div>
+  </div>
+  <div class="center sitedesc">
+    Powered by <a href="http://jekyllrb.com/">Jekyll</a> | Hosted on <a href="https://pages.github.com/">
+      Github</a>
+  </div>
+
+  <script type="text/javascript" src="/assets/js/jquery.js"></script>
+  <script type="text/javascript" src="/assets/js/bootstrap.js"></script>
+  <script type="text/javascript" src="/assets/js/tagutils.js"></script>
+  <script type="text/javascript" src="/assets/js/main.js"></script>
+  <script type="text/javascript" type="module" src="/assets/js/search.js"></script>
+
+</footer>
+
+</body>
+
+</html>
